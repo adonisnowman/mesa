@@ -151,7 +151,7 @@ class UsersApiController extends BaseController
     }
 
     //註冊
-    public function Sign()
+    public function Create()
     {
         
         $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile","password"]);

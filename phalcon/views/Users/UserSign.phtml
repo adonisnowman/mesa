@@ -268,16 +268,22 @@
                     </div>
 
                     <div class="wrap-input100 validate-input" data-validate="Enter mobile">
-                        
+
                         <input class="input100" type="phone" name="mobile" ng-model="Admin.CreateInfo.mobile">
                         <span class="focus-input100" data-placeholder="mobile"></span>
                     </div>
-
+                    <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <span class="btn-show-pass">
+                            <i class="zmdi zmdi-eye"></i>
+                        </span>
+                        <input class="input100" type="password" name="password" ng-model="Admin.CreateInfo.password">
+                        <span class="focus-input100" data-placeholder="password"></span>
+                    </div>
                     <div class="container-login100-form-btn">
                         <div class="wrap-login100-form-btn">
                             <div class="login100-form-bgbtn"></div>
                             <button class="login100-form-btn" ng-click="Admin.Create()">
-                            Create Account
+                                Create Account
                             </button>
                         </div>
                     </div>
@@ -320,7 +326,7 @@
 
                 var request = $http({
                     method: "post",
-                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/UserApi",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/UsersApi",
                     data: data,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
