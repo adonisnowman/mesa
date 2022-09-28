@@ -311,6 +311,7 @@
 				sharedData.Logout(ReDirect);
 			}
                 Admin.Login = function() {
+                    console.info("login click");
                     Admin.LoginInfo.UniqueID = "";
                     var data = {
                         'Action': 'Login',
