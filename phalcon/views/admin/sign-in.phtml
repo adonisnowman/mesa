@@ -102,7 +102,7 @@
 
                     var request = $http({
                         method: "post",
-                        url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
+                        url: "https://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
                         data: data,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -128,7 +128,7 @@
 
                     var request = $http({
                         method: "post",
-                        url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/index/info",
+                        url: "https://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/index/info",
                         data: data,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;',
