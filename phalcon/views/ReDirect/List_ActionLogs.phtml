@@ -1,0 +1,130 @@
+<!--
+=========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="icon.jpg">
+    <link rel="icon" type="image/png" href="icon.jpg">
+    <title>
+        Beaming Admin
+    </title>
+    <?php echo $header; ?>
+</head>
+
+<body class="g-sidenav-show  bg-gray-200" ng-app="Admin"  >
+    <!-- Extra details for Live View on GitHub Pages -->
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <?php echo $aside; ?>
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        <!-- Navbar -->
+        <?php echo $nav; ?>
+        <!-- End Navbar -->
+        <?php echo $Dashboard; ?>
+        <div ng-controller="AdminController as Admin" >
+        <?php echo $ActionLogs; ?>
+        </div>
+    </main>
+
+    <!--   Core JS Files   -->
+    
+    <script>
+          adonis.controller('AdminController', ['sharedData', '$scope', '$http', function (sharedData, $scope, $http) {
+            var Admin = this;
+                if (location.pathname == "/logout") location.href = '';
+                
+                Admin.jkanbanInfoModal = document.getElementById("jkanban-info-modal");
+                Admin.ActionLogsModal = new bootstrap.Modal(Admin.jkanbanInfoModal, {
+                    show: true
+                });              
+
+                Admin.ActionLogsShow = function(item) {
+                    Admin.Input_ActionLogs = item;
+                    console.info(Admin.Input_ActionLogs);
+                    var ActionLogsData = {
+                        'Action': 'ActionLogsData',
+                        'Data': JSON.stringify(Admin.Input_ActionLogs),
+                    }
+                    var request = $http({
+                        method: "post",
+                        url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
+                        data: ActionLogsData,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                        },
+                    }).then(function successCallback(response) {
+                        var data = response.data;
+                        Admin.Input_ActionLogs = data.ActionLogsData;
+                        Admin.Pages = data.Pages;
+                    }, function errorCallback(response) {
+
+                    });
+                }
+
+                Admin.ListPages = {};
+
+                Admin.Search = "";
+
+                Admin.ActionLogs = function () {
+                    var ActionLogs = {
+                        "UniqueID": "",
+                        'Pages': Admin.ListPages
+                    }
+                    var data = {
+                        'UniqueID': '',
+                        'Action': 'ActionLogs',
+                        'Data': JSON.stringify(ActionLogs)
+                    }
+                    var promise = sharedData.List(data );
+                
+                    promise.then(function(data) {  // 呼叫承諾API獲取資料 .resolve  
+                        Admin.List = data.List;
+                        Admin.ListPages = data.Pages;
+                        console.info(Admin.ListPages);
+                    }, function(data) {  // 處理錯誤 .reject  
+                        console.info(data);
+                    }); 				
+                };
+                Admin.ActionLogs();
+                
+            }]);
+    </script>
+    <script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+    <script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <!-- Kanban scripts -->
+    <script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+    <script>
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+                damping: '0.5'
+            }
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
+    </script>
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+<!--
+=========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<?php echo $header; ?>
+    
+   
+</head>
+
+<body class="g-sidenav-show  bg-gray-200" ng-app="Admin">
+    <!-- Extra details for Live View on GitHub Pages -->
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <?php echo $aside; ?>
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        <!-- Navbar -->
+        <?php echo $nav; ?>
+        <!-- End Navbar -->
+        
+        <div ng-controller="AdminController as Admin">
+            <?php echo $Accounts; ?>
+        </div>
+    </main>
+
+    <!--   Core JS Files   -->
+    <script>
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function (sharedData, $scope, $http) {
+            var Admin = this;
+            if (location.pathname == "/logout") location.href = '';
+            Admin.ReDirect = function (ReDirect) {
+                console.info(ReDirect);
+                sharedData.ReDirect(ReDirect);
+            }
+            Admin.Logout = function () {
+                console.info("adoni");
+                sharedData.Logout(ReDirect);
+            }
+
+            
+            Admin.AccountsModal = document.getElementById("AccountsModal");
+            Admin.AccountsModal = new bootstrap.Modal(Admin.AccountsModal, {
+                show: true
+            });
+            //後台帳號資料顯示
+            Admin.AccountsData = function (item) {
+
+                Admin.StoredChange = item;
+                var AccountsData = {
+                    'Action': 'AccountsData',
+                    'Data': JSON.stringify(Admin.StoredChange),
+                }
+                var request = $http({
+                    method: "post",
+                    url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
+                    data: AccountsData,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    Admin.StoredChange = data.AccountsData;
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            }
+
+            Admin.AccountsPages = {};
+            //後台帳號列表
+            Admin.Accounts = function () {
+
+
+                var Accounts = {
+                    'Action': 'Accounts',
+                    'Data': JSON.stringify({
+                        'UniqueID': "",
+                        'Pages': Admin.AccountsPages,
+                        'Search' : Admin.Search,
+                    }),
+                }
+                var request = $http({
+                    method: "post",
+                    url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
+                    data: Accounts,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    Admin.Accounts_List = data.Accounts;
+                    Admin.AccountsPages = data.Pages;
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
+
+            
+            Admin.Accounts();
+        }]);
+    </script>
+    <script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+    <script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <!-- Kanban scripts -->
+    <script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+    <script>
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+                damping: '0.5'
+            }
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
+    </script>
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+
+</html>

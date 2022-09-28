@@ -1,0 +1,354 @@
+<!--
+ =========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<?php echo $header; ?>
+</head>
+
+<body class="g-sidenav-show bg-gray-200" ng-app="Admin">
+	<!-- Extra details for Live View on GitHub Pages -->
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"> </iframe>
+	</noscript>
+	<!-- End Google Tag Manager (noscript) -->
+	<?php echo $aside; ?>
+	<main class="main-content max-height-vh-100 h-100">
+		<?php echo $nav; ?>
+		<div ng-controller="AdminController as Admin">
+			<?php echo $Input_Nav; ?>
+			<div class="container-fluid my-3 py-3">
+				<div class="row mb-5">
+					<div class="col-lg-3">
+						<div class="input-group input-group-outline" ng-class="(Admin.Search)?'is-filled':''">
+							<label class="form-label">Search here</label>
+							<input type="text" class="form-control" ng-model="Admin.Search">
+						</div>
+						<div class="card position-sticky top-1" style="height: 70vh;overflow: scroll;">
+							<ul class="nav flex-column bg-white border-radius-lg p-3">
+								<li class="nav-item" ng-repeat=" item in Admin.checkKeys_List | filter : Admin.Search">
+									<a class="nav-link text-dark d-flex" data-scroll="" ng-click="Admin.Select(item);">
+										<div class="">
+											<h6 class="text-dark font-weight-bold mb-0">{{item.ControllerName}}</h6>
+											<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+												{{item.ActionName}}
+											</p>
+										</div>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-9 mt-lg-0 mt-4">
+						<!-- Card Profile -->
+
+						<!-- Card Basic Info -->
+						<div class="card mt-4" id="basic-info">
+							<div class="card-header">
+
+								<div class="ms-auto text-end">
+									<md-button class="md-raised" ng-click="Admin.ApiMesa();">
+										呼叫測試
+									</md-button>
+									<a class="btn btn-link text-dark px-3 mb-0" ng-click="Admin.Edit()"><i class="material-icons text-sm me-2">edit</i>編輯/新增</a>
+
+								</div>
+								<div class="d-flex flex-column">
+									<h6 class="mb-3 text-sm">Api Mesa</h6>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_ApiMesa.ControllerName)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										Controller Name:
+										<span class="text-dark font-weight-bold ms-sm-2">{{Admin.Input_ApiMesa.ControllerName}}</span>
+									</span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_ApiMesa.ActionName)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										Action Name:
+										<span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_ApiMesa.ActionName}}</span>
+									</span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_ApiMesa.PostData)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										PostData:
+										<span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_ApiMesa.PostData}}</span>
+									</span>
+									<div class="input-group input-group-static">
+										<label>禁止呼叫設定</label>
+										<div class="form-check form-switch ms-2 my-auto">
+											<input class="form-check-input" type="checkbox" ng-model="Admin.Input_ApiMesa.offshelf" checked>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="card-body pt-0">
+								<div class="row">
+									<div class="col-6">
+										<div class="row">
+											<div class="col-12">
+												<div class="input-group input-group-static">
+													<label>呼叫網址</label>
+													<input type="text" class="form-control" placeholder="呼叫網址" ng-model="Admin.Input_ApiMesa.Url">
+												</div>
+											</div>
+
+										</div>
+										<div class="row">
+											<div class="col-6">
+												<div class="input-group input-group-static">
+													<label>Controller Name</label>
+													<input type="text" class="form-control" placeholder="Controller Name" ng-model="Admin.Input_ApiMesa.ControllerName">
+												</div>
+											</div>
+											<div class="col-6">
+												<div class="input-group input-group-static">
+													<label>Action Name</label>
+													<input type="text" class="form-control" placeholder="Action Name" ng-model="Admin.Input_ApiMesa.ActionName">
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<label>參數管理</label>
+											<md-chips ng-model="Admin.Input_ApiMesa.PostData" md-on-remove="Admin.md_on_remove($chip)" md-on-add="Admin.md_on_add($chip)">
+											</md-chips>
+										</div>
+										<div class="row" ng-repeat=" item in Admin.Input_ApiMesa.ApiMesaPost ">
+											<div class="col-sm-3 col-6">
+												<label class="form-label mt-4 ms-0">{{item.name}}</label>
+											</div>
+
+											<div class="col-md-3 align-self-center">
+												<md-input-container>
+													<md-select ng-model="item.Type" aria-label="Select">
+														<md-option ng-repeat="item in Admin.DefaultValueType" ng-value="item">
+															{{item}}
+														</md-option>
+													</md-select>
+												</md-input-container>
+											</div>
+											<div class="col-md-3 align-self-center">
+												<div class="input-group input-group-static">
+													<input type="text" class="form-control" placeholder="欄位說明" ng-model="item.label">
+												</div>
+											</div>
+											<div class="col-12">
+												<label>預設參數值</label>
+												<md-chips ng-model="item.DefaultValue">
+												</md-chips>
+											</div>
+										</div>
+									</div>
+									<div class="col-6">
+										<pre id="RequestData"></pre>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+	</main>
+
+	<script>
+		adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+			var Admin = this;
+			if (location.pathname == "/logout") location.href = '';
+			Admin.ReDirect = function(ReDirect) {
+				console.info(ReDirect);
+				sharedData.ReDirect(ReDirect);
+			}
+			Admin.Logout = function() {
+				console.info("adoni");
+				sharedData.Logout(ReDirect);
+			}
+			Admin.Select = function(Item) {
+				Admin.Input_ApiMesa.ControllerName = Item.ControllerName;
+				Admin.Input_ApiMesa.ActionName = Item.ActionName;
+				Admin.Input_ApiMesa.PostData = Item.PostData;
+				Admin.Input_ApiMesa.ApiMesaPost = [];
+				Admin.Input_ApiMesa.PostData.forEach(value => {
+					Admin.Input_ApiMesa.ApiMesaPost.push({
+						'name': value,
+						'DefaultValue': []
+					})
+				});
+			}
+			Admin.md_on_add = function(chip) {
+				Admin.Input_ApiMesa.ApiMesaPost.push({
+					'name': chip,
+					'DefaultValue': []
+				})
+			}
+			Admin.md_on_remove = function(chip) {
+				Admin.Input_ApiMesa.ApiMesaPost.splice(
+					Admin.Input_ApiMesa.ApiMesaPost.findIndex(object => {
+						return object.name === chip;
+					}))
+
+			}
+			Admin.DefaultValueType = ["文字", "陣列", "數字", "布林"];
+
+			Admin.Input_ApiMesa = {};
+			Admin.Input_ApiMesa.PostData = ["UniqueID"];
+			Admin.Input_ApiMesa.UniqueID = "";
+			Admin.Input_ApiMesa.offshelf = false;
+
+			Admin.Input_ApiMesa.Rule = {};
+			Admin.Input_ApiMesa.ApiMesaPost = [];
+			Admin.Input_ApiMesa.PostData.forEach(value => {
+				Admin.Input_ApiMesa.ApiMesaPost.push({
+					'name': value,
+					'DefaultValue': []
+				})
+			});
+
+			Admin.checkKeysPages = {};
+
+			Admin.Search = "";
+
+			Admin.checkKeys = function() {
+				var checkKeys = {
+					"UniqueID": "",
+					'Pages': Admin.checkKeysPages
+				}
+				var data = {
+					'UniqueID': '',
+					'Action': 'checkKeys',
+					'Data': JSON.stringify(checkKeys)
+				}
+				var promise = sharedData.List(data);
+
+				promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+					Admin.checkKeys_List = data.List;
+					Admin.checkKeysPages = data.Pages;
+				}, function(data) { // 處理錯誤 .reject  
+					console.info(data);
+				});
+
+			};
+			Admin.checkKeys();
+
+			Admin.ApiMesa = function() {
+
+				if (!Admin.Input_ApiMesa.Url) {
+					sharedData.Toast("Must Url data", 3000);
+					return false;
+				}
+				if (!Admin.Input_ApiMesa.ControllerName) {
+					sharedData.Toast("Must Controller Name", 3000);
+					return false;
+				}
+				if (!Admin.Input_ApiMesa.ActionName) {
+					sharedData.Toast("Must Action Name", 3000);
+					return false;
+				}
+
+				var ApiMesaPost = {};
+				Admin.Input_ApiMesa.ApiMesaPost.forEach(item => {
+					if (item.DefaultValue.length == 0) ApiMesaPost[item.name] = "";
+					else if ("文字" == item.DefaultValueType) ApiMesaPost[item.name] = item.DefaultValue.join(",");
+					else if ("陣列" == item.DefaultValueType) ApiMesaPost[item.name] = item.DefaultValue;
+					else if ("數字" == item.DefaultValueType) ApiMesaPost[item.name] = item.DefaultValue.join("");
+					else if ("數字" == item.DefaultValueType) ApiMesaPost[item.name] = (item.DefaultValue.length > 0)
+					else ApiMesaPost[item.name] = item.DefaultValue.join("_");
+				});
+
+				var data = {
+					'Action': Admin.Input_ApiMesa.ActionName,
+					'Data': JSON.stringify(ApiMesaPost),
+				}
+
+				var request = $http({
+					method: "post",
+					url: "http://" + Admin.Input_ApiMesa.Url + "/" + Admin.Input_ApiMesa.ControllerName.replace("Controller", ""),
+					data: data,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;',
+					},
+				}).then(function successCallback(response) {
+					var data = response.data;
+					const container = document.getElementById('RequestData')
+					const objectViewer = new LunaObjectViewer(container, {
+						unenumerable: false,
+						accessGetter: true,
+					})
+					objectViewer.set({});
+					objectViewer.set(data)
+					if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+					console.info(data);
+				}, function errorCallback(response) {
+					// called asynchronously if an error occurs
+					// or server returns response with an error status.
+
+				});
+			};
+
+			Admin.Edit = function() {
+				var data = {
+					'UniqueID': '',
+					'Action': 'Input_ApiMesa',
+					'Data': JSON.stringify(Admin.Input_ApiMesa)
+				}
+				sharedData.Edit(data);
+				Admin.checkKeys();
+			};
+
+		}]);
+	</script>
+	<!--   Core JS Files   -->
+	<script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+	<script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/choices.min.js"></script>
+	<!-- Kanban scripts -->
+	<script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+	<script>
+		if (document.getElementById('choices-gender')) {
+			var gender = document.getElementById('choices-gender');
+			const example = new Choices(gender);
+		}
+
+		if (document.getElementById('choices-language')) {
+			var language = document.getElementById('choices-language');
+			const example = new Choices(language);
+		}
+
+		if (document.getElementById('choices-skills')) {
+			var skills = document.getElementById('choices-skills');
+			const example = new Choices(skills, {
+				delimiter: ',',
+				editItems: true,
+				maxItemCount: 20,
+				removeItemButton: true,
+				addItems: true
+			});
+		}
+	</script>
+	<script>
+		var win = navigator.platform.indexOf('Win') > -1;
+		if (win && document.querySelector('#sidenav-scrollbar')) {
+			var options = {
+				damping: '0.5'
+			}
+			Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+		}
+	</script>
+	<!-- Github buttons -->
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+	<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+	<script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+</body>
+
+</html>

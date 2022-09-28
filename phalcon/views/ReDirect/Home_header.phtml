@@ -1,0 +1,256 @@
+<!-- Extra details for Live View on GitHub Pages -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="apple-touch-icon" sizes="76x76" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<base href="http://<?php echo $_SERVER['HTTP_HOST'] ; ?>">
+<title>
+    後台
+</title>
+<!--     Fonts and icons     -->
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+<!-- Nucleo Icons -->
+<link href="material-dashboard-master/assets/css/nucleo-icons.css" rel="stylesheet" />
+<link href="material-dashboard-master/assets/css/nucleo-svg.css" rel="stylesheet" />
+<!-- Font Awesome Icons -->
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<!-- CSS Files -->
+<!-- AngularJS Material CSS now available via Google CDN; version 1.2.1 used here -->
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.css">
+<link id="pagestyle" href="material-dashboard-master/assets/css/material-dashboard.min.css?v=3.0.2" rel="stylesheet" />
+<!-- Anti-flicker snippet (recommended)  -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://kit.fontawesome.com/4e4a114ffc.js" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+<script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.css" />
+<script src="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
+<!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
+
+<script>
+    var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
+    adonis.service('sharedData', function($http, $q, $mdToast) {
+        var self = this;
+        //Toast 
+        var last = {
+            bottom: true,
+            top: false,
+            left: false,
+            right: true
+        };
+        self.toastPosition = angular.extend({}, last);
+
+        self.getToastPosition = function() {
+            sanitizePosition();
+
+            return Object.keys(self.toastPosition)
+                .filter(function(pos) {
+                    return self.toastPosition[pos];
+                }).join(' ');
+        };
+
+        function sanitizePosition() {
+            var current = self.toastPosition;
+
+            if (current.bottom && last.top) {
+                current.top = false;
+            }
+            if (current.top && last.bottom) {
+                current.bottom = false;
+            }
+            if (current.right && last.left) {
+                current.left = false;
+            }
+            if (current.left && last.right) {
+                current.right = false;
+            }
+
+            last = angular.extend({}, current);
+        };
+
+        self.Toast = function(Msg, timeout) {
+            console.info('Toast', Msg, timeout);
+            var pinTo = self.getToastPosition();
+            var toast = $mdToast.simple()
+                .textContent(Msg)
+                .highlightAction(true)
+                // Accent is used by default, this just demonstrates the usage.
+                .highlightClass('md-accent')
+                .position(pinTo)
+                .hideDelay(timeout);
+
+            $mdToast.show(toast)
+        }
+        self.showActionToast = function() {
+            var pinTo = self.getToastPosition();
+            var toast = $mdToast.simple()
+                .textContent('Marked as read')
+                .actionKey('z')
+                .actionHint('Press the Control-"z" key combination to ')
+                .action('UNDO')
+                .dismissHint('Activate the Escape key to dismiss this toast.')
+                .highlightAction(true)
+                // Accent is used by default, this just demonstrates the usage.
+                .highlightClass('md-accent')
+                .position(pinTo)
+                .hideDelay(0);
+
+            $mdToast.show(toast)
+                .then(function(response) {
+                    if (response === 'ok') {
+                        alert('You selected the \'UNDO\' action.');
+                    } else {
+                        $log.log('Toast dismissed.');
+                    }
+                }).catch(function() {
+                    $log.log('Toast failed or was forced to close early by another toast.');
+                });
+        };
+        self.Logout = function() {
+            var Data = {}
+            Data.UniqueID = "";
+            var ReDirect = {
+                'Action': 'Logout',
+                'Data': JSON.stringify(Data),
+            }
+            var request = $http({
+                method: "post",
+                url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                data: ReDirect,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                },
+            }).then(function successCallback(response) {
+                var data = response.data;
+                location.reload();
+
+            }, function errorCallback(response) {
+
+            });
+        }
+        self.ReDirect = function(ReDirect) {
+            var ReDirect = {
+                UniqueID: "",
+                ReDirect: ReDirect
+            }
+            var ReDirect = {
+                'Action': 'ReDirect',
+                'Data': JSON.stringify(ReDirect),
+            }
+            console.info(ReDirect);
+            var request = $http({
+                method: "post",
+                url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                data: ReDirect,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                },
+            }).then(function successCallback(response) {
+                var data = response.data;
+                location.reload();
+            }, function errorCallback(response) {
+
+            });
+        }
+        //Edit
+        self.Edit = function(data) {
+
+            var request = $http({
+                method: "post",
+                url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiEdit",
+                data: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                }
+            }).then(function successCallback(response) {
+
+                if (response.data.Data && response.data.Data.action) {
+                    self.Toast('Marked as ' + response.data.Data.action, 3000);
+                } else if (response.data.ErrorMsg) {
+                    self.Toast('Marked as ' + response.data.ErrorMsg.join(","), 3000);
+                } else console.info(response.data);
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+
+            });
+        };
+        //List
+        self.LtstData = {};
+        self.List = function(data, key) {
+            var deferred = $q.defer();
+            var request = $http({
+                method: "post",
+                url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                data: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                }
+            }).then(function successCallback(response) {
+                var data = response.data;
+                var Data = {};
+                Data.List = data[data.Action];
+                Data.Pages = data.Pages;
+                deferred.resolve(Data);
+            }, function errorCallback(response) {
+                deferred.reject(response);
+
+            });
+
+            return deferred.promise;
+        };
+
+        //Remove
+        
+        self.Remove = function(data) {
+            var deferred = $q.defer();
+            var request = $http({
+                method: "post",
+                url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiRemove",
+                data: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                }
+            }).then(function successCallback(response) {
+                var data = response.data;
+                var Data = {};
+                Data.List = data[data.Action];
+                Data.Pages = data.Pages;
+                deferred.resolve(Data);
+            }, function errorCallback(response) {
+                deferred.reject(response);
+
+            });
+
+            return deferred.promise;
+        };
+
+
+    });
+</script>
+<style>
+    .bg-gradient-primary {
+        background-image: linear-gradient(195deg, #0b1048 0%, #4e5bb9 100%);
+    }
+
+    .shadow-primary {
+        box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(34 10 143 / 37%) !important;
+    }
+
+    .btn-primary,
+    .btn.bg-gradient-primary {
+        box-shadow: 0 3px 3px 0 rgb(51 30 233 / 15%), 0 3px 1px -2px rgb(30 42 233 / 20%), 0 1px 5px 0 rgb(30 39 233 / 15%);
+    }
+
+    #pie {
+        height: 440px;
+    }
+</style>

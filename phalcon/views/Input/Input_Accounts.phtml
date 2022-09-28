@@ -1,0 +1,206 @@
+<!--
+ =========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <?php echo $header; ?>
+</head>
+
+<body class="g-sidenav-show bg-gray-200" ng-app="Admin">
+  <!-- Extra details for Live View on GitHub Pages -->
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <?php echo $aside; ?>
+  <main class="main-content max-height-vh-100 h-100" ng-controller="AdminController as Admin">
+    <?php echo $nav; ?>
+    <?php echo $Input_Nav; ?>
+    <div class="container-fluid my-3 py-3">
+      <div class="row mb-5">
+        <div class="col-lg-3">
+          <div class="input-group input-group-outline" ng-class="(Admin.Search)?'is-filled':''">
+            <label class="form-label">Search here</label>
+            <input type="text" class="form-control" ng-model="Admin.Search">
+          </div>
+          <div class="card position-sticky top-1" style="height: 70vh;overflow: scroll;">
+            <ul class="nav flex-column bg-white border-radius-lg p-3">
+              <li class="nav-item" ng-repeat=" item in Admin.Accounts_List | filter : Admin.Search">
+                <a class="nav-link text-dark d-flex" data-scroll="" ng-click="Admin.Input_Accounts = item;">
+                  <div class="">
+                    <h6 class="text-dark font-weight-bold mb-0">{{item.account}}</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{item.mobile}}</p>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-9 mt-lg-0 mt-4">
+          <!-- Card Profile -->
+
+          <!-- Card Basic Info -->
+          <div class="card mt-4" id="basic-info">
+            <div class="card-header">
+
+              <div class="d-flex flex-column">
+                <div class="d-flex jusitfy-content-between">
+                  <div class="fw-bold fs-5">系統帳號</div>
+                  <div class="ms-auto text-end">
+                    <a class="btn btn-link text-dark px-3 mb-0" ng-click="Admin.Edit()"><i class="material-icons text-sm me-2">edit</i>編輯/新增</a>
+
+                  </div>
+                </div>
+                <span class="mb-2 text-s " ng-class="(Admin.Input_Accounts.account)?'text-gradient text-success text-xs':''">
+                  <i class="fas fa-check"></i> 後台帳號名稱: <span class="text-dark font-weight-bold ms-sm-2">{{Admin.Input_Accounts.account}}</span></span>
+                <span class="mb-2 text-s " ng-class="(Admin.Input_Accounts.password)?'text-gradient text-success text-xs':''">
+                  <i class="fas fa-check"></i> 後台帳號密碼: <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_Accounts.password}}</span></span>
+                <div class="input-group input-group-static">
+                  <label>禁止呼叫設定</label>
+                  <div class="form-check form-switch ms-2 my-auto">
+                    <input class="form-check-input" type="checkbox" ng-model="Admin.Input_Accounts.offshelf" checked>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body pt-0">
+              <div class="row">
+                <div class="col-6">
+                  <div class="input-group input-group-static">
+                    <label>後台帳號名稱</label>
+                    <input type="text" class="form-control" placeholder="Accounts Name" ng-model="Admin.Input_Accounts.account">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="input-group input-group-static">
+                    <label>後台密碼</label>
+                    <input type="text" class="form-control" placeholder="Accounts Password" ng-model="Admin.Input_Accounts.password">
+                  </div>
+                </div>
+
+                <div class="row">
+                  <label>允許IP</label>
+                  <md-chips ng-model="Admin.Input_Accounts.AllowIps" >
+                  </md-chips>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+      var Admin = this;
+
+      if (location.pathname == "/logout") location.href = '';
+      Admin.ReDirect = function(ReDirect) {
+        console.info(ReDirect);
+        sharedData.ReDirect(ReDirect);
+      }
+      Admin.Logout = function() {
+        console.info("adoni");
+        sharedData.Logout(ReDirect);
+      }
+
+
+      Admin.Input_Accounts = {};
+      Admin.Input_Accounts.UniqueID = "";
+      Admin.Input_Accounts.AllowIps = [];
+      Admin.Input_Accounts.offshelf = 0;
+      Admin.AccountsPages = {};
+      Admin.Accounts = function() {
+        var Accounts = {
+          "UniqueID": "",
+          'Pages': Admin.AccountsPages,
+        }
+        var data = {
+          'UniqueID': '',
+          'Action': 'Accounts',
+          'Data': JSON.stringify(Accounts),
+        }
+        var promise = sharedData.List(data);
+
+        promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+          Admin.Accounts_List = data.List;
+          Admin.AccountsPages = data.Pages;
+        }, function(data) { // 處理錯誤 .reject  
+          console.info(data);
+        });
+
+      };
+      Admin.Accounts();
+      Admin.Edit = function() {
+        var data = {
+          'UniqueID': '',
+          'Action': 'Input_Accounts',
+          'Data': JSON.stringify(Admin.Input_Accounts),
+        }
+        sharedData.Edit(data);
+        Admin.Accounts();
+      };
+
+
+    }]);
+  </script>
+  <!--   Core JS Files   -->
+  <script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+  <script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/choices.min.js"></script>
+  <!-- Kanban scripts -->
+  <script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+  <script>
+    if (document.getElementById('choices-gender')) {
+      var gender = document.getElementById('choices-gender');
+      const example = new Choices(gender);
+    }
+
+    if (document.getElementById('choices-language')) {
+      var language = document.getElementById('choices-language');
+      const example = new Choices(language);
+    }
+
+    if (document.getElementById('choices-skills')) {
+      var skills = document.getElementById('choices-skills');
+      const example = new Choices(skills, {
+        delimiter: ',',
+        editItems: true,
+        maxItemCount: 20,
+        removeItemButton: true,
+        addItems: true
+      });
+    }
+  </script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+
+</html>

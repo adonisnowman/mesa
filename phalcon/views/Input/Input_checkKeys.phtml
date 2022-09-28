@@ -1,0 +1,331 @@
+<!--
+ =========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<?php echo $header; ?>
+</head>
+
+<body class="g-sidenav-show bg-gray-200" ng-app="Admin">
+	<!-- Extra details for Live View on GitHub Pages -->
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"> </iframe>
+	</noscript>
+	<!-- End Google Tag Manager (noscript) -->
+	<?php echo $aside; ?>
+	<main class="main-content max-height-vh-100 h-100">
+		<?php echo $nav; ?>
+		<div ng-controller="AdminController as Admin">
+			<?php echo $Input_Nav; ?>
+			<div class="container-fluid my-3 py-3">
+				<div class="row mb-5">
+					<div class="col-lg-3">
+						<div class="input-group input-group-outline" ng-class="(Admin.Search)?'is-filled':''">
+							<label class="form-label">Search here</label>
+							<input type="text" class="form-control" ng-model="Admin.Search">
+						</div>
+						<div class="card position-sticky top-1" style="height: 70vh;overflow: scroll;">
+							<ul class="nav flex-column bg-white border-radius-lg p-3">
+								<li class="nav-item" ng-repeat=" item in Admin.checkKeys_List | filter : Admin.Search">
+									<a class="nav-link text-dark d-flex" data-scroll="" ng-click="Admin.Input_checkKeys = item;">
+										<div class="">
+											<h6 class="text-dark font-weight-bold mb-0">{{item.ControllerName}}</h6>
+											<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+												{{item.ActionName}}
+											</p>
+										</div>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-9 mt-lg-0 mt-4">
+						<!-- Card Profile -->
+
+						<!-- Card Basic Info -->
+						<div class="card mt-4" id="basic-info">
+							<div class="card-header">
+								<div class="ms-auto text-end">
+									<a class="btn btn-link text-dark px-3 mb-0" ng-click="Admin.Edit()">
+										<i class="material-icons text-sm me-2">edit</i>Edit</a>
+								</div>
+								<div class="d-flex flex-column">
+									<h6 class="mb-3 text-sm">系統參數</h6>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_checkKeys.ControllerName)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										Controller Name:
+										<span class="text-dark font-weight-bold ms-sm-2">{{Admin.Input_checkKeys.ControllerName}}</span>
+									</span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_checkKeys.ActionName)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										Action Name:
+										<span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeys.ActionName}}</span>
+									</span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_checkKeys.AccountType)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										I'm:
+										<span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeys.AccountType}}</span>
+									</span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_checkKeys.ActionPort)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										Action Port:
+										<span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeys.ActionPort}}</span>
+									</span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_checkKeys.PostData)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i>
+										PostData:
+										<span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeys.PostData}}</span>
+									</span>
+									<div class="input-group input-group-static">
+										<label>禁止呼叫設定</label>
+										<div class="form-check form-switch ms-2 my-auto">
+											<input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeys.offshelf" checked>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="card-body pt-0">
+								<div class="row">
+									<div class="col-6">
+										<div class="input-group input-group-static">
+											<label>Controller Name</label>
+											<input type="text" class="form-control" placeholder="Controller Name" ng-model="Admin.Input_checkKeys.ControllerName">
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="input-group input-group-static">
+											<label>Action Name</label>
+											<input type="text" class="form-control" placeholder="Action Name" ng-model="Admin.Input_checkKeys.ActionName">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+
+									<label>PostData</label>
+									<md-chips ng-model="Admin.Input_checkKeys.PostData">
+									</md-chips>
+
+								</div>
+								<div class="row">
+									<div class="col-sm-4 col-6">
+										<label class="form-label mt-4 ms-0">I'm</label>
+										<md-input-container>
+											<md-select ng-model="Admin.Input_checkKeys.AccountType" aria-label="Select">
+												<md-option>
+													<em>None</em>
+												</md-option>
+												<md-option aria-hidden="true" ng-repeat="item in Admin.AccountTypes" ng-value="item">
+													{{item}}
+												</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+
+									<div class="col-md-4 align-self-center">
+										<label class="form-label mt-4 ms-0">Action Port</label>
+										<md-input-container>
+											<md-select ng-model="Admin.Input_checkKeys.ActionPort" aria-label="Select">
+												<md-option>
+													<em>None</em>
+												</md-option>
+												<md-option ng-repeat="item in Admin.ActionPorts" ng-value="item">
+													{{item}}
+												</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+									<div class="col-md-4 align-self-center">
+									<div class="input-group input-group-static">
+											<input type="text" class="form-control" placeholder="功能說明" ng-model="Admin.Input_checkKeys.label">
+										</div>
+									</div>
+								</div>
+								<div class="col-12">
+									<div class="input-group input-group-static">
+										<label>權限判斷啟用</label>
+										<div class="form-check form-switch ms-2 my-auto">
+											<input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeys.extends_disable" checked>
+										</div>
+									</div>
+									<div class="row" ng-show="Admin.Input_checkKeys.extends_disable">
+										<div class="col-3">
+											<div class="input-group input-group-static">
+												<label>群組繼承</label>
+												<div class="form-check form-switch ms-2 my-auto">
+													<input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeys.Rule.extend_group" checked>
+												</div>
+											</div>
+										</div>
+										<div class="col-3">
+											<div class="input-group input-group-static">
+												<label>ＩＰ繼承</label>
+												<div class="form-check form-switch ms-2 my-auto">
+													<input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeys.Rule.extend_remote" checked>
+												</div>
+											</div>
+										</div>
+										<div class="col-3">
+											<div class="input-group input-group-static">
+												<label>新增繼承</label>
+												<div class="form-check form-switch ms-2 my-auto">
+													<input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeys.Rule.extend_insert" checked>
+												</div>
+											</div>
+										</div>
+										<div class="col-3">
+											<div class="input-group input-group-static">
+												<label>修改繼承</label>
+												<div class="form-check form-switch ms-2 my-auto">
+													<input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeys.Rule.extend_update" checked>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</main>
+
+	<script>
+		adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+			var Admin = this;
+			if (location.pathname == "/logout") location.href = '';
+			Admin.ReDirect = function(ReDirect) {
+				console.info(ReDirect);
+				sharedData.ReDirect(ReDirect);
+			}
+			Admin.Logout = function() {
+				console.info("adoni");
+				sharedData.Logout(ReDirect);
+			}
+
+			Admin.Input_checkKeys = {};
+			Admin.Input_checkKeys.PostData = ["UniqueID"];
+			Admin.ActionPorts = ["Clientele", "Admin", "Develop"];
+			Admin.Input_checkKeys.UniqueID = "";
+
+			Admin.Input_checkKeys.offshelf = false;
+			Admin.Input_checkKeys.extends_disable = false;
+			Admin.Input_checkKeys.Rule = {};
+
+			Admin.checkKeysPages = {};
+
+			Admin.Search = "";
+
+			Admin.checkKeys = function() {
+				var checkKeys = {
+					"UniqueID": "",
+					'Pages': Admin.checkKeysPages
+				}
+				var data = {
+					'UniqueID': '',
+					'Action': 'checkKeys',
+					'Data': JSON.stringify(checkKeys)
+				}
+				var promise = sharedData.List(data);
+
+				promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+					Admin.checkKeys_List = data.List;
+					Admin.checkKeysPages = data.Pages;
+				}, function(data) { // 處理錯誤 .reject  
+					console.info(data);
+				});
+
+			};
+			Admin.checkKeys();
+
+			Admin.AccountTypes = function() {
+				var data = {
+					'Action': 'AccountTypes',
+					'Data': JSON.stringify({
+						"UniqueID": ""
+					})
+				}
+				var promise = sharedData.List(data, 'checkKeysRule');
+
+				promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+					Admin.AccountTypes = data.List;
+					Admin.checkKeysPages = data.Pages;
+				}, function(data) { // 處理錯誤 .reject  
+					console.info(data);
+				});
+
+			};
+			Admin.AccountTypes();
+
+			Admin.Edit = function() {
+				var data = {
+					'UniqueID': '',
+					'Action': 'Input_checkKeys',
+					'Data': JSON.stringify(Admin.Input_checkKeys)
+				}
+				sharedData.Edit(data);
+				Admin.checkKeys();
+			};
+
+		}]);
+	</script>
+	<!--   Core JS Files   -->
+	<script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+	<script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/choices.min.js"></script>
+	<!-- Kanban scripts -->
+	<script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+	<script>
+		if (document.getElementById('choices-gender')) {
+			var gender = document.getElementById('choices-gender');
+			const example = new Choices(gender);
+		}
+
+		if (document.getElementById('choices-language')) {
+			var language = document.getElementById('choices-language');
+			const example = new Choices(language);
+		}
+
+		if (document.getElementById('choices-skills')) {
+			var skills = document.getElementById('choices-skills');
+			const example = new Choices(skills, {
+				delimiter: ',',
+				editItems: true,
+				maxItemCount: 20,
+				removeItemButton: true,
+				addItems: true
+			});
+		}
+	</script>
+	<script>
+		var win = navigator.platform.indexOf('Win') > -1;
+		if (win && document.querySelector('#sidenav-scrollbar')) {
+			var options = {
+				damping: '0.5'
+			}
+			Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+		}
+	</script>
+	<!-- Github buttons -->
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+	<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+	<script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+</body>
+
+</html>

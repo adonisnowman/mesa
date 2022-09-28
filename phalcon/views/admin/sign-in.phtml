@@ -1,0 +1,172 @@
+<!--
+=========================================================
+* Material Dashboard 2 - v3.0.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>    
+    <?php echo $header; ?>
+</head>
+
+<body class="bg-gray-200" ng-app="Admin">
+    <main class="main-content  mt-0" ng-controller="AdminController as Admin">
+        <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
+            <span class="mask bg-gradient-dark opacity-6"></span>
+            <div class="container my-auto">
+                <div class="row">
+                    <div class="col-lg-4 col-md-8 col-12 mx-auto">
+                        <div class="card z-index-0 fadeIn3 fadeInBottom">
+                            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                                <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1" ng-show="!Admin.SignView">
+                                    <h4 class="text-white font-weight-bolder text-center mt-2 mb-0"> Account 後台 登入頁面</h4>
+                                </div>
+                                <div class="bg-gradient-success shadow-primary border-radius-lg py-3 pe-1" ng-show="Admin.SignView">
+                                    <h4 class="text-white font-weight-bolder text-center mt-2 mb-0"> Account 後台 註冊頁面</h4>
+                                </div>
+                            </div>
+                            <div class="card-body" ng-show="!Admin.SignView">
+                                <form role="form" class="text-start">
+                                    <div class="input-group input-group-outline my-3">
+                                        <label class="form-label" ng-class="(Admin.LoginInfo.account)?'text-success ':''"> Email <i ng-show="Admin.LoginInfo.account" class="fas fa-check"></i></label>
+                                        <input type="text" class="form-control" ng-model="Admin.LoginInfo.account">
+                                    </div>
+                                    <div class="input-group input-group-outline mb-3">
+                                        <label class="form-label" ng-class="(Admin.LoginInfo.password)?'text-success ':''"> 手機 <i ng-show="Admin.LoginInfo.password" class="fas fa-check"></i></label>
+                                        <input type="password" class="form-control" ng-model="Admin.LoginInfo.password">
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="button" class="btn bg-gradient-primary w-100 my-4 mb-2" ng-click="Admin.Login()"> 登入 </button>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="button" class="btn bg-gradient-success w-100 my-4 mb-2" ng-click="Admin.SignView = !Admin.SignView"> 前往註冊 </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-body" ng-show="Admin.SignView">
+                                <form role="form" class="text-start">
+                                    <div class="input-group input-group-outline my-3">
+                                        <label class="form-label" ng-class="(Admin.SignInfo.account)?'text-success ':''"> Email <i ng-show="Admin.LoginInfo.account" class="fas fa-check"></i></label>
+                                        <input type="email" class="form-control" ng-model="Admin.SignInfo.account">
+                                    </div>
+                                    <div class="input-group input-group-outline mb-3">
+                                        <label class="form-label" ng-class="(Admin.SignInfo.password)?'text-success ':''"> 手機 <i ng-show="Admin.LoginInfo.password" class="fas fa-check"></i></label>
+                                        <input type="phone" class="form-control" ng-model="Admin.SignInfo.mobile">
+                                    </div>   
+                                    <div class="input-group input-group-outline mb-3">
+                                        <label class="form-label" ng-class="(Admin.SignInfo.password)?'text-success ':''"> 密碼 <i ng-show="Admin.LoginInfo.password" class="fas fa-check"></i></label>
+                                        <input type="phone" class="form-control" ng-model="Admin.SignInfo.password">
+                                    </div>                                     
+                                    <div class="text-center">
+                                        <button type="button" class="btn bg-gradient-success w-100 my-4 mb-2" ng-click="Admin.Sign()"> 註冊 </button>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="button" class="btn bg-gradient-primary w-100 my-4 mb-2" ng-click="Admin.SignView = !Admin.SignView"> 返回登入 </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    <script>
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function (sharedData, $scope, $http) {
+			var Admin = this;
+			if (location.pathname == "/logout") location.href = '';
+			Admin.ReDirect = function (ReDirect) {
+				console.info(ReDirect);
+				sharedData.ReDirect(ReDirect);
+			}
+			Admin.Logout = function () {
+				sharedData.Logout(ReDirect);
+			}
+                Admin.Login = function() {
+                    Admin.LoginInfo.UniqueID = "";
+                    var data = {
+                        'Action': 'Login',
+                        'Data': JSON.stringify(Admin.LoginInfo),
+                    }
+
+                    var request = $http({
+                        method: "post",
+                        url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
+                        data: data,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                            
+                        },
+                    }).then(function successCallback(response) {
+                        var data = response.data;
+                        
+                        if (data.UniqueID) location.reload();
+                        if (data.ErrorMsg) sharedData.Toast (data.ErrorMsg, 3000) ;
+                    }, function errorCallback(response) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+
+                    });
+                };
+                
+                Admin.Sign = function() {
+                    var data = {
+                        'Action': 'Login',
+                        'Data': JSON.stringify(Admin.SignInfo),
+                    }
+
+                    var request = $http({
+                        method: "post",
+                        url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/index/info",
+                        data: data,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;',
+                        },
+                    }).then(function successCallback(response) {
+                        var data = response.data;
+                        console.info(data);
+                        if (data.UniqueID) location.reload();
+                        if (data.ErrorMsg) sharedData.Toast (data.ErrorMsg, 3000) ;
+                    }, function errorCallback(response) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+
+                    });
+                };
+
+            }]);
+    </script>
+
+
+    <!--   Core JS Files   -->
+    <script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+    <script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <script>
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+                damping: '0.5'
+            }
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
+    </script>
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.0"></script>
+</body>
+
+</html>

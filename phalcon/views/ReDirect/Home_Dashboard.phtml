@@ -1,0 +1,67 @@
+<div class="row" ng-controller="DashboardController as Dashboard">
+    <div id="pie" dx-pie-chart="chartOptions"></div>
+</div>
+<script>
+    adonis.controller('DashboardController', ['sharedData','$scope', function (sharedData, $scope, $http) {
+        var Dashboard = this;
+        
+        
+            $scope.chartOptions = {
+                    type: 'doughnut',
+                    palette: 'Soft Pastel',
+                    bindingOptions: {
+                        "dataSource": "List"
+                    },
+                    title: 'Api 呼叫百分比計算',
+                    tooltip: {
+                        enabled: true,
+                        format: 'Number',
+                        customizeTooltip(arg) {
+                            return {
+                                text: `${arg.originalValue} - ${(arg.percent * 100).toFixed(2)}%`,
+                            };
+                        },
+                    },
+                    legend: {
+                        horizontalAlignment: 'right',
+                        verticalAlignment: 'top',
+                        margin: 0,
+                    },
+                    export: {
+                        enabled: true,
+                    },
+                    series: [{
+                        argumentField: 'region',
+                        label: {
+                            visible: true,
+                            connector: {
+                                visible: true,
+                            },
+                        },
+                    }],
+                };
+        $scope.Dashboard = function () {
+            var Dashboard = {
+                "UniqueID": "",
+            }
+            var data = {
+                'UniqueID': '',
+                'Action': 'Dashboard',
+                'Data': JSON.stringify(Dashboard)
+            }
+            var promise = sharedData.List(data);
+
+            promise.then(function (data) {  // 呼叫承諾API獲取資料 .resolve  
+                
+                $scope.List  = data.List;
+                
+            }, function (data) {  // 處理錯誤 .reject  
+                console.info(data);
+            });
+        };
+        $scope.Dashboard();
+        
+    }]);
+
+
+</script>

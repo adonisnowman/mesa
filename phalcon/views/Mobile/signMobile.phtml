@@ -1,0 +1,141 @@
+<!--
+=========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <?php echo $header; ?>
+</head>
+
+<body class="bg-gray-200">
+  <!-- Extra details for Live View on GitHub Pages -->
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <!-- Navbar -->
+
+  <!-- End Navbar -->
+  <main class="main-content  mt-0">
+    <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
+      <span class="mask bg-gradient-dark opacity-6"></span>
+      <div class="container my-auto">
+        <div class="row">
+          <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+            <div class="card">
+              <div class="card-header text-center py-0">
+                <div class="mt-n5">
+                  <img class="avatar avatar-xxl shadow-lg" alt="Image placeholder" src="icon.jpg">
+                </div>
+              </div>
+              <div class="card-body text-center">
+                <h4 class="mb-0 font-weight-bolder">Adonis.tw</h4>
+                <p class="mb-4">輸入簡訊驗證，確保您的權益</p>
+                <form role="form">
+                  <div class="input-group input-group-dynamic">
+                    <label class="form-label">簡訊驗證碼</label>
+                    <input type="number" class="form-control">
+                  </div>
+                  <div class="text-center">
+                    <button type="button" class="btn btn-lg bg-gradient-primary mt-4 mb-0">發送驗證碼</button>
+                    <button type="button" class="btn btn-lg bg-gradient-success mt-4 mb-0">完成驗證</button>
+                    <a href="http://<?php echo $_SERVER['HTTP_HOST'] ; ?>" >
+                    <button type="button" class="btn btn-lg bg-gradient-dark mt-4 mb-0">跳過驗證</button>
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- -------- START FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
+  <footer class="footer py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 mb-4 mx-auto text-center">
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
+            Company
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
+            About Us
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
+            Team
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
+            Products
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
+            Blog
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
+            Pricing
+          </a>
+        </div>
+        <div class="col-lg-8 mx-auto text-center mb-4 mt-2">
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
+            <span class="text-lg fab fa-dribbble"></span>
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
+            <span class="text-lg fab fa-twitter"></span>
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
+            <span class="text-lg fab fa-instagram"></span>
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
+            <span class="text-lg fab fa-pinterest"></span>
+          </a>
+          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
+            <span class="text-lg fab fa-github"></span>
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-8 mx-auto text-center mt-1">
+          <p class="mb-0 text-secondary">
+            Copyright © <script>
+              document.write(new Date().getFullYear())
+            </script> Material by Creative Tim.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- -------- END FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
+  <!--   Core JS Files   -->
+  <script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+  <script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <!-- Kanban scripts -->
+  <script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+  <script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+
+</html>

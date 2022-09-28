@@ -1,0 +1,302 @@
+<!--
+ =========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<title>
+		後台
+	</title>
+	<?php echo $header; ?>
+</head>
+
+<body class="g-sidenav-show bg-gray-200" ng-app="Admin">
+	<!-- Extra details for Live View on GitHub Pages -->
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"> </iframe>
+	</noscript>
+	<!-- End Google Tag Manager (noscript) -->
+	<?php echo $aside; ?>
+	<main class="main-content max-height-vh-100 h-100">
+		<?php echo $nav; ?>
+		<div ng-controller="AdminController as Admin">
+			<?php echo $Input_Nav; ?>
+			<div class="container-fluid my-3 py-3">
+				<div class="row mb-5">
+					<div class="col-lg-3">
+						<div class="input-group input-group-outline" ng-class="(Admin.Search)?'is-filled':''">
+							<label class="form-label">Search here</label>
+							<input type="text" class="form-control" ng-model="Admin.Search">
+						</div>
+						<div class="card position-sticky top-1" style="height: 70vh;overflow: scroll;">
+							<ul class="nav flex-column bg-white border-radius-lg p-3">
+								<li class="nav-item" ng-repeat=" item in Admin.RedirectAdmin_List | filter : Admin.Search">
+
+									<div ng-show="item.offshelf" class="btn btn-link text-danger px-0" style="float: left;" aria-hidden="false">
+										<i class="material-icons">delete</i>
+									</div>
+									<span class="nav-link text-dark d-flex" data-scroll="" ng-click="Admin.Input_RedirectAdmin = item;">
+
+										<div class="">
+
+											<h6 class="text-dark font-weight-bold mb-0">{{item.ViewsPath}}</h6>
+											<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+												{{item.ReDirect}}
+											</p>
+										</div>
+									</span>
+
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-9 mt-lg-0 mt-4">
+						<!-- Card Profile -->
+
+						<!-- Card Basic Info -->
+						<div class="card mt-4" id="basic-info">
+							<div class="card-header">
+								<div class="d-flex flex-column">
+									<div class="d-flex jusitfy-content-between">
+										<div class="fw-bold fs-5">系統頁面</div>
+										<div class="ms-auto text-end">
+											<a class="btn btn-link text-dark px-3 mb-0" ng-click="Admin.Edit()"><i class="material-icons text-sm me-2">edit</i>編輯/新增</a>
+
+										</div>
+									</div>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_RedirectAdmin.ReDirect)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i> 導頁名稱: <span class="text-dark font-weight-bold ms-sm-2">{{Admin.Input_RedirectAdmin.ReDirect}}</span></span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_RedirectAdmin.ViewsPath)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i> 路徑名稱: <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_RedirectAdmin.ViewsPath}}</span></span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_RedirectAdmin.FileName)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i> 檔案名稱: <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_RedirectAdmin.FileName}}</span></span>
+									<span class="mb-2 text-s " ng-class="(Admin.Input_RedirectAdmin.ViewsType)?'text-gradient text-success text-xs':''">
+										<i class="fas fa-check"></i> 檔案類型: <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_RedirectAdmin.ViewsType}}</span></span>
+									<div class="input-group input-group-static">
+										<label>禁止呼叫設定</label>
+										<div class="form-check form-switch ms-2 my-auto">
+											<input class="form-check-input" type="checkbox" ng-model="Admin.Input_RedirectAdmin.offshelf" checked>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+
+							<div class="card-body pt-0">
+								<div class="row">
+									<div class="col-6">
+										<div class="input-group input-group-static">
+											<label>導頁名稱</label>
+											<input type="text" class="form-control" placeholder="導頁名稱" ng-model="Admin.Input_RedirectAdmin.ReDirect">
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="input-group input-group-static">
+											<label>路徑名稱</label>
+											<input type="text" class="form-control" placeholder="路徑名稱" ng-model="Admin.Input_RedirectAdmin.ViewsPath">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="input-group input-group-static">
+										<label>檔案名稱</label>
+										<input type="text" class="form-control" placeholder="路徑名稱" ng-model="Admin.Input_RedirectAdmin.FileName">
+									</div>
+								</div>
+								<div class="row">
+
+
+									<div class="col-md-3 align-self-center">
+										<label class="form-label mt-4 ms-0">檔案類型</label>
+										<md-input-container>
+											<md-select ng-model="Admin.Input_RedirectAdmin.ViewsType" aria-label="Select">
+												<md-option>
+													<em checked>Default</em>
+												</md-option>
+												<md-option ng-repeat="item in Admin.ViewsType" ng-value="item">
+													{{item}}
+												</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+									<div class="col-md-8 align-self-center">
+										<label class="form-label mt-4 ms-0">Api權限</label>
+										<md-input-container class="btn btn-lg">
+											<md-select ng-model="Admin.checkKeysRule_selectd" aria-label="Select">
+												<md-option ng-repeat="item in Admin.checkKeysRule_List" ng-value="item.checkKeys" ng-click="Admin.checkInput_checkKeysRule(item.checkKeys)">
+													<span class="text-warning">{{item.checkKeys.label}}</span>
+													<span class="text-primany">{{ item.checkKeys.ControllerName.replace("Controller","") }}</span>
+													<span class="text-success">{{ item.checkKeys.ActionName }}</span>
+												</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+
+								</div>
+								<div class="row">
+									<div class="card ms-4 mt-2 col-3" ng-repeat="item in Admin.Input_checkKeysRule track by $index" ng-click="Admin.Input_checkKeysRule.splice($index,1)">
+
+										<span class="text-primany">{{item.ControllerName}}</span>
+										<span class="text-success">{{item.ActionName}}</span>
+										<span class="text-warning">{{item.label}}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</main>
+
+	<script>
+		adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+			var Admin = this;
+			if (location.pathname == "/logout") location.href = '';
+
+			Admin.checkInput_checkKeysRule = function(item) {
+				Admin.Input_checkKeysRule.findIndex(object => {
+					if( object === item ) sharedData.Toast("Has Selected", 3000);
+					return object === item;
+				}) ? Admin.Input_checkKeysRule.push(item) : ''
+			}
+
+			Admin.ReDirect = function(ReDirect) {
+				sharedData.ReDirect(ReDirect);
+			}
+			Admin.Logout = function() {
+				sharedData.Logout(ReDirect);
+			}
+
+
+			Admin.Input_RedirectAdmin = {};
+			Admin.Input_RedirectAdmin.PostData = "UniqueID";
+			Admin.ViewsType = ["phtml", "vue", "html"];
+			Admin.Input_RedirectAdmin.UniqueID = "";
+			Admin.Input_RedirectAdmin.offshelf = false;
+
+			Admin.Search = "";
+			Admin.RedirectAdminPages = {};
+			Admin.RedirectAdmin = function() {
+				var RedirectAdmin = {
+					"UniqueID": "",
+					'Pages': Admin.RedirectAdminPages
+				}
+				var data = {
+					'UniqueID': '',
+					'Action': 'RedirectAdmin',
+					'Data': JSON.stringify(RedirectAdmin)
+				}
+				var promise = sharedData.List(data);
+
+				promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+					Admin.RedirectAdmin_List = data.List;
+					Admin.RedirectAdminPages = data.Pages;
+				}, function(data) { // 處理錯誤 .reject  
+					console.info(data);
+				});
+			};
+			Admin.RedirectAdmin();
+
+			Admin.Input_checkKeysRule = [];
+			Admin.checkKeysRulePages = {};
+			Admin.checkKeysRule = function() {
+
+				var checkKeys = {
+					"UniqueID": "",
+					'Pages': Admin.checkKeysRulePages
+				}
+
+				if (Admin.Input_checkKeysRule.UniqueID_Accounts)
+					checkKeys.Search = Admin.Input_checkKeysRule.UniqueID_Accounts;
+				var data = {
+					'UniqueID': '',
+					'Action': 'checkKeysRule',
+					'Data': JSON.stringify(checkKeys)
+				}
+				var promise = sharedData.List(data);
+
+				promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+					Admin.checkKeysRule_List = data.List;
+					Admin.checkKeysRulePages = data.Pages;
+				}, function(data) { // 處理錯誤 .reject  
+					console.info(data);
+				});
+			};
+			Admin.checkKeysRule();
+
+			Admin.Edit = function() {
+				Admin.Input_RedirectAdmin.Input_checkKeysRule = Admin.Input_checkKeysRule;
+				var data = {
+					'UniqueID': '',
+					'Action': 'Input_RedirectAdmin',
+					'Data': JSON.stringify(Admin.Input_RedirectAdmin)
+				}
+				sharedData.Edit(data);
+				Admin.RedirectAdmin();
+
+			};
+
+		}]);
+	</script>
+	<!--   Core JS Files   -->
+	<script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+	<script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/choices.min.js"></script>
+	<!-- Kanban scripts -->
+	<script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+	<script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+	<script>
+		if (document.getElementById('choices-gender')) {
+			var gender = document.getElementById('choices-gender');
+			const example = new Choices(gender);
+		}
+
+		if (document.getElementById('choices-language')) {
+			var language = document.getElementById('choices-language');
+			const example = new Choices(language);
+		}
+
+		if (document.getElementById('choices-skills')) {
+			var skills = document.getElementById('choices-skills');
+			const example = new Choices(skills, {
+				delimiter: ',',
+				editItems: true,
+				maxItemCount: 20,
+				removeItemButton: true,
+				addItems: true
+			});
+		}
+	</script>
+	<script>
+		var win = navigator.platform.indexOf('Win') > -1;
+		if (win && document.querySelector('#sidenav-scrollbar')) {
+			var options = {
+				damping: '0.5'
+			}
+			Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+		}
+	</script>
+	<!-- Github buttons -->
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+	<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+	<script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+</body>
+
+</html>

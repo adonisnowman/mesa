@@ -1,0 +1,416 @@
+<!--
+ =========================================================
+* Material Dashboard 2 PRO - v3.0.2
+=========================================================
+
+* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
+* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <?php echo $header; ?>
+</head>
+
+<body class="g-sidenav-show bg-gray-200" ng-app="Admin">
+    <!-- Extra details for Live View on GitHub Pages -->
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKDMSK6" height="0" width="0" style="display:none;visibility:hidden"> </iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <?php echo $aside; ?>
+    <main class="main-content max-height-vh-100 h-100" ng-controller="AdminController as Admin">
+        <?php echo $nav; ?>
+
+        <?php echo $Input_Nav; ?>
+        <div class="tab-content container-fluid my-3 py-3">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="row mb-5">
+                    <div class="col-lg-3">
+                        <div class="input-group input-group-outline mb-2" ng-class="(Admin.Search)?'is-filled':''">
+                            <label class="form-label">搜尋</label>
+                            <input type="text" class="form-control" ng-model="Admin.Search">
+                        </div>
+                        <div class="card position-sticky top-1" style="height: 25vh;overflow: scroll;">
+                            <ul class="nav flex-column bg-white border-radius-lg p-3">
+                                <li class="nav-item" ng-repeat=" item in Admin.Accounts_List | filter : Admin.Search">
+                                    <a class="nav-link text-dark d-flex" data-scroll="" ng-click="Admin.Input_checkKeysRule.Accounts = item; Admin.Input_checkKeysRule.UniqueID_Accounts = item.UniqueID;Admin.checkKeysRule();">
+                                        <div class="">
+                                            <h6 class="text-dark font-weight-bold mb-0">{{item.account}}</h6>
+                                            <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                                                {{item.REMOTE_ADDR}}
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card position-sticky top-1 my-4" style="height: 45vh;overflow: scroll;">
+                            <ul class="nav flex-column bg-white border-radius-lg p-3">
+                                <li class="nav-item" ng-repeat=" item in Admin.checkKeys_List | filter : Admin.Search">
+                                    <a class="nav-link text-dark d-flex" data-scroll="" ng-click="Admin.Input_checkKeysRule.checkKeys = item;Admin.Input_checkKeysRule.UniqueID_checkKeys = item.UniqueID;Admin.Input_checkKeysRule.PostData = item.PostData;">
+                                        <div class="">
+                                            <h6 class="text-dark font-weight-bold mb-0">{{item.ControllerName}}</h6>
+                                            <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                                                {{item.ActionName}}
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-9 mt-lg-0 mt-4">
+                        <!-- Card Profile -->
+
+                        <!-- Card Basic Info -->
+                        <div class="card" id="basic-info">
+                            <div class="card-header">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex jusitfy-content-between">
+                                        <div class="fw-bold fs-5">系統權限</div>
+                                        <div class="ms-auto text-end">
+                                            <md-button class="md-raised">
+                                                產生權限繼承表
+                                            </md-button>
+                                            <a class="btn btn-link text-dark px-3 mb-0" ng-click="Admin.Edit()"><i class="material-icons text-sm me-2">edit</i>編輯/新增</a>
+
+                                        </div>
+                                    </div>
+                                    <span class="mb-2 text-s " ng-class="(Admin.Input_checkKeysRule.checkKeys)?'text-gradient text-success text-xs':''">
+                                        <i class="fas fa-check"></i>
+                                        checkKeys Name:
+                                        <span class="text-dark font-weight-bold ms-sm-2">{{Admin.Input_checkKeysRule.checkKeys.ControllerName}}</span>
+                                        <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeysRule.checkKeys.ActionName}}</span>
+                                    </span>
+                                    <span class="mb-2 text-s " ng-class="(Admin.Input_checkKeysRule.Accounts)?'text-gradient text-success text-xs':''">
+                                        <i class="fas fa-check"></i>
+                                        建立者:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeysRule.Accounts.account}}</span>
+                                        <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeysRule.Accounts.UniqueID}}</span>
+                                        <span class="text-dark ms-sm-2 font-weight-bold">{{Admin.Input_checkKeysRule.Accounts.REMOTE_ADDR}}</span>
+                                    </span>
+                                    <div class="input-group input-group-static">
+                                        <label>禁止呼叫設定</label>
+                                        <div class="form-check form-switch ms-2 my-auto">
+                                            <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.offshelf" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-danger text-sm">重複資料會被覆寫，無重複資料將新增</div>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="input-group input-group-static">
+                                            <label>後台啟用</label>
+                                            <div class="form-check form-switch ms-2 my-auto">
+                                                <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.admin_disable" checked>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="input-group input-group-static">
+                                            <label>會員啟用</label>
+                                            <div class="form-check form-switch ms-2 my-auto">
+                                                <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.account_disable" checked>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12" ng-show="Admin.Input_checkKeysRule.account_disable">
+                                        <label class="form-label mt-4">會員群組</label>
+                                        <md-chips ng-model="Admin.Input_checkKeysRule.AccountGroups">
+                                        </md-chips>
+                                    </div>
+                                    <div class="col-md-12" ng-show="Admin.Input_checkKeysRule.account_disable">
+                                        <label class="form-label mt-4">會員帳號</label>
+                                        <md-chips ng-model="Admin.Input_checkKeysRule.Users">
+                                        </md-chips>
+                                    </div>
+
+
+                                    <div class="col-12">
+                                        <div class="input-group input-group-static">
+                                            <label>繼承啟用</label>
+                                            <div class="form-check form-switch ms-2 my-auto">
+                                                <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.extends_disable" checked>
+
+                                            </div>
+                                        </div>
+                                        <div class="row" ng-show="Admin.Input_checkKeysRule.extends_disable">
+                                            <div class="col-3">
+                                                <div class="input-group input-group-static" ng-show="Admin.Input_checkKeysRule.checkKeys.Rule.extend_group ">
+                                                    <label>群組繼承</label>
+                                                    <div class="form-check form-switch ms-2 my-auto">
+                                                        <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.Rule.extend_group" checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="input-group input-group-static" ng-show="Admin.Input_checkKeysRule.checkKeys.Rule.extend_remote ">
+                                                    <label>ＩＰ繼承</label>
+                                                    <div class="form-check form-switch ms-2 my-auto">
+                                                        <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.Rule.extend_remote" checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12" ng-show="Admin.Input_checkKeysRule.Rule.extend_remote">
+                                                <label>指定IP位址</label>
+                                                <md-chips ng-model="Admin.Input_checkKeysRule.ip_remote">
+                                                </md-chips>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="input-group input-group-static" ng-show="Admin.Input_checkKeysRule.checkKeys.Rule.extend_insert ">
+                                                    <label>新增繼承</label>
+                                                    <div class="form-check form-switch ms-2 my-auto">
+                                                        <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.Rule.extend_insert" checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="input-group input-group-static" ng-show="Admin.Input_checkKeysRule.checkKeys.Rule.extend_update ">
+                                                    <label>修改繼承</label>
+                                                    <div class="form-check form-switch ms-2 my-auto">
+                                                        <input class="form-check-input" type="checkbox" ng-model="Admin.Input_checkKeysRule.Rule.extend_update" checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12" ng-show="Admin.Input_checkKeysRule.Rule.extend_update">
+                                                <label>可修改欄位</label>
+                                                <md-chips ng-model="Admin.Input_checkKeysRule.PostData">
+                                                </md-chips>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                            <div class="card">
+                                <div class="card-body px-0 pb-2">
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center text-uppercase text-danger text-xxs font-weight-bolder opacity-7"></th>
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Controller</th>
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">建立者</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">後台</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">會員</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">繼承</th>
+                                                    <th class="text-center text-uppercase text-danger text-xxs font-weight-bolder opacity-7">關閉</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in Admin.checkKeysRule_List ">
+                                                    <td class="align-middle">                                                        
+                                                        <div ng-class="(item.offshelf==1)?'text-danger':''" class="px-0"  aria-hidden="false" ng-click="Admin.RemoveItem = item;Admin.Remove()">
+                                                            <i class="material-icons">delete</i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle" ng-click=" Admin.Input_checkKeysRule = item ;Admin.Input_checkKeysRule.PostData = item.checkKeys.PostData;">
+                                                        {{ item.checkKeys.ControllerName}}
+                                                    </td>
+                                                    <td ng-click=" Admin.Input_checkKeysRule = item ;Admin.Input_checkKeysRule.PostData = item.checkKeys.PostData;">
+                                                        {{ item.checkKeys.ActionName}}
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {{ item.Accounts.account}}
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <div class="form-check form-switch ms-2 my-auto">
+                                                            <input class="form-check-input" type="checkbox" value="1" readonly ng-model="item.admin_disable" checked ng-click="Admin.Input_checkKeysRule = item;item.admin_disable=!item.admin_disable;Admin.Edit();">
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <div class="form-check form-switch ms-2 my-auto">
+                                                            <input class="form-check-input" type="checkbox" value="1" readonly ng-model="item.account_disable" checked ng-click="Admin.Input_checkKeysRule = item;item.account_disable=!item.account_disable;Admin.Edit();">
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <div class="form-check form-switch ms-2 my-auto">
+                                                            <input class="form-check-input" type="checkbox" value="1" readonly ng-model="item.extends_disable" checked ng-click="Admin.Input_checkKeysRule = item;item.extends_disable=!item.extends_disable;Admin.Edit();">
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <div class="form-check form-switch ms-2 my-auto">
+                                                            <input class="form-check-input" type="checkbox" value="1" readonly ng-model="item.offshelf" checked ng-click="Admin.Input_checkKeysRule = item;item.offshelf=!item.offshelf;Admin.Edit();">
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+    <script>
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+            var Admin = this;
+            if (location.pathname == "/logout") location.href = '';
+            Admin.ReDirect = function(ReDirect) {
+                console.info(ReDirect);
+                sharedData.ReDirect(ReDirect);
+            }
+            Admin.Logout = function() {
+                sharedData.Logout(ReDirect);
+            }
+
+            Admin.Input_checkKeysRule = {};
+            Admin.Input_checkKeysRule.UniqueID = "";
+            Admin.Input_checkKeysRule.AccountGroups = ["Default"];
+            Admin.Input_checkKeysRule.Users = ["Default"];
+            Admin.Input_checkKeysRule.ip_remote = ["Default"];
+
+            Admin.Input_checkKeysRule.admin_disable = false;
+            Admin.Input_checkKeysRule.account_disable = false;
+            Admin.Input_checkKeysRule.extends_disable = false;
+            Admin.Input_checkKeysRule.offshelf = false;
+            Admin.Input_checkKeysRule.Rule = null;
+            Admin.Input_checkKeysRule.PostData = null;
+
+            Admin.checkKeysRulePages = {};
+            Admin.checkKeysRule = function() {
+
+                var checkKeys = {
+                    "UniqueID": "",
+                    'Pages': Admin.checkKeysRulePages
+                }
+
+                if (Admin.Input_checkKeysRule.UniqueID_Accounts)
+                    checkKeys.Search = Admin.Input_checkKeysRule.UniqueID_Accounts;
+                var data = {
+                    'UniqueID': '',
+                    'Action': 'checkKeysRule',
+                    'Data': JSON.stringify(checkKeys)
+                }
+                var promise = sharedData.List(data);
+
+                promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+                    Admin.checkKeysRule_List = data.List;
+                    Admin.checkKeysRulePages = data.Pages;
+                }, function(data) { // 處理錯誤 .reject  
+                    console.info(data);
+                });
+            };
+            Admin.checkKeysRule();
+
+            Admin.AccountsPages = {};
+            Admin.Accounts = function() {
+                var checkKeys = {
+                    "UniqueID": "",
+                    'Pages': Admin.AccountsPages
+                }
+                var data = {
+                    'UniqueID': '',
+                    'Action': 'Accounts',
+                    'Data': JSON.stringify(checkKeys)
+                }
+                var promise = sharedData.List(data);
+
+                promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+                    Admin.Accounts_List = data.List;
+                    Admin.AccountsPages = data.Pages;
+                }, function(data) { // 處理錯誤 .reject  
+                    console.info(data);
+                });
+
+            };
+            Admin.Accounts();
+
+            Admin.checkKeysPages = {};
+            Admin.Search = "";
+
+            Admin.checkKeys = function() {
+                var checkKeys = {
+                    "UniqueID": "",
+                    'Pages': Admin.checkKeysPages
+                }
+                var data = {
+                    'UniqueID': '',
+                    'Action': 'checkKeys',
+                    'Data': JSON.stringify(checkKeys)
+                }
+                var promise = sharedData.List(data);
+
+                promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+                    Admin.checkKeys_List = data.List;
+                    Admin.checkKeysPages = data.Pages;
+                }, function(data) { // 處理錯誤 .reject  
+                    console.info(data);
+                });
+
+            };
+            Admin.checkKeys();
+
+
+            Admin.Edit = function() {
+                var data = {
+                    'UniqueID': '',
+                    'Action': 'Input_checkKeysRule',
+                    'Data': JSON.stringify(Admin.Input_checkKeysRule)
+                }
+                var promise = sharedData.Edit(data);
+                setTimeout(function() {
+                    Admin.checkKeysRule();
+                }, 500);
+            };
+
+            Admin.Remove = function() {
+                var data = {
+                    'UniqueID': '',
+                    'Action': 'Remove_checkKeysRule',
+                    'Data': JSON.stringify(Admin.RemoveItem)
+                }
+                var promise = sharedData.Remove(data);
+                setTimeout(function() {
+                    Admin.checkKeysRule();
+                }, 500);
+            };
+
+        }]);
+    </script>
+    <!--   Core JS Files   -->
+    <script src="material-dashboard-master/assets/js/core/popper.min.js"></script>
+    <script src="material-dashboard-master/assets/js/core/bootstrap.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <!-- Kanban scripts -->
+    <script src="material-dashboard-master/assets/js/plugins/dragula/dragula.min.js"></script>
+    <script src="material-dashboard-master/assets/js/plugins/jkanban/jkanban.js"></script>
+
+
+    <script>
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+                damping: '0.5'
+            }
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
+    </script>
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="material-dashboard-master/assets/js/material-dashboard.min.js?v=3.0.2"></script>
+</body>
+
+</html>
