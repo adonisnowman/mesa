@@ -111,7 +111,7 @@ class ApiController extends BaseController
 
         //ActionLogs       
         $Item["ActionName"] = $Action;
-        $Item["ActionPort"] = _Action::ActionPort($_SERVER['SERVER_NAME']);
+        $Item["ActionPort"] = _Action::ActionPort($_SERVER['HTTP_HOST']);
         $checkKeys = checkKeys::getObjectByItem($Item);
         
         if (!empty($checkKeys) && $checkKeys->offshelf) {
