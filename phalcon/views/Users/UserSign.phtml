@@ -263,7 +263,7 @@
                     </span>
 
                     <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
-                        <input class="input100" type="text" name="email" ng-model="Admin.LoginInfo.account">
+                        <input class="input100" type="text" name="email" ng-model="Admin.CreateInfo.account">
                         <span class="focus-input100" data-placeholder="Email"></span>
                     </div>
 
@@ -271,15 +271,15 @@
                         <span class="btn-show-pass">
                             <i class="zmdi zmdi-eye"></i>
                         </span>
-                        <input class="input100" type="password" name="password" ng-model="Admin.LoginInfo.password">
+                        <input class="input100" type="password" name="password" ng-model="Admin.CreateInfo.password">
                         <span class="focus-input100" data-placeholder="Password"></span>
                     </div>
 
                     <div class="container-login100-form-btn">
                         <div class="wrap-login100-form-btn">
                             <div class="login100-form-bgbtn"></div>
-                            <button class="login100-form-btn" ng-click="Admin.Login()">
-                                Login
+                            <button class="login100-form-btn" ng-click="Admin.Create()">
+                            Create Account
                             </button>
                         </div>
                     </div>
@@ -312,17 +312,17 @@
             Admin.Logout = function() {
                 sharedData.Logout(ReDirect);
             }
-            Admin.Login = function() {
+            Admin.Create = function() {
                 console.info("login click");
-                Admin.LoginInfo.UniqueID = "";
+                Admin.CreateInfo.UniqueID = "";
                 var data = {
                     'Action': 'Login',
-                    'Data': JSON.stringify(Admin.LoginInfo),
+                    'Data': JSON.stringify(Admin.CreateInfo),
                 }
 
                 var request = $http({
                     method: "post",
-                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/UserApi",
                     data: data,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
