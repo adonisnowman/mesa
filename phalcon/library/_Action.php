@@ -18,7 +18,8 @@ class _Action
     }
     public static function ActionPort($domain, $Item = [])
     {
-        
+        $domain = str_replace("https://","",$domain);
+        $domain = str_replace("http://","",$domain);
         $checkKeys = checkKeys::getObjectByItem($Item);
         
         foreach( $checkKeys->checkKeysRule->toArray() AS $checkKeysRule) {
