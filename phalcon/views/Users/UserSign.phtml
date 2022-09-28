@@ -1,408 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>Login V2</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--===============================================================================================-->
-    <link rel="icon" type="image/png" href="login/images/icons/favicon.ico" />
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/vendor/bootstrap/css/bootstrap.min.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/fonts/iconic/css/material-design-iconic-font.min.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/vendor/animate/animate.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/vendor/css-hamburgers/hamburgers.min.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/vendor/animsition/css/animsition.min.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/vendor/select2/select2.min.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/vendor/daterangepicker/daterangepicker.css">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="login/css/util.css">
-    <link rel="stylesheet" type="text/css" href="login/css/main.css">
-    <!--===============================================================================================-->
-
-    <script src="https://kit.fontawesome.com/4e4a114ffc.js" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
-    <script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.css" />
-    <script src="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
-    <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
-
-    <script>
-        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
-        adonis.service('sharedData', function($http, $q, $mdToast) {
-            var self = this;
-            //Toast 
-            var last = {
-                bottom: true,
-                top: false,
-                left: false,
-                right: true
-            };
-            self.toastPosition = angular.extend({}, last);
-
-            self.getToastPosition = function() {
-                sanitizePosition();
-
-                return Object.keys(self.toastPosition)
-                    .filter(function(pos) {
-                        return self.toastPosition[pos];
-                    }).join(' ');
-            };
-
-            function sanitizePosition() {
-                var current = self.toastPosition;
-
-                if (current.bottom && last.top) {
-                    current.top = false;
-                }
-                if (current.top && last.bottom) {
-                    current.bottom = false;
-                }
-                if (current.right && last.left) {
-                    current.left = false;
-                }
-                if (current.left && last.right) {
-                    current.right = false;
-                }
-
-                last = angular.extend({}, current);
-            };
-
-            self.Toast = function(Msg, timeout) {
-                console.info('Toast', Msg, timeout);
-                var pinTo = self.getToastPosition();
-                var toast = $mdToast.simple()
-                    .textContent(Msg)
-                    .highlightAction(true)
-                    // Accent is used by default, this just demonstrates the usage.
-                    .highlightClass('md-accent')
-                    .position(pinTo)
-                    .hideDelay(timeout);
-
-                $mdToast.show(toast)
-            }
-            self.showActionToast = function() {
-                var pinTo = self.getToastPosition();
-                var toast = $mdToast.simple()
-                    .textContent('Marked as read')
-                    .actionKey('z')
-                    .actionHint('Press the Control-"z" key combination to ')
-                    .action('UNDO')
-                    .dismissHint('Activate the Escape key to dismiss this toast.')
-                    .highlightAction(true)
-                    // Accent is used by default, this just demonstrates the usage.
-                    .highlightClass('md-accent')
-                    .position(pinTo)
-                    .hideDelay(0);
-
-                $mdToast.show(toast)
-                    .then(function(response) {
-                        if (response === 'ok') {
-                            alert('You selected the \'UNDO\' action.');
-                        } else {
-                            $log.log('Toast dismissed.');
-                        }
-                    }).catch(function() {
-                        $log.log('Toast failed or was forced to close early by another toast.');
-                    });
-            };
-            self.Logout = function() {
-                var Data = {}
-                Data.UniqueID = "";
-                var ReDirect = {
-                    'Action': 'Logout',
-                    'Data': JSON.stringify(Data),
-                }
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
-                    data: ReDirect,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    },
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    location.reload();
-
-                }, function errorCallback(response) {
-
-                });
-            }
-            self.ReDirect = function(ReDirect) {
-                var ReDirect = {
-                    UniqueID: "",
-                    ReDirect: ReDirect
-                }
-                var ReDirect = {
-                    'Action': 'ReDirect',
-                    'Data': JSON.stringify(ReDirect),
-                }
-                console.info(ReDirect);
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
-                    data: ReDirect,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    },
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    location.reload();
-                }, function errorCallback(response) {
-
-                });
-            }
-            //Edit
-            self.Edit = function(data) {
-
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiEdit",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    }
-                }).then(function successCallback(response) {
-
-                    if (response.data.Data && response.data.Data.action) {
-                        self.Toast('Marked as ' + response.data.Data.action, 3000);
-                    } else if (response.data.ErrorMsg) {
-                        self.Toast('Marked as ' + response.data.ErrorMsg.join(","), 3000);
-                    } else console.info(response.data);
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-
-                });
-            };
-            //List
-            self.LtstData = {};
-            self.List = function(data, key) {
-                var deferred = $q.defer();
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    }
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    var Data = {};
-                    Data.List = data[data.Action];
-                    Data.Pages = data.Pages;
-                    deferred.resolve(Data);
-                }, function errorCallback(response) {
-                    deferred.reject(response);
-
-                });
-
-                return deferred.promise;
-            };
-
-            //Remove
-
-            self.Remove = function(data) {
-                var deferred = $q.defer();
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiRemove",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    }
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    var Data = {};
-                    Data.List = data[data.Action];
-                    Data.Pages = data.Pages;
-                    deferred.resolve(Data);
-                }, function errorCallback(response) {
-                    deferred.reject(response);
-
-                });
-
-                return deferred.promise;
-            };
-
-
-        });
-    </script>
-    <style>
-        .bg-gradient-primary {
-            background-image: linear-gradient(195deg, #0b1048 0%, #4e5bb9 100%);
-        }
-
-        .shadow-primary {
-            box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(34 10 143 / 37%) !important;
-        }
-
-        .btn-primary,
-        .btn.bg-gradient-primary {
-            box-shadow: 0 3px 3px 0 rgb(51 30 233 / 15%), 0 3px 1px -2px rgb(30 42 233 / 20%), 0 1px 5px 0 rgb(30 39 233 / 15%);
-        }
-
-        #pie {
-            height: 440px;
-        }
-    </style>
+	<title>Login V2</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="login/images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/fonts/iconic/css/material-design-iconic-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="login/vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="login/vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="login/css/util.css">
+	<link rel="stylesheet" type="text/css" href="login/css/main.css">
+<!--===============================================================================================-->
 
 </head>
-
-<body ng-app="Admin" style="background-size: cover;background-image: url(https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80);;">
-    <div class="limiter" style="
+<body style="background-size: cover;background-image: url(https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80);;">
+	<div class="limiter" style="
 	background-image: linear-gradient(195deg,#42424a,#191919);
 	opacity: .6;
 	position: absolute;
 	height: 100vh;
 	"></div>
+	
+	<div class="limiter" style="position: absolute;z-index:1;">
+		<div class="container-login100" style="background:none;">
+			<div class="wrap-login100">
+				<form class="login100-form validate-form">
+					<span class="login100-form-title p-b-26">
+						Welcome
+					</span>
+					<span class="login100-form-title p-b-48">
+						<i class="zmdi zmdi-font"></i>
+					</span>
 
-    <div class="limiter" style="position: absolute;z-index:1;">
-        <main ng-controller="AdminController as Admin">
-            <div class="container-login100" style="background:none;">
-                <div class="wrap-login100">
-                    <form class="login100-form validate-form">
-                        <span class="login100-form-title p-b-26">
-                            Welcome
-                        </span>
-                        <span class="login100-form-title p-b-48">
-                            <i class="zmdi zmdi-font"></i>
-                        </span>
+					<div class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
+						<input class="input100" type="text" name="email">
+						<span class="focus-input100" data-placeholder="Email"></span>
+					</div>
 
-                        <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
-                            <input class="input100" type="text" name="email">
-                            <span class="focus-input100" data-placeholder="Email"></span>
-                        </div>
+					<div class="wrap-input100 validate-input" data-validate="Enter password">
+						<span class="btn-show-pass">
+							<i class="zmdi zmdi-eye"></i>
+						</span>
+						<input class="input100" type="password" name="pass">
+						<span class="focus-input100" data-placeholder="Password"></span>
+					</div>
 
-                        <div class="wrap-input100 validate-input" data-validate="Enter password">
-                            <span class="btn-show-pass">
-                                <i class="zmdi zmdi-eye"></i>
-                            </span>
-                            <input class="input100" type="password" name="pass">
-                            <span class="focus-input100" data-placeholder="Password"></span>
-                        </div>
+					<div class="container-login100-form-btn">
+						<div class="wrap-login100-form-btn">
+							<div class="login100-form-bgbtn"></div>
+							<button class="login100-form-btn">
+								Login
+							</button>
+						</div>
+					</div>
 
-                        <div class="container-login100-form-btn">
-                            <div class="wrap-login100-form-btn">
-                                <div class="login100-form-bgbtn"></div>
-                                <button class="login100-form-btn">
-                                    Login
-                                </button>
-                            </div>
-                        </div>
+					<div class="text-center p-t-115">
+						<span class="txt1">
+							Don’t have an account?
+						</span>
 
-                        <div class="text-center p-t-115">
-                            <span class="txt1">
-                                Don’t have an account?
-                            </span>
+						<a class="txt2" href="login/#">
+							Sign Up
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
 
-                            <a class="txt2" href="login/#">
-                                Sign Up
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </main>
-    </div>
-
-
-    <div id="dropDownSelect1"></div>
-    <script>
-        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
-            var Admin = this;
-            if (location.pathname == "/logout") location.href = '';
-            Admin.ReDirect = function(ReDirect) {
-                console.info(ReDirect);
-                sharedData.ReDirect(ReDirect);
-            }
-            Admin.Logout = function() {
-                sharedData.Logout(ReDirect);
-            }
-            Admin.Login = function() {
-                Admin.LoginInfo.UniqueID = "";
-                var data = {
-                    'Action': 'Login',
-                    'Data': JSON.stringify(Admin.LoginInfo),
-                }
-
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                    },
-                }).then(function successCallback(response) {
-                    var data = response.data;
-
-                    if (data.UniqueID) location.reload();
-                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-
-                });
-            };
-
-            Admin.Sign = function() {
-                var data = {
-                    'Action': 'Login',
-                    'Data': JSON.stringify(Admin.SignInfo),
-                }
-
-                var request = $http({
-                    method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/index/info",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;',
-                    },
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    console.info(data);
-                    if (data.UniqueID) location.reload();
-                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-
-                });
-            };
-
-        }]);
-    </script>
-    <!--===============================================================================================-->
-    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="vendor/animsition/js/animsition.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="vendor/bootstrap/js/popper.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="vendor/select2/select2.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="vendor/daterangepicker/moment.min.js"></script>
-    <script src="vendor/daterangepicker/daterangepicker.js"></script>
-    <!--===============================================================================================-->
-    <script src="vendor/countdowntime/countdowntime.js"></script>
-    <!--===============================================================================================-->
-    <script src="js/main.js"></script>
+	<div id="dropDownSelect1"></div>
+	
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
 
 </body>
-
 </html>
