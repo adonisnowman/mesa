@@ -26,7 +26,7 @@ class _Action
             if (!empty($checkKeysRule) && empty($checkKeysRule->offshelf)) {
                
                 $AccountGroups = Tools::fix_array_Key(checkKeys::getObjectByItem($Item)->checkKeysRule->toArray(), "AccountGroups");
-                var_dump($domain,$AccountGroups,$checkKeys->ActionPort);
+                // var_dump($domain,$AccountGroups,$checkKeys->ActionPort);
                 if ($AccountGroups != "Default") $AccountGroups = explode(",", join(",", $AccountGroups));
 
                 if (in_array("Default", $AccountGroups)) return  $checkKeys->ActionPort;           
