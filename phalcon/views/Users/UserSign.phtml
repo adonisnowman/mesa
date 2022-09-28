@@ -38,7 +38,24 @@
     <script src="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
     <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
+    <style>
+    .bg-gradient-primary {
+        background-image: linear-gradient(195deg, #0b1048 0%, #4e5bb9 100%);
+    }
 
+    .shadow-primary {
+        box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(34 10 143 / 37%) !important;
+    }
+
+    .btn-primary,
+    .btn.bg-gradient-primary {
+        box-shadow: 0 3px 3px 0 rgb(51 30 233 / 15%), 0 3px 1px -2px rgb(30 42 233 / 20%), 0 1px 5px 0 rgb(30 39 233 / 15%);
+    }
+
+    #pie {
+        height: 440px;
+    }
+</style>
     <script>
         var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
         adonis.service('sharedData', function($http, $q, $mdToast) {
