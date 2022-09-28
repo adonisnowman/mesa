@@ -38,6 +38,7 @@ class Tools
     }
     public static function ServerIp(){
         
+        return "1.165.113.231";
         return file_get_contents('https://api.ipify.org', false ,);
     }
 
