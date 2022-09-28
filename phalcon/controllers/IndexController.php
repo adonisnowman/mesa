@@ -31,7 +31,14 @@ class IndexController extends BaseController
         Tools::emailSend("adonisnowman@gmail.com", "signEmail", _Views::RedirectAdmin($Return));
         if (!empty($_GET['token'])) Tools::checkToken($_GET['token']);
     }
-
+//登入登出功能
+public function LogoutAction()
+{
+    unset($_SESSION[Tools::getIp()]['ReDirect']);
+    session_destroy();
+    $Return['ReDirect'] = "sign-in";
+    return $Return;
+}
     public function indexAction()
     {
 
