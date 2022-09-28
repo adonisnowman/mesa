@@ -127,7 +127,7 @@
                 }
                 var request = $http({
                     method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
                     data: ReDirect,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -152,7 +152,7 @@
                 console.info(ReDirect);
                 var request = $http({
                     method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
                     data: ReDirect,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -169,7 +169,7 @@
 
                 var request = $http({
                     method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiEdit",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiEdit",
                     data: data,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -193,7 +193,7 @@
                 var deferred = $q.defer();
                 var request = $http({
                     method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
                     data: data,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -218,7 +218,7 @@
                 var deferred = $q.defer();
                 var request = $http({
                     method: "post",
-                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiRemove",
+                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/ApiRemove",
                     data: data,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
