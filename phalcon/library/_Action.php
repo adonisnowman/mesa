@@ -29,7 +29,7 @@ class _Action
                 if ($AccountGroups != "Default") $AccountGroups = explode(",", join(",", $AccountGroups));   
                 else return $checkKeys->ActionPort;             
                 if (in_array($domain, $AccountGroups)) return  $checkKeys->ActionPort;
-            } else return $checkKeys->ActionPort;        
+            } 
         }
         
 
