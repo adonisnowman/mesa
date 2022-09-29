@@ -110,10 +110,10 @@ class UsersApiController extends BaseController
 
         if (!empty($ActionLogs->UniqueID)) {
             //這邊不在讀取資料表判斷
-            if (!empty($_SESSION[Tools::getIp()])) {
+            if (!empty($_SESSION[Tools::getIp()]['Users'])) {
                 var_dump($_SESSION[Tools::getIp()]);
-                $ActionLogs->UniqueID_UsersLoginLogs = $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'];
-                $ActionLogs->UniqueID_Users = $_SESSION[Tools::getIp()]['UniqueID'];
+                $ActionLogs->UniqueID_UsersLoginLogs = $_SESSION[Tools::getIp()]['Users']['UniqueID_UsersLoginLogs'];
+                $ActionLogs->UniqueID_Users = $_SESSION[Tools::getIp()]['Users']['UniqueID'];
             } else if (!empty(self::$PostData['UniqueID'])) {
                 $ActionLogs->UniqueID_UsersLoginLogs = self::$PostData['UniqueID'];
             }
@@ -185,7 +185,7 @@ class UsersApiController extends BaseController
     //登入登出功能
     public function Logout()
     {
-        unset($_SESSION[Tools::getIp()]['ReDirect']);
+        unset($_SESSION[Tools::getIp()]);
         session_destroy();
         $Return['ReDirect'] = "UserSign";
         return $Return;
@@ -223,7 +223,7 @@ class UsersApiController extends BaseController
             $Users->save();
 
 
-            $_SESSION[Tools::getIp()] = $Users->toArray();
+            $_SESSION[Tools::getIp()]['Users'] = $Users->toArray();
             $_SESSION['checkKeys'] = checkKeys::getListByItem(["AccountType" => "None"]);
             $_SESSION['checkKeys'] = array_merge($_SESSION['checkKeys'], checkKeys::getListByItem(["AccountType" => $Users->account]));
 
