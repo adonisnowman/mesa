@@ -111,6 +111,7 @@ class UsersApiController extends BaseController
         if (!empty($ActionLogs->UniqueID)) {
             //這邊不在讀取資料表判斷
             if (!empty($_SESSION[Tools::getIp()])) {
+                var_dump($_SESSION[Tools::getIp()]);
                 $ActionLogs->UniqueID_UsersLoginLogs = $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'];
                 $ActionLogs->UniqueID_Users = $_SESSION[Tools::getIp()]['UniqueID'];
             } else if (!empty(self::$PostData['UniqueID'])) {
