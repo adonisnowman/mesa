@@ -9,6 +9,7 @@
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
+            position: absolute;
         }
 
         .card {
@@ -103,7 +104,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
 
         .profile {
             width: 330px;
-            
+
             margin: auto;
             margin-bottom: 20px;
             transform: translate(-50%, -50%);
@@ -285,7 +286,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
             border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.7);
             position: absolute;
-            top: 50%;
+            top: 15%;
             right: -40%;
             transform: translate(-50%, -50%);
             transition-duration: 0.3s;
@@ -348,11 +349,12 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
         UL {
             list-style-type: none;
             position: absolute;
-            top:50%;
-            left:50%;
+            top: 50%;
+            left: 50%;
         }
+
         li {
-            
+            min-height: 600px;
         }
     </style>
 </head>
@@ -360,9 +362,10 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
 <body>
 
     <ul>
-        <li>
+        <li class="">
             <div class="profile">
-                <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                <div class="photo"><img
+                        src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
                 </div>
                 <div class="content">
                     <div class="text">
@@ -372,28 +375,29 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                     <div class="btn"><span></span></div>
                 </div>
                 <div class="box">
-        
+
                     <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i
                         class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
                 </div>
                 <div class="cards-list">
-        
+
                     <div class="card 1">
                         <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" /> </div>
                         <div class="card_title title-white">
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                     <div class="card 2">
                         <div class="card_image">
-                            <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                            <img
+                                src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
                         </div>
                         <div class="card_title title-white">
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                     <div class="card 3">
                         <div class="card_image">
                             <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
@@ -402,7 +406,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                     <div class="card 4">
                         <div class="card_image">
                             <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
@@ -411,13 +415,16 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                 </div>
             </div>
+            
         </li>
+        
         <li>
             <div class="profile">
-                <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                <div class="photo"><img
+                        src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
                 </div>
                 <div class="content">
                     <div class="text">
@@ -427,28 +434,29 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                     <div class="btn"><span></span></div>
                 </div>
                 <div class="box">
-        
+
                     <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i
                         class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
                 </div>
                 <div class="cards-list">
-        
+
                     <div class="card 1">
                         <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" /> </div>
                         <div class="card_title title-white">
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                     <div class="card 2">
                         <div class="card_image">
-                            <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                            <img
+                                src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
                         </div>
                         <div class="card_title title-white">
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                     <div class="card 3">
                         <div class="card_image">
                             <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
@@ -457,7 +465,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                     <div class="card 4">
                         <div class="card_image">
                             <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
@@ -466,15 +474,15 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                             <p>Card Title</p>
                         </div>
                     </div>
-            
+
                 </div>
             </div>
         </li>
     </ul>
 
-    
-    
-    
+
+
+
     <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
         integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
     <script>
@@ -482,6 +490,9 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
             $('.btn').click(function () {
                 $(this).toggleClass('active');
                 return $('.box').toggleClass('open');
+            });
+            $('.card').click(function () {
+                console.info("clicked");
             });
 
         }).call(this);
