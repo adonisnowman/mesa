@@ -27,7 +27,6 @@ class UploadsController extends BaseController
         $id =  _UniqueID::shortUniqueID();
         $Mp4File = "video/{$id}.mp4";
        
-        if(!empty($_FILES) && file_exists($_FILES['file']['tmp_name']) == false) exit;
             echo $exec = " ffmpeg -i {$_FILES['file']['tmp_name']} -y $Mp4File 2>&1 ";
             if (exec($exec, $out)) {
                 
