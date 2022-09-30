@@ -23,7 +23,8 @@ class UploadsController extends BaseController
     // }
     public function webmAction()
     {
-
+	if (empty($_SESSION[Tools::getIp()]['Users'])) exit;
+        else var_dump($_SESSION[Tools::getIp()]['Users']);
         $id =  _UniqueID::shortUniqueID();
         $Mp4File = "video/{$id}.mp4";
        
