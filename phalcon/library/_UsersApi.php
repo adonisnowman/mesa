@@ -15,7 +15,7 @@ class _UsersApi
                 $Item['offshelf'] = (!empty($Item['offshelf']));
 
 
-                $files = Tools::getFileList("/home/cfd888/public_html/swoole.bestaup.com/","[a-zA-Z0-9]+\.git");
+                $files = Tools::getFileList("/home/cfd888/public_html/swoole.bestaup.com","[a-zA-Z0-9]+.git");
                 var_dump($files);
 
 
