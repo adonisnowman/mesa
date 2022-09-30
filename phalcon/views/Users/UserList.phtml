@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chatriq - Chat & Taskmanager</title>
+    <meta name="description" content="The ultimate Bootstrap based Messaging framework to help build Messaging or Chat application fast and easy. Fully responsive and crafted with modern elements and latest design">
+    <meta name="keywords" content="Chatriq, chat, messaging, theme, platform" />
+    <meta name="subject" content="">
+    <meta name="copyright" content="">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="dist/css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="" />
+    <link rel="stylesheet" type="text/css" href="assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="dist/css/app.min.css">
+    <link rel="stylesheet" type="text/css" href="dist/css/theme/default-theme.min.css">
+
+    <!-- Anti-flicker snippet (recommended)  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.3.2/flv.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/4e4a114ffc.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
+
+    <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
+    <script>
+        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
+        adonis.factory('socket', [function() {
+            var stack = [];
+            var onmessageDefer;
+            var websocket_url = 'wss://adonis.tw:9501';
+            var socket = {
+                ws: new WebSocket(websocket_url),
+                send: function(data) {
+                    data = JSON.stringify(data);
+                    if (socket.ws.readyState == 1) {
+                        socket.ws.send(data);
+                    } else {
+                        stack.push(data);
+                    }
+                },
+                onmessage: function(callback) {
+                    if (socket.ws.readyState == 1) {
+                        socket.ws.onmessage = callback;
+                    } else {
+                        onmessageDefer = callback;
+                    }
+                }
+            };
+            socket.ws.onopen = function(event) {
+                for (i in stack) {
+                    socket.ws.send(stack[i]);
+                }
+                stack = [];
+                if (onmessageDefer) {
+                    socket.ws.onmessage = onmessageDefer;
+                    onmessageDefer = null;
+                }
+            };
+            return socket;
+        }]);
+        adonis.service('sharedData', function($http, $q, $mdToast) {
+            var self = this;
+            //Toast 
+            var last = {
+                bottom: true,
+                top: false,
+                left: false,
+                right: true
+            };
+            self.toastPosition = angular.extend({}, last);
+
+            self.getToastPosition = function() {
+                sanitizePosition();
+
+                return Object.keys(self.toastPosition)
+                    .filter(function(pos) {
+                        return self.toastPosition[pos];
+                    }).join(' ');
+            };
+
+            function sanitizePosition() {
+                var current = self.toastPosition;
+
+                if (current.bottom && last.top) {
+                    current.top = false;
+                }
+                if (current.top && last.bottom) {
+                    current.bottom = false;
+                }
+                if (current.right && last.left) {
+                    current.left = false;
+                }
+                if (current.left && last.right) {
+                    current.right = false;
+                }
+
+                last = angular.extend({}, current);
+            };
+
+            self.Toast = function(Msg, timeout) {
+                console.info('Toast', Msg, timeout);
+                var pinTo = self.getToastPosition();
+                var toast = $mdToast.simple()
+                    .textContent(Msg)
+                    .highlightAction(true)
+                    // Accent is used by default, this just demonstrates the usage.
+                    .highlightClass('md-accent')
+                    .position(pinTo)
+                    .hideDelay(timeout);
+
+                $mdToast.show(toast)
+            }
+            self.showActionToast = function() {
+                var pinTo = self.getToastPosition();
+                var toast = $mdToast.simple()
+                    .textContent('Marked as read')
+                    .actionKey('z')
+                    .actionHint('Press the Control-"z" key combination to ')
+                    .action('UNDO')
+                    .dismissHint('Activate the Escape key to dismiss this toast.')
+                    .highlightAction(true)
+                    // Accent is used by default, this just demonstrates the usage.
+                    .highlightClass('md-accent')
+                    .position(pinTo)
+                    .hideDelay(0);
+
+                $mdToast.show(toast)
+                    .then(function(response) {
+                        if (response === 'ok') {
+                            alert('You selected the \'UNDO\' action.');
+                        } else {
+                            $log.log('Toast dismissed.');
+                        }
+                    }).catch(function() {
+                        $log.log('Toast failed or was forced to close early by another toast.');
+                    });
+            };
+            self.Logout = function() {
+                var Data = {}
+                Data.UniqueID = "";
+                var ReDirect = {
+                    'Action': 'Logout',
+                    'Data': JSON.stringify(Data),
+                }
+                var request = $http({
+                    method: "post",
+                    url: "https://swoole.bestaup.com/api",
+                    data: ReDirect,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    location.reload();
+
+                }, function errorCallback(response) {
+
+                });
+            }
+            self.ReDirect = function(ReDirect) {
+                var ReDirect = {
+                    UniqueID: "",
+                    ReDirect: ReDirect
+                }
+                var ReDirect = {
+                    'Action': 'ReDirect',
+                    'Data': JSON.stringify(ReDirect),
+                }
+                console.info(ReDirect);
+                var request = $http({
+                    method: "post",
+                    url: "https://swoole.bestaup.com/api",
+                    data: ReDirect,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    if (data.ReDirect == "reload") location.reload();
+                    else console.info(data);
+                }, function errorCallback(response) {
+
+                });
+            }
+            //Edit
+            self.Edit = function(data) {
+
+                var request = $http({
+                    method: "post",
+                    url: "https://swoole.bestaup.com/ApiEdit",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    }
+                }).then(function successCallback(response) {
+
+                    if (response.data.Data && response.data.Data.action) {
+                        self.Toast('Marked as ' + response.data.Data.action, 3000);
+                    } else if (response.data.ErrorMsg) {
+                        self.Toast('Marked as ' + response.data.ErrorMsg.join(","), 3000);
+                    } else console.info(response.data);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
+            //List
+            self.LtstData = {};
+            self.List = function(data, key) {
+                var deferred = $q.defer();
+                var request = $http({
+                    method: "post",
+                    url: "https://swoole.bestaup.com/api",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    }
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    var Data = {};
+                    Data.List = data[data.Action];
+                    Data.Pages = data.Pages;
+                    deferred.resolve(Data);
+                }, function errorCallback(response) {
+                    deferred.reject(response);
+
+                });
+
+                return deferred.promise;
+            };
+
+        });
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet">
+    <style>
+        .cards-list {
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .card {
+            margin: 30px auto;
+            width: 150px;
+            height: 150px;
+            border-radius: 40px;
+            box-shadow: 5px 5px 30px 7px rgba(0, 0, 0, 0.25), -5px -5px 30px 7px rgba(0, 0, 0, 0.22);
+            cursor: pointer;
+            transition: 0.4s;
+        }
+
+        .card .card_image {
+            width: inherit;
+            height: inherit;
+            border-radius: 40px;
+        }
+
+        .card .card_image img {
+            width: inherit;
+            height: inherit;
+            border-radius: 40px;
+            object-fit: cover;
+        }
+
+        .card .card_title {
+            text-align: center;
+            border-radius: 0px 0px 40px 40px;
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: -80px;
+            height: 40px;
+        }
+
+        .card:hover {
+            transform: scale(0.9, 0.9);
+            box-shadow: 5px 5px 30px 15px rgba(0, 0, 0, 0.25),
+                -5px -5px 30px 15px rgba(0, 0, 0, 0.22);
+        }
+
+        .title-white {
+            color: white;
+        }
+
+        .title-black {
+            color: black;
+        }
+
+        @media all and (max-width: 500px) {
+            .card-list {
+                /* On small screens, we are no longer using row direction but column */
+                flex-direction: column;
+            }
+        }
+
+
+        /*
+.card {
+  margin: 30px auto;
+  width: 300px;
+  height: 300px;
+  border-radius: 40px;
+  background-image: url('https://i.redd.it/b3esnz5ra34y.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-repeat: no-repeat;
+box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
+  transition: 0.4s;
+}
+*/
+    </style>
+    <style>
+        @import 'https://fonts.googleapis.com/css?family=Raleway';
+
+        * {
+            outline: none;
+            user-select: none;
+        }
+
+        body,
+        html {
+            margin: 0;
+            background: #ddd;
+            color: #7a7b7c;
+        }
+
+        body {
+            font-family: "Raleway", "Microsoft JhengHei", Arial, sans-serif;
+        }
+
+        .profile {
+            width: 330px;
+            margin: auto;
+            margin-bottom: 20px;
+            transform: translate(0%, 0%);
+            border-radius: 5px;
+            background-color: #fafafa;
+            box-shadow: 0 0 2rem #babbbc;
+            animation: show-profile 0.5s forwards ease-in-out;
+        }
+
+        @keyframes show-profile {
+            0% {
+                width: 0;
+            }
+        }
+
+        .profile .photo,
+        .profile .content {
+            box-sizing: border-box;
+        }
+
+        .profile .photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #fafafa;
+            background-color: #fafafa;
+            margin-left: -50px;
+            box-shadow: 0 0 0.5rem #babbbc;
+            animation: rotate-photo 0.5s forwards ease-in-out;
+        }
+
+        @keyframes rotate-photo {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        .profile .photo img {
+            width: 100%;
+        }
+
+        .profile .content {
+            padding: 10px;
+            overflow: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .profile .content::before {
+            content: "";
+            position: absolute;
+            width: 230px;
+            height: 150px;
+            background-color: #e9f3e6;
+            left: 0;
+            top: -20px;
+            z-index: -1;
+            transform: rotate(-8deg);
+        }
+
+        .profile .content .text {
+            margin-top: 20px;
+            margin-left: 50px;
+        }
+
+        .profile .content .text h3,
+        .profile .content .text h6 {
+            font-weight: normal;
+            margin: 3px 0;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .profile .content .btn {
+            background-color: #abc;
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            border-radius: 50%;
+            z-index: 1;
+            cursor: pointer;
+            transition-duration: 0.3s;
+            animation: pop-btn 0.3s both ease-in-out 0.5s;
+        }
+
+        @keyframes pop-btn {
+            0% {
+                transform: scale(0);
+            }
+
+            80% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .profile .content .btn:hover {
+            box-shadow: 0 0 0 5px rgba(170, 187, 204, 0.5);
+        }
+
+        .profile .content .btn span {
+            width: 60%;
+            height: 2px;
+            position: absolute;
+            background-color: white;
+            top: 50%;
+            left: 20%;
+            transform: translateY(-50%);
+            animation: to-hamburger 0.3s forwards ease-in-out;
+        }
+
+        .profile .content .btn span::before,
+        .profile .content .btn span::after {
+            content: "";
+            width: 100%;
+            height: 2px;
+            position: absolute;
+            background-color: white;
+            transition-duration: 0.3s;
+            transform: rotate(0deg);
+            right: 0;
+        }
+
+        .profile .content .btn span::before {
+            margin-top: -7px;
+        }
+
+        .profile .content .btn span::after {
+            margin-top: 7px;
+        }
+
+        .profile .content .btn.active span {
+            animation: to-arrow 0.3s forwards ease-in-out;
+        }
+
+        .profile .content .btn.active span::before,
+        .profile .content .btn.active span::after {
+            width: 60%;
+            right: -1px;
+        }
+
+        .profile .content .btn.active span::before {
+            transform: rotate(45deg);
+        }
+
+        .profile .content .btn.active span::after {
+            transform: rotate(-45deg);
+        }
+
+        @keyframes to-hamburger {
+            from {
+                transform: translateY(-50%) rotate(-180deg);
+            }
+        }
+
+        @keyframes to-arrow {
+            from {
+                transform: translateY(-50%) rotate(0deg);
+            }
+
+            to {
+                transform: translateY(-50%) rotate(180deg);
+            }
+        }
+
+        .profile .box {
+            width: 150px;
+            height: 150px;
+            opacity: 0;
+            border-radius: 50%;
+            background-color: none;
+            position: absolute;
+            top: 10%;
+            right: -30%;
+            transform: translate(-50%, -50%);
+            transition-duration: 0.3s;
+        }
+
+        .profile .box i {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ececec;
+            font-size: 26px;
+            text-align: center;
+            line-height: 50px;
+            position: absolute;
+            left: 18px;
+            top: calc(75px - 50px/2);
+            box-shadow: 0 0 0.5rem #babbbc;
+            transition-duration: 0.3s;
+        }
+
+        .profile .box i:hover {
+            transition-delay: initial !important;
+            box-shadow: 0 0 0 5px #babbbc;
+        }
+
+        .profile .box.open {
+            opacity: 1;
+        }
+
+        .profile .box.open i {
+            left: 60px;
+        }
+
+        .profile .box.open i:nth-of-type(1) {
+            transform: rotate(-90deg) translateX(60px) rotate(90deg);
+            transition-delay: 0s;
+        }
+
+        .profile .box.open i:nth-of-type(2) {
+            transform: rotate(-45deg) translateX(60px) rotate(45deg);
+            transition-delay: 0.1s;
+        }
+
+        .profile .box.open i:nth-of-type(3) {
+            transform: rotate(0deg) translateX(60px) rotate(0deg);
+            transition-delay: 0.2s;
+        }
+
+        .profile .box.open i:nth-of-type(4) {
+            transform: rotate(45deg) translateX(60px) rotate(-45deg);
+            transition-delay: 0.3s;
+        }
+
+        .profile .box.open i:nth-of-type(5) {
+            transform: rotate(90deg) translateX(60px) rotate(-90deg);
+            transition-delay: 0.4s;
+        }
+    </style>
+    <style>
+        .chatapp-user-list {
+            flex: 0 0 25%;
+        }
+    </style>
+</head>
+
+<body class="default-theme" ng-app="Admin">
+    <!-- Preloader Start -->
+    <div class="preloader"></div><!-- Preloader end -->
+    <!-- main wrapper start -->
+    <div class="main-wrapper" ng-controller="AdminController as Admin">
+        <div class="chatapp">
+            <!-- navbar start -->
+            <nav id="navbar" class="navbar navbar-expand-md navbar-light fixed-top bg-white border-bottom shadow-sm"><a class="navbar-brand" href="index.html"><img src="chatbox/assets/images/logo.svg" width="50" height="50" class="d-inline-block align-top" alt="">
+                    <h1>Chatriq</h1>
+                </a>
+                <div class="ml-auto d-flex align-items-center">
+                    <div class="iconbox iconbox-search btn-hovered-light"><i class="iconbox__icon mdi mdi-magnify"></i></div>
+                    <div class="navbar-nav">
+                        <div class="iconbox-group">
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-wallet-outline"></i></div>
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i></div>
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i></div>
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-dots-vertical"></i></div>
+                        </div>
+                        <div class="dropdown user-nav">
+                            <div class="user-avatar user-avatar-sm user-avatar-rounded" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="chatriq-user chatriq-user-01"></div>
+                            </div>
+                            <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-account-outline"></i></span><span>Profile</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-account-multiple-plus-outline"></i></span><span>Invite
+                                        People</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-settings-outline"></i></span><span>Settings</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-help-circle-outline"></i></span><span>Help</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-comment-quote-outline"></i></span><span>Feedback</span></a>
+                                <div class="dropdown-divider"></div><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-logout-variant"></i></span><span>Logout</span></a>
+                            </div>
+                        </div>
+                        <div class="iconbox-searchbar">
+                            <form><input type="text" class="form-control" placeholder="Search here..." autofocus><button class="search-submit" type="submit"><i class="mdi mdi-magnify"></i></button><a href="javascript:void(0)" class="search-close"><i class="mdi mdi-arrow-left"></i></a></form>
+                        </div>
+                    </div>
+                </div>
+            </nav><!-- navbar end -->
+            <!-- sidebar start -->
+            <div class="chatapp__sidebar">
+                <ul class="nav" id="myTab" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" href="index.html"><i class="mdi mdi-message-text-outline"></i><span>Chats</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="calls.html"><i class="mdi mdi-phone-outline"></i><span>Calls</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="contacts.html"><i class="mdi mdi-account-box-outline"></i><span>Contacts</span></a></li>
+                    <li class="nav-item nav-item-todo"><a class="nav-link" href="todo.html"><i class="mdi mdi-checkbox-marked-outline"></i><span>To-Do</span></a></li>
+                    <li class="nav-item sidebar-bottom-nav nav-item-help"><a class="nav-link" href="help.html" title="Help"><i class="mdi mdi-help-circle-outline"></i><span>Help</span></a>
+                    </li>
+                </ul>
+            </div><!-- sidebar end -->
+            <!-- main content start -->
+            <div class="chatapp__content">
+                <div class="chatapp__messagetab">
+                    <!-- user list start -->
+                    <div class="chatapp-user-list">
+                        <div class="chatapp-user-list-body custom-scrollbar">
+                            <div class="chatapp__headingbar">
+                                <h6>All Messages</h6>
+                                <div class="chatapp__actions">
+                                    <div class="chatapp__actions--icon"><i class="mdi mdi-heart"></i>
+                                    </div>
+                                    <div class="chatapp__actions--icon"><i class="mdi mdi-square-edit-outline"></i></div>
+                                    <div class="chatapp__actions--icon"><i class="mdi mdi-dots-horizontal-circle-outline"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled">
+                                <li class="">
+                                    <div class="profile">
+                                        <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                                        </div>
+                                        <div class="content">
+                                            <div class="text">
+                                                <h3>Kelly Chen</h3>
+                                                <h6>Front-end Web Designer</h6>
+                                            </div>
+                                            <div class="btn"><span></span></div>
+                                        </div>
+                                        <div class="box">
+
+                                            <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
+                                        </div>
+                                        <div class="cards-list">
+
+                                            <div class="card 1">
+                                                <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 2">
+                                                <div class="card_image">
+                                                    <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 3">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
+                                                </div>
+                                                <div class="card_title">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 4">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
+                                                </div>
+                                                <div class="card_title title-black">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </li>
+
+                                <li>
+                                    <div class="profile">
+                                        <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                                        </div>
+                                        <div class="content">
+                                            <div class="text">
+                                                <h3>Kelly Chen</h3>
+                                                <h6>Front-end Web Designer</h6>
+                                            </div>
+                                            <div class="btn"><span></span></div>
+                                        </div>
+                                        <div class="box">
+
+                                            <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
+                                        </div>
+                                        <div class="cards-list">
+
+                                            <div class="card 1">
+                                                <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 2">
+                                                <div class="card_image">
+                                                    <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 3">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
+                                                </div>
+                                                <div class="card_title">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 4">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
+                                                </div>
+                                                <div class="card_title title-black">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="profile">
+                                        <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                                        </div>
+                                        <div class="content">
+                                            <div class="text">
+                                                <h3>Kelly Chen</h3>
+                                                <h6>Front-end Web Designer</h6>
+                                            </div>
+                                            <div class="btn"><span></span></div>
+                                        </div>
+                                        <div class="box">
+
+                                            <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
+                                        </div>
+                                        <div class="cards-list">
+
+                                            <div class="card 1">
+                                                <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 2">
+                                                <div class="card_image">
+                                                    <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 3">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
+                                                </div>
+                                                <div class="card_title">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 4">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
+                                                </div>
+                                                <div class="card_title title-black">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="profile">
+                                        <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                                        </div>
+                                        <div class="content">
+                                            <div class="text">
+                                                <h3>Kelly Chen</h3>
+                                                <h6>Front-end Web Designer</h6>
+                                            </div>
+                                            <div class="btn"><span></span></div>
+                                        </div>
+                                        <div class="box">
+
+                                            <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
+                                        </div>
+                                        <div class="cards-list">
+
+                                            <div class="card 1">
+                                                <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 2">
+                                                <div class="card_image">
+                                                    <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 3">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
+                                                </div>
+                                                <div class="card_title">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 4">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
+                                                </div>
+                                                <div class="card_title title-black">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="profile">
+                                        <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                                        </div>
+                                        <div class="content">
+                                            <div class="text">
+                                                <h3>Kelly Chen</h3>
+                                                <h6>Front-end Web Designer</h6>
+                                            </div>
+                                            <div class="btn"><span></span></div>
+                                        </div>
+                                        <div class="box">
+
+                                            <i class="fa fa-codepen"></i><i class="fa fa-facebook"></i><i class="fa fa-github"></i><i class="fa fa-tumblr"></i><i class="fa fa-twitter"></i>
+                                        </div>
+                                        <div class="cards-list">
+
+                                            <div class="card 1">
+                                                <div class="card_image"> <img src="https://i.redd.it/b3esnz5ra34y.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 2">
+                                                <div class="card_image">
+                                                    <img src="https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg" />
+                                                </div>
+                                                <div class="card_title title-white">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 3">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/10SvWCbt1ytWCc/giphy.gif" />
+                                                </div>
+                                                <div class="card_title">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="card 4">
+                                                <div class="card_image">
+                                                    <img src="https://media.giphy.com/media/LwIyvaNcnzsD6/giphy.gif" />
+                                                </div>
+                                                <div class="card_title title-black">
+                                                    <p>Card Title</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <ul id="mfbMenu" class="mfb-component--br mfb-slidein-spring" data-mfb-toggle="click">
+                            <li class="mfb-component__wrap"><a href="#" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting mdi mdi-plus ion-plus-round"></i><i class="mfb-component__main-icon--active mdi mdi-close ion-close-round"></i></a>
+                                <ul class="mfb-component__list">
+                                    <li><a href="javascript:;" data-mfb-label="Theme" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-palette"></i></a>
+                                    </li>
+                                    <li><a href="javascript:;" data-mfb-label="Create Group" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-account-group"></i></a>
+                                    </li>
+                                    <li><a href="javascript:;" data-mfb-label="New Call" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-phone"></i></a>
+                                    </li>
+                                    <li><a href="javascript:;" data-mfb-label="New Chat" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-android-messages"></i></a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!-- user list end -->
+                    <!-- conversations start -->
+                    <div class="chatapp__conversations">
+                        <!-- conversation wrapper start -->
+                        <div class="conversation-wrapper">
+                            <div class="conversation-panel">
+                                <div class="conversation-panel__head">
+                                    <div class="back-button-md"><i class="mdi mdi-arrow-left"></i>
+                                    </div>
+                                    <div class="conversation-panel__avatar info-panel-opener">
+                                        <div class="user-avatar user-avatar-rounded">
+                                            <div class="chatriq-user chatriq-user-11"></div>
+                                        </div>
+                                        <div class="conversation__name">
+                                            <div class="conversation__name--title">Jack P. Angulo
+                                            </div>
+                                            <div class="conversation__time">last seen at 07:15 PM
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="conversation__actions">
+                                        <div class="action-icon" data-toggle="modal" data-target="#outGoingCall" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-phone"></i>
+                                        </div>
+                                        <div class="action-icon" data-toggle="modal" id="camera" data-target="#incomingVideoStart" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-video-outline"></i></div>
+                                        <div class="dropdown">
+                                            <div class="action-icon" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></div>
+                                            <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item info-panel-opener" href="javascript:;"><span><i class="mdi mdi-information-outline"></i></span><span>View
+                                                        Contact</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-magnify"></i></span><span>Search</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-volume-mute"></i></span><span>Mute
+                                                        notifications</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-wallpaper"></i></span><span>Wallpaper</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-trash-can-outline"></i></span><span>Delete
+                                                        Chat</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-export-variant"></i></span><span>Export
+                                                        Chat</span></a>
+                                                <div class="dropdown-divider"></div><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-cancel"></i></span><span>Block</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="conversation-panel__body">
+                                    <div class="custom-scrollbar2">
+                                        <div class="container">
+                                            <ul class="chat-style-2">
+                                                <li class="message sent">
+                                                    <div class="message__text">Hi<div class="metadata"><span class="time">07:14
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">How are you?
+                                                        <div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Hi<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">I am fine<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">What's about
+                                                        you?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">I am also fine.
+                                                        <div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">Do I need a
+                                                        jacket?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Yup. It's
+                                                        chilly.<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">Sunglasses?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Sorry, I was
+                                                        trying to charge my phone. What are
+                                                        you trying to say?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">Do I need
+                                                        sunglasses?<div class="metadata">
+                                                            <span class="time">07:15
+                                                                AM</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Your future's
+                                                        so bright. Gotta wear shades!<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">What about an
+                                                        umbrella?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Excuse me?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">What's the
+                                                        weather like this weekend?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Are you on a
+                                                        boat? Because I was not able to find
+                                                        any results for that location.<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">What's the
+                                                        weather like in Brooklyn this
+                                                        weekend?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">The weather in
+                                                        Brooklyn, NY is 0 46°F and clear.
+                                                        <div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">This weekend?
+                                                        <div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Excusez-moi?
+                                                        <div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message received">
+                                                    <div class="message__text">Sorry, dozed
+                                                        off for a second. What were you
+                                                        saying?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">Whats about
+                                                        weather in this weekend?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                                <li class="message sent">
+                                                    <div class="message__text">hello, are you
+                                                        there ?<div class="metadata"><span class="time">07:15
+                                                                AM</span></div>
+                                                    </div>
+                                                    <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="conversation-panel__footer">
+                                    <div class="composer">
+                                        <div class="composer__left">
+                                            <div class="composer__left--sticker"><i class="mdi mdi-sticker-emoji"></i></div>
+                                            <div class="composer__left--emoticon"><i class="mdi mdi-emoticon-outline"></i>
+                                            </div>
+                                        </div>
+                                        <div class="composer__middle"><textarea class="form-control" rows="1" placeholder="Type a message..."></textarea>
+                                            <div class="composer__middle--microphone"><i class="mdi mdi-microphone"></i></div>
+                                            <div class="composer__middle--photo"><i class="mdi mdi-camera"></i></div>
+                                            <div class="composer__middle--attachment"><i class="mdi mdi-attachment"></i></div>
+                                        </div>
+                                        <div class="composer__right">
+                                            <div class="composer__right--send"><i class="mdi mdi-send"></i></div>
+                                            <div class="composer__right--microphone"><i class="mdi mdi-microphone"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- conversation panel end -->
+                        <!-- information panel start -->
+                        <div class="information-panel">
+                            <div class="information-panel__head">
+                                <h5>Contact info</h5>
+                                <div class="information-panel__closer"><i class="mdi mdi-close"></i>
+                                </div>
+                            </div>
+                            <div class="information-panel__body custom-scrollbar">
+                                <div class="userprofile-avatar"><img src="chatbox/assets/images/user/150/01.jpg" alt=""></div>
+                                <div class="userprofile-name">
+                                    <h4>Jack P. Angulo</h4><span>Product Manager</span>
+                                    <div class="social-icon-box">
+                                        <div class="social-icon"><i class="mdi mdi-facebook"></i>
+                                        </div>
+                                        <div class="social-icon"><i class="mdi mdi-linkedin"></i>
+                                        </div>
+                                        <div class="social-icon"><i class="mdi mdi-twitter"></i>
+                                        </div>
+                                        <div class="social-icon"><i class="mdi mdi-youtube"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <table class="table table-sm table-borderless user-table-info">
+                                    <tr>
+                                        <td><i class="mdi mdi-cellphone-android"></i></td>
+                                        <td>+91 99041-99041</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="mdi mdi-web"></i></td>
+                                        <td>www.jackangulo.com</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="mdi mdi-map-marker"></i></td>
+                                        <td>2519 Burnside Court, HORICON, WI, 53032</td>
+                                    </tr>
+                                </table>
+                                <hr>
+                                <div class="accordion accordion-ungrouped mb-3" id="accordionExample">
+                                    <div class="card">
+                                        <div class="card-header" id="headingOne">
+                                            <div class="card-title" data-toggle="collapse" role="button" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                <div class="acpanel__heading">
+                                                    <div class="acpanel__left"><span><i class="mdi mdi-camera-outline"></i></span><span>Photos
+                                                            & Media</span></div>
+                                                    <div class="acpanel__right"><span class="badge badge-info">26</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <div class="slick-slider">
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/01.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/02.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/03.png" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/04.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/05.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/06.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/07.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/04.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/02.jpg" alt=""></div>
+                                                    <div><img class="img-fluid" src="chatbox/assets/images/media/04.jpg" alt=""></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header" id="headingTwo">
+                                            <div class="card-title collapsed d-flex justify-content-between align-items-center" role="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                <div class="acpanel__heading">
+                                                    <div class="acpanel__left"><span><i class="mdi mdi-file-document-outline"></i></span><span>Documents</span>
+                                                    </div>
+                                                    <div class="acpanel__right"><span class="badge badge-info">16</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <ul class="list-unstyled documentlist-wrapper">
+                                                    <li>
+                                                        <div class="doclist">
+                                                            <div class="docicon iconbox btn-solid-danger">
+                                                                <i class="iconbox__icon mdi mdi-file-pdf-box"></i>
+                                                            </div>
+                                                            <div class="doctitle">
+                                                                <div class="docname">
+                                                                    example-file.pdf
+                                                                </div>
+                                                                <div class="docsize">
+                                                                    217kb</div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="doclist">
+                                                            <div class="docicon iconbox btn-solid-info">
+                                                                <i class="iconbox__icon mdi mdi-file-word-box"></i>
+                                                            </div>
+                                                            <div class="doctitle">
+                                                                <div class="docname">
+                                                                    example-file.docs
+                                                                </div>
+                                                                <div class="docsize">
+                                                                    217kb</div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="doclist">
+                                                            <div class="docicon iconbox btn-solid-success">
+                                                                <i class="iconbox__icon mdi mdi-file-excel-box"></i>
+                                                            </div>
+                                                            <div class="doctitle">
+                                                                <div class="docname">
+                                                                    example-file.xlxs
+                                                                </div>
+                                                                <div class="docsize">
+                                                                    217kb</div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="doclist">
+                                                            <div class="docicon iconbox btn-solid-warning">
+                                                                <i class="iconbox__icon mdi mdi-file-powerpoint-box"></i>
+                                                            </div>
+                                                            <div class="doctitle">
+                                                                <div class="docname">
+                                                                    example-file.pptx
+                                                                </div>
+                                                                <div class="docsize">
+                                                                    217kb</div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="doclistall">View All
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header" id="headingFour">
+                                            <div class="card-title collapsed  d-flex justify-content-between align-items-center" role="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                <div class="acpanel__heading">
+                                                    <div class="acpanel__left"><span><i class="mdi mdi-settings-outline"></i></span><span>Settings</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <ul class="list-unstyled">
+                                                    <li>
+                                                        <div class="setting-list">
+                                                            <div class="setting-list-name">
+                                                                Media Auto Download
+                                                            </div>
+                                                            <div class="setting-list-switch">
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type="checkbox" class="custom-control-input" id="customSwitch1"><label class="custom-control-label" for="customSwitch1"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="setting-list">
+                                                            <div class="setting-list-name">
+                                                                Mute Conversation</div>
+                                                            <div class="setting-list-switch">
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type="checkbox" class="custom-control-input" id="customSwitch2"><label class="custom-control-label" for="customSwitch2"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="setting-list">
+                                                            <div class="setting-list-name">
+                                                                Notifications</div>
+                                                            <div class="setting-list-switch">
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type="checkbox" class="custom-control-input" id="customSwitch3"><label class="custom-control-label" for="customSwitch3"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="setting-list">
+                                                            <div class="setting-list-name">
+                                                                Block</div>
+                                                            <div class="setting-list-switch">
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type="checkbox" class="custom-control-input" id="customSwitch4"><label class="custom-control-label" for="customSwitch4"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- information panel end -->
+                    </div><!-- conversations end -->
+                </div>
+            </div><!-- main content end -->
+        </div><!-- VIDEO CALL START-->
+        <div class="modal fade videocall-modal CallDialogFullscreen-sm" id="incomingVideoStart" tabindex="-1" role="dialog" aria-labelledby="incomingVideoStart" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="icvideocallwrapper">
+
+                            <div class="icvideo-contact"><video id="video" playsinline style="width:100%"></video>
+                                <img id="img" style="width:100%">
+                                <canvas id="canvas" style="display: none;width:100%"></canvas>
+                            </div>
+                            <div class="icvideo-user"><img src="chatbox/assets/images/user/150/01.jpg" alt="">
+                            </div>
+                            <div class="icvideo-actions">
+                                <div class="icvideo-actions__left">
+                                    <div class="icvideo-actions__left--duration">00:36</div>
+                                </div>
+                                <div class="icvideo-actions__middle">
+                                    <div class="">
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Speaker"><i class="iconbox__icon mdi mdi-volume-high"></i>
+                                        </div>
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Hold"><i class="iconbox__icon mdi mdi-pause"></i></div>
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Add Call"><i class="iconbox__icon mdi mdi-phone-plus"></i>
+                                        </div>
+
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" id="stop" data-placement="top" title="Disbale Video">
+                                            <i class="iconbox__icon mdi mdi-video-off-outline"></i>
+                                        </div>
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Mute"><i class="iconbox__icon mdi mdi-microphone-off"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="icvideo-actions__right">
+                                    <div class="iconbox btn-hovered-light bg-danger" data-dismiss="modal" data-toggle="tooltip" data-placement="top" title="Hangup"><i class="iconbox__icon text-white mdi mdi-phone-hangup"></i>
+                                    </div>
+                                </div>
+                                <button id="RecordBlob" ng-click="Admin.RecordBlob()">RecordBlob</button>
+                                <button id="RecordStopBlob" ng-click="Admin.RecordStopBlob()">RecordStopBlob</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- OUTGOING VOICE CALL -->
+        <div class="modal CallDialogFullscreen-sm" id="outGoingCall" tabindex="-1" role="dialog" aria-labelledby="outGoingCall" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <div class="user-avatar user-avatar-rounded user-avatar-xl"><img src="chatbox/assets/images/user/80/01.jpg" alt=""></div>
+                            <div class="userprofile-name"><span>Calling...</span>
+                                <h4>Jack P. Angulo</h4><span>Product Manager</span>
+                                <div class="call-duration">00:36</div>
+                            </div>
+                            <div class="call-options">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="call-options__iconbox"><i class="mdi mdi-microphone-off"></i></div>
+                                        <h6>Mute</h6>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="call-options__iconbox"><i class="mdi mdi-volume-high"></i></div>
+                                        <h6>Speaker</h6>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="call-options__iconbox"><i class="mdi mdi-pause"></i></div>
+                                        <h6>Hold</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="call-actions">
+                                <div class="call-hangup" data-dismiss="modal"><i class="mdi mdi-phone-hangup"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- main wrapper end -->
+    <script>
+        let cameraStream
+        let screenStream
+        const camera = document.querySelector('#camera')
+
+        const stop = document.querySelector('#stop')
+        const video = document.querySelector('#video')
+
+        function stopAllStream() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => {
+                    track.stop()
+                })
+                cameraStream = null
+            }
+        }
+        const isPortrait = true;
+        // const constraints = { audio: true, video: true };
+        const constraints = {
+            audio: true,
+            video: {
+                width: {
+                    min: 1024,
+                    ideal: 1280,
+                    max: 1920
+                },
+                height: {
+                    min: 576,
+                    ideal: 720,
+                    max: 1080
+                }
+            }
+        }
+        camera.addEventListener('click', () => {
+            navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+                stopAllStream()
+                cameraStream = stream
+                video.srcObject = stream
+                video.play()
+            })
+        })
+
+
+
+        stop.addEventListener('click', stopAllStream);
+    </script>
+    <script>
+        adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', function(sharedData, socket, $scope, $http) {
+            var Admin = this;
+
+            //Camera
+            Admin.Camera = function() {
+                navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+                    stopAllStream()
+                    cameraStream = stream
+                    video.srcObject = stream
+                    video.play()
+                })
+            }
+
+            Admin.CameraStop = function() {
+                stopAllStream()
+            }
+            //RecordBlob
+            Admin.RecordBlob = function() {
+
+                if (!cameraStream && !screenStream) return
+                const currentStream = cameraStream || screenStream
+                const options = {
+                    audioBitsPerSecond: 128000,
+                    videoBitsPerSecond: 2500000,
+                    mimeType: 'video/webm'
+                }
+                const mediaRecorder = new MediaRecorder(currentStream, options)
+                videoMediaRecorder = mediaRecorder
+                mediaRecorder.addEventListener('dataavailable', e => {
+                    const blob = new Blob([e.data], {
+                        type: 'video/webm'
+                    })
+
+                    var formData = new FormData();
+                    formData.append('file', blob);
+                    var request = $http({
+                        method: 'POST',
+                        url: 'https://swoole.bestaup.com/Uploads/webm',
+                        data: formData,
+                        headers: {
+                            'Content-Type': undefined
+                        },
+                    }).then(function successCallback(response) {
+                        var data = response.data;
+                        console.info(data);
+                    }, function errorCallback(response) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+
+                    });
+
+
+                    const downloadLink = document.createElement('a')
+                    downloadLink.href = window.URL.createObjectURL(blob)
+                    downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
+                    downloadLink.click()
+                })
+                mediaRecorder.start()
+
+            }
+
+            Admin.RecordStopBlob = function() {
+                if (!videoMediaRecorder) return
+                videoMediaRecorder.stop()
+            }
+            //stream
+            Admin.StreamPlay = function() {
+                const StreamLoad = document.getElementById('StreamLoad');
+                const flvPlayer = flvjs.createPlayer({
+                    type: 'flv',
+                    url: 'https://adonis.tw:8443/live/mark.flv'
+                });
+                flvPlayer.attachMediaElement(StreamLoad)
+                flvPlayer.load();
+                flvPlayer.play();
+            }
+            Admin.StreamLoad = function() {
+                if (flvjs.isSupported()) {
+                    var request = $http({
+                        method: "get",
+                        url: "https://adonis.tw/stream.php"
+                    }).then(function successCallback(response) {
+
+                    }, function errorCallback(response) {
+                        console.info(response);
+
+                    });
+
+                }
+            }
+
+
+
+            //chatbox
+            Admin.Msg = {};
+            Admin.getMessage = [];
+            socket.onmessage(function(event) {
+                var data = JSON.parse(event.data);
+                console.info(data);
+                Admin.getMessage.push(data);
+                $scope.$apply();
+            });
+            Admin.SendMsg = function() {
+                console.info(Admin.Msg);
+                socket.send(Admin.Msg);
+            }
+            if (location.pathname == "/logout") location.href = '';
+
+            Admin.updateMessage = function(message) {
+                Admin.Login(message)
+            }
+            Admin.ReDirect = function(ReDirect) {
+                sharedData.ReDirect(ReDirect);
+            }
+            Admin.Logout = function() {
+                sharedData.Logout(ReDirect);
+            }
+            Admin.Users = function() {
+                var Users = {
+                    "UniqueID": "",
+                }
+                var data = {
+                    'UniqueID': '',
+                    'Action': 'Users',
+                    'Data': JSON.stringify(Users),
+                }
+                var promise = sharedData.List(data);
+
+                promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+                    Admin.Users_List = data.List;
+                    Admin.UsersPages = data.Pages;
+                }, function(data) { // 處理錯誤 .reject  
+                    console.info(data);
+                });
+
+            };
+            Admin.Users();
+
+
+
+        }]);
+    </script>
+    <!-- Javascripts Files -->
+    <script src="chatbox/dist/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="chatbox/dist/js/popper.min.js"></script>
+    <script src="chatbox/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src=""></script>
+    <script src="chatbox/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="chatbox/assets/vendors/material-floating-button/dist/mfb.min.js"></script>
+    <script src="chatbox/dist/js/main.min.js"></script>
+</body>
+
+</html>

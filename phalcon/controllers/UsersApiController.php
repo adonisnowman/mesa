@@ -247,8 +247,30 @@ class UsersApiController extends BaseController
         } else {
             //預設登入後頁面 List_bargain
             $_SESSION[Tools::getIp()]['History'] = "UserSign";
-            $_SESSION[Tools::getIp()]['ReDirect'] = "Input_checkKeysRule";
+            $_SESSION[Tools::getIp()]['ReDirect'] = "UserList";
         }
+
+        return $Return;
+    }
+
+    //顯示會員列表
+
+    public function Users()
+    {
+
+        $TableName = __FUNCTION__;
+
+        if (!empty(self::$PostData['Search'])) {
+            $SelectKeys = ["Controller", "Action", "HTTP_HOST", "REMOTE_ADDR"];
+            $Select = Models::SelectLike($SelectKeys, self::$PostData['Search']);
+        } else $Select = "";
+        self::$Pages = Tools::Pages(self::$Pages, $TableName::count());
+        $Select = Models::DefultSelect(self::$Pages, $Select);
+
+
+        $Return = [];
+        $Return[$TableName] = _Api::$TableName($TableName::find($Select));
+
 
         return $Return;
     }
