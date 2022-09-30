@@ -56,7 +56,8 @@ public function LogoutAction()
         else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
         else $Return['ReDirect'] = "UserSign";
 
-
+        var_dump($_SERVER['SERVER_NAME']);
+        exit;
 
 
 
