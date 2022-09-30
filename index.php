@@ -31,7 +31,7 @@ $dir = "/{$dirname}/";
 if (!defined('ROOT_PATH') ) 
 {
 	// define('ROOT_PATH', "/var/www" . $dir);
-	define('ROOT_PATH', "/home/cfd888/public_html/swoole.bestaup.com" . $dir);
+	define('ROOT_PATH', "/home/cfd888/public_html" . $dir);
 
 	
 }
