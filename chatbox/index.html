@@ -1780,7 +1780,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
             let cameraStream
             let screenStream
             const camera = document.querySelector('#camera')
-            const screen = document.querySelector('#screen')
+            
             const stop = document.querySelector('#stop')
             const video = document.querySelector('#video')
 
@@ -1790,13 +1790,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                               track.stop()
                         })
                         cameraStream = null
-                  }
-                  if (screenStream) {
-                        screenStream.getTracks().forEach(track => {
-                              track.stop()
-                        })
-                        screenStream = null
-                  }
+                  }                 
             }
             const isPortrait = true;
             // const constraints = { audio: true, video: true };
@@ -1815,99 +1809,11 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                   })
             })
 
-            screen.addEventListener('click', () => {
-                  navigator.mediaDevices.getDisplayMedia(constraints).then(stream => {
-                        stopAllStream()
-                        screenStream = stream
-                        video.srcObject = stream
-                        video.play()
-                  })
-            })
+            
 
             stop.addEventListener('click', stopAllStream);
-            let screenshotBlobUrl
-            const screenshot = document.querySelector('#screenshot')
-            const screenshotDownload = document.querySelector('#screenshot-download')
-            const img = document.querySelector('#img')
-            const canvas = document.querySelector('#canvas')
-            const ctx = canvas.getContext('2d')
-
-            screenshot.addEventListener('click', () => {
-                  if (!cameraStream && !screenStream) return
-                  const width = video.offsetWidth
-                  const height = video.offsetHeight
-                  canvas.width = width
-                  canvas.height = height
-                  ctx.drawImage(video, 0, 0, width, height)
-                  canvas.toBlob(blob => {
-                        screenshotBlobUrl = window.URL.createObjectURL(blob)
-                        img.src = screenshotBlobUrl
-                  })
-            })
-
-            screenshotDownload.addEventListener('click', () => {
-                  if (!screenshotBlobUrl) return
-                  const downloadLink = document.createElement('a')
-                  downloadLink.href = screenshotBlobUrl
-                  downloadLink.download = 'fileName'
-                  downloadLink.click()
-            })
-
-            let videoMediaRecorder
-            let recordingMediaRecorder
-            const videoStart = document.querySelector('#video-start')
-            const videoDownload = document.querySelector('#video-download')
-            const recordingStart = document.querySelector('#recording-start')
-            const recordingDownload = document.querySelector('#recording-download')
-
-            videoStart.addEventListener('click', () => {
-                  if (!cameraStream && !screenStream) return
-                  const currentStream = cameraStream || screenStream
-                  const options = {
-                        audioBitsPerSecond: 128000,
-                        videoBitsPerSecond: 2500000,
-                        mimeType: 'video/webm'
-                  }
-                  const mediaRecorder = new MediaRecorder(currentStream, options)
-                  videoMediaRecorder = mediaRecorder
-                  mediaRecorder.addEventListener('dataavailable', e => {
-                        const blob = new Blob([e.data], { type: 'video/webm' })
-                        const downloadLink = document.createElement('a')
-                        downloadLink.href = window.URL.createObjectURL(blob)
-                        downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
-                        downloadLink.click()
-                  })
-                  mediaRecorder.start()
-            })
-
-            videoDownload.addEventListener('click', () => {
-                  if (!videoMediaRecorder) return
-                  videoMediaRecorder.stop()
-            })
-
-            recordingStart.addEventListener('click', () => {
-                  if (!cameraStream && !screenStream) return
-                  const currentStream = cameraStream || screenStream
-                  const optionsrecording = {
-                        audioBitsPerSecond: 128000,
-                        mimeType: 'audio/webm'
-                  }
-                  const mediaRecorder = new MediaRecorder(currentStream, optionsrecording)
-                  recordingMediaRecorder = mediaRecorder
-                  mediaRecorder.addEventListener('dataavailable', e => {
-                        const blob = new Blob([e.data], { type: 'audio/webm' })
-                        const downloadLink = document.createElement('a')
-                        downloadLink.href = window.URL.createObjectURL(blob)
-                        downloadLink.download = 'recordingName'
-                        downloadLink.click()
-                  })
-                  mediaRecorder.start()
-            })
-
-            recordingDownload.addEventListener('click', () => {
-                  if (!recordingMediaRecorder) return
-                  recordingMediaRecorder.stop()
-            })
+           
+            
       </script>
        <script>
         adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', function (sharedData, socket, $scope, $http) {

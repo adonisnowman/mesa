@@ -38,7 +38,7 @@ class UploadsController extends BaseController
                 var_dump($out);
                 exec(" ffmpeg -re -i $Mp4File -c copy -f flv  -flvflags no_duration_filesize rtmp://adonis.tw/live/{$id} 2>&1", $out);
                 var_dump($out);
-            }
+            }ELSE var_dump($out);
         
     }
 
