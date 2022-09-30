@@ -10,7 +10,7 @@ class _UniqueID
     {
         
     }
-    public function shortUniqueID(){
+    public static function shortUniqueID(){
         //加入隨機資料ID
         $Encryptionkey = self::$Encryptionkey;
         $microtime =(int)  round(((float)microtime(true)));
