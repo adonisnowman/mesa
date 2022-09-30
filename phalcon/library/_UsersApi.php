@@ -13,6 +13,12 @@ class _UsersApi
             foreach($Ojbects AS $Object){
                 $Item = $Object->toArray();
                 $Item['offshelf'] = (!empty($Item['offshelf']));
+
+
+                $files = Tools::getFileList("vidoe","[a-zA-Z0-9]+.");
+                var_dump($files);
+
+
                 $Return[] = $Item;
             }            
         }
