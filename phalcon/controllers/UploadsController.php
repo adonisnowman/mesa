@@ -1,6 +1,5 @@
 <?php
 
-use Phalcon\Http\Response;
 
 class UploadsController extends BaseController
 {
@@ -23,10 +22,15 @@ class UploadsController extends BaseController
     // }
     public function webmAction()
     {
-	if (empty($_SESSION[Tools::getIp()]['Users'])) exit;
-        else var_dump($_SESSION[Tools::getIp()]['Users']);
+        if (empty($_SESSION[Tools::getIp()]['Users'])) exit;
+        else $VideoDir = "video/".$_SESSION[Tools::getIp()]['Users']['UniqueID'];
+        if(file_exists($VideoDir) == false){
+            mkdir($VideoDir);
+            chmod($VideoDir, 0777);
+        }
         $id =  _UniqueID::shortUniqueID();
-        $Mp4File = "video/{$id}.mp4";
+        $Mp4File = $VideoDir."/{$id}.mp4";
+        $GifFile = $VideoDir."/{$id}.gif";
        
             echo $exec = " ffmpeg -i {$_FILES['file']['tmp_name']} -y $Mp4File 2>&1 ";
             if (exec($exec, $out)) {
@@ -34,7 +38,7 @@ class UploadsController extends BaseController
                 if (file_exists($Mp4File) == false) exit;
                 exec(" sudo chmod 777 {$Mp4File} ", $out);
                 var_dump($out);
-                exec(" ffmpeg -i {$Mp4File} -pix_fmt rgb24 -r 4 video/{$id}.gif 2>&1", $out);
+                exec(" ffmpeg -i {$Mp4File} -pix_fmt rgb24 -r 4 {$GifFile} 2>&1", $out);
                 var_dump($out);
                 exec(" ffmpeg -re -i $Mp4File -c copy -f flv  -flvflags no_duration_filesize rtmp://adonis.tw/live/{$id} 2>&1", $out);
                 var_dump($out);
@@ -44,3 +48,4 @@ class UploadsController extends BaseController
 
     
 }
+
