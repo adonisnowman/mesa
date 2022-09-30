@@ -48,12 +48,12 @@ public function LogoutAction()
         //預設模板讀取
         $Return = _Views::Init();
         if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
-
+        else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
         else $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);
 
-        if (!empty($_SESSION[Tools::getIp()]['ReDirect']))
-            $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
+        if (!empty($_SESSION[Tools::getIp()]['ReDirect']))  $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
         else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['ReDirect'] = "sign-in";
+        else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
         else $Return['ReDirect'] = "UserSign";
 
 
