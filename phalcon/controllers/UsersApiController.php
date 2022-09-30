@@ -269,7 +269,7 @@ class UsersApiController extends BaseController
 
 
         $Return = [];
-        $Return[$TableName] = _Api::$TableName($TableName::find($Select));
+        $Return[$TableName] = _UsersApi::$TableName($TableName::find($Select));
 
 
         return $Return;
