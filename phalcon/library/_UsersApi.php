@@ -15,8 +15,8 @@ class _UsersApi
                 $Item['offshelf'] = (!empty($Item['offshelf']));
 
 
-                $files = Tools::getFileList("/home/cfd888/public_html/swoole.bestaup.com/video","[a-zA-Z0-9]+\.gif");
-                var_dump($files);
+                $Item['videos'] = Tools::getFileList("/home/cfd888/public_html/swoole.bestaup.com/video","[a-zA-Z0-9]+\.gif");
+                
 
 
                 $Return[] = $Item;
