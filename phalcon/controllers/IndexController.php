@@ -53,12 +53,10 @@ public function LogoutAction()
 
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))  $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
         else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['ReDirect'] = "sign-in";
-        else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
+        else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
         else $Return['ReDirect'] = "UserSign";
 
-        var_dump($_SERVER['SERVER_NAME']);
-        exit;
-
+       
 
 
         //預設 新增修改 模板讀取
