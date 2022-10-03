@@ -247,7 +247,7 @@ class UsersApiController extends BaseController
         } else {
             //預設登入後頁面 List_bargain
             $_SESSION[Tools::getIp()]['History'] = "UserSign";
-            $_SESSION[Tools::getIp()]['ReDirect'] = "UserList";
+            $_SESSION[Tools::getIp()]['ReDirect'] = "UserInfo";
         }
 
         return $Return;
