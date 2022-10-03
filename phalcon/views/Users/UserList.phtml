@@ -35,7 +35,7 @@
         adonis.factory('socket', [function() {
             var stack = [];
             var onmessageDefer;
-            var websocket_url = 'wss://adonis.tw:9501';
+            var websocket_url = 'wss://swoole.bestaup.com:9509';
             var socket = {
                 ws: new WebSocket(websocket_url),
                 send: function(data) {

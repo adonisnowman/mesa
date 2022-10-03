@@ -15,8 +15,11 @@ class _UsersApi
                 $Item['offshelf'] = (!empty($Item['offshelf']));
 
 
-                $Item['videos'] = Tools::getFileList("/home/cfd888/public_html/swoole.bestaup.com/video","[a-zA-Z0-9]+\.gif");
-                
+                $Item['videos'] = Tools::getFileList("/home/cfd888/public_html/swoole.bestaup.com/video/".$Item['UniqueID'],"[a-zA-Z0-9]+\.gif");
+                if(!empty($Item['videos']))
+                foreach($Item['videos'] AS &$video){
+                    $video = $Item['UniqueID']."/".$video;
+                }
 
 
                 $Return[] = $Item;
@@ -27,3 +30,4 @@ class _UsersApi
 
     
 }
+
