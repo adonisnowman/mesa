@@ -1265,16 +1265,6 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
 
             //Camera
             Admin.CameraType = false;
-            Admin.Camera = function() {
-                if(!$window.navigator.mediaDevices.getUserMedia(constraints)) console.info("error Camera");
-                $window.navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-                    stopAllStream()
-                    Admin.cameraStream = stream
-                    video.srcObject = stream
-                    video.play()
-                })
-            }
-
             Admin.CameraStop = function() {
                 if (Admin.cameraStream) {
                     Admin.cameraStream.getTracks().forEach(track => {
@@ -1283,6 +1273,17 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                     Admin.cameraStream = null
                 }
             }
+            Admin.Camera = function() {
+                if(!$window.navigator.mediaDevices.getUserMedia(constraints)) console.info("error Camera");
+                $window.navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+                    Admin.CameraStop();
+                    Admin.cameraStream = stream
+                    video.srcObject = stream
+                    video.play()
+                })
+            }
+
+           
             //RecordBlob
             Admin.RecordBlob = function() {
 
