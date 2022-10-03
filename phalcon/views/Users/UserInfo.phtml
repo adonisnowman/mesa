@@ -50,10 +50,9 @@
     <script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
 
     <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-file-upload/2.5.0/angular-file-upload.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
     <script>
-        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx','angularFileUpload']);
+        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
         adonis.factory('socket', [function() {
             var stack = [];
             var onmessageDefer;
@@ -391,61 +390,13 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div class="container" style="padding:10px 10px;">	
-        <div class="well col-sm-10">    	
-		<form>
-			<div class="form-group">
-				<input type="file" nv-file-select="" class="file" data-msg-placeholder="Select File for upload..." uploader="uploader" /> 					
-			</div>
-		</form>
-	</div>
-	<div class="well col-sm-10">  
-		<div class="col-md-12" style="margin-bottom: 40px">
-
-			<h3>Upload queue</h3>
-			<p>Queue length: {{ uploader.queue.length }}</p>
-
-			<table class="table">
-				<thead>
-					<tr>
-						<th width="50%">Name</th>
-						<th ng-show="uploader.isHTML5">Size</th>
-						<th ng-show="uploader.isHTML5">Progress</th>
-						<th>Status</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="item in uploader.queue">
-						<td><strong>{{ item.file.name }}</strong></td>
-						<td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-						<td ng-show="uploader.isHTML5">
-							<div class="progress" style="margin-bottom: 0;">
-								<div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
-							</div>
-						</td>
-						<td class="text-center">
-							<span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-							<span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-							<span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-						</td>
-						<td nowrap>
-							<button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-								<span class="glyphicon glyphicon-upload"></span> Upload
-							</button>
-							<button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-								<span class="glyphicon glyphicon-ban-circle"></span> Cancel
-							</button>
-							<button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
-								<span class="glyphicon glyphicon-trash"></span> Remove
-							</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-
-	</div>
+                                    <div class="dropzone" file-dropzone="[image/png, image/jpeg, image/gif]" file="image" file-name="imageFileName" data-max-file-size="3">
+                                        <span>Drop Image Here</span>
+                                    </div>
+                                    <div class="image-container">
+                                        <img ng-src={{image}} />
+                                        <span class="file-name">{{imageFileName}}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div><!-- contact profile wrapper end -->
@@ -542,7 +493,7 @@
         const video = document.querySelector('#video')
     </script>
     <script>
-        adonis.controller('AdminController', ['sharedData','FileUploader', 'socket', '$scope', '$http', '$window', function(sharedData, FileUploader, socket, $scope, $http, $window) {
+        adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', '$window', function(sharedData, socket, $scope, $http, $window) {
             var Admin = this;
             const constraints = {
                 audio: true,
