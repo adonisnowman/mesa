@@ -722,7 +722,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
                                     <div class="conversation__actions">
                                         <div class="action-icon" data-toggle="modal" data-target="#outGoingCall" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-phone"></i>
                                         </div>
-                                        <div class="action-icon" data-toggle="modal" id="camera" data-target="#incomingVideoStart" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-video-outline"></i></div>
+                                        <div class="action-icon" data-toggle="modal" ng-click="Admin.Camera();" data-target="#incomingVideoStart" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-video-outline"></i></div>
                                         <div class="dropdown">
                                             <div class="action-icon" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></div>
                                             <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item info-panel-opener" href="javascript:;"><span><i class="mdi mdi-information-outline"></i></span><span>View
@@ -1287,12 +1287,11 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
     <script>
         adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', function(sharedData, socket, $scope, $http) {
             var Admin = this;
-
             //Camera
             Admin.Camera = function() {
                 navigator.mediaDevices.getUserMedia(constraints).then(stream => {
                     stopAllStream()
-                    cameraStream = stream
+                    Admin.cameraStream = stream
                     video.srcObject = stream
                     video.play()
                 })
@@ -1304,8 +1303,8 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
             //RecordBlob
             Admin.RecordBlob = function() {
 
-                if (!cameraStream && !screenStream) return
-                const currentStream = cameraStream || screenStream
+                if (!Admin.cameraStream && !screenStream) return
+                const currentStream = Admin.cameraStream || screenStream
                 const options = {
                     audioBitsPerSecond: 128000,
                     videoBitsPerSecond: 2500000,
