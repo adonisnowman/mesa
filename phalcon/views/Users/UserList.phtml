@@ -1289,6 +1289,7 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
             var Admin = this;
             //Camera
             Admin.Camera = function() {
+                console.info(123);
                 navigator.mediaDevices.getUserMedia(constraints).then(stream => {
                     stopAllStream()
                     Admin.cameraStream = stream
@@ -1298,7 +1299,12 @@ box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.2
             }
 
             Admin.CameraStop = function() {
-                stopAllStream()
+                if (Admin.cameraStream) {
+                    Admin.cameraStream.getTracks().forEach(track => {
+                    track.stop()
+                })
+                Admin.cameraStream = null
+            }
             }
             //RecordBlob
             Admin.RecordBlob = function() {
