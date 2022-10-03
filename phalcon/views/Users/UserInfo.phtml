@@ -52,98 +52,7 @@
     <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
     <script>
-        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
-        adonis.directive('fileDropzone', function() {
-                return {
-                    restrict: 'A',
-                    scope: {
-                        file: '=',
-                        fileName: '='
-                    },
-                    link: function(scope, element, attrs) {
-                        var checkSize,
-                            isTypeValid,
-                            processDragOverOrEnter,
-                            validMimeTypes;
-
-                        processDragOverOrEnter = function(event) {
-                            if (event != null) {
-                                event.preventDefault();
-                            }
-                            event.dataTransfer.effectAllowed = 'copy';
-                            return false;
-                        };
-
-                        validMimeTypes = attrs.fileDropzone;
-
-                        checkSize = function(size) {
-                            var _ref;
-                            if (((_ref = attrs.maxFileSize) === (void 0) || _ref === '') || (size / 1024) / 1024 < attrs.maxFileSize) {
-                                return true;
-                            } else {
-                                alert("File must be smaller than " + attrs.maxFileSize + " MB");
-                                return false;
-                            }
-                        };
-
-                        isTypeValid = function(type) {
-                            if ((validMimeTypes === (void 0) || validMimeTypes === '') || validMimeTypes.indexOf(type) > -1) {
-                                return true;
-                            } else {
-                                alert("Invalid file type.  File must be one of following types " + validMimeTypes);
-                                return false;
-                            }
-                        };
-
-                        element.bind('dragover', processDragOverOrEnter);
-                        element.bind('dragenter', processDragOverOrEnter);
-
-                        return element.bind('drop', function(event) {
-                            var file, name, reader, size, type;
-                            if (event != null) {
-                                event.preventDefault();
-                            }
-                            reader = new FileReader();
-                            reader.onload = function(evt) {
-                                if (checkSize(size) && isTypeValid(type)) {
-                                    return scope.$apply(function() {
-                                        scope.file = evt.target.result;
-                                        if (angular.isString(scope.fileName)) {
-                                            return scope.fileName = name;
-                                        }
-                                    });
-                                }
-                            };
-                            file = event.dataTransfer.files[0];
-                            name = file.name;
-                            type = file.type;
-                            size = file.size;
-                            reader.readAsDataURL(file);
-                            return false;
-                        });
-                    }
-                };
-            })
-
-
-            .directive("fileread", [function() {
-                return {
-                    scope: {
-                        fileread: "="
-                    },
-                    link: function(scope, element, attributes) {
-                        element.bind("change", function(changeEvent) {
-                            var reader = new FileReader();
-                            reader.onload = function(loadEvent) {
-                                scope.$apply(function() {
-                                    scope.fileread = loadEvent.target.result;
-                                });
-                            }
-                            reader.readAsDataURL(changeEvent.target.files[0]);
-                        });
-                    }
-                }
-            }]);
+        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx','angularFileUpload']);
         adonis.factory('socket', [function() {
             var stack = [];
             var onmessageDefer;
@@ -481,13 +390,61 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div class="dropzone" file-dropzone="[image/png, image/jpeg, image/gif]" file="image" file-name="Admin.imageFileName" data-max-file-size="3">
-                                        <span>Drop Image Here</span>
-                                    </div>
-                                    <div class="image-container">
-                                        <img ng-src={{Admin.image}} />
-                                        <span class="file-name">{{Admin.imageFileName}}</span>
-                                    </div>
+                                    <div class="container" style="padding:10px 10px;">	
+        <div class="well col-sm-10">    	
+		<form>
+			<div class="form-group">
+				<input type="file" nv-file-select="" class="file" data-msg-placeholder="Select File for upload..." uploader="uploader" /> 					
+			</div>
+		</form>
+	</div>
+	<div class="well col-sm-10">  
+		<div class="col-md-12" style="margin-bottom: 40px">
+
+			<h3>Upload queue</h3>
+			<p>Queue length: {{ uploader.queue.length }}</p>
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th width="50%">Name</th>
+						<th ng-show="uploader.isHTML5">Size</th>
+						<th ng-show="uploader.isHTML5">Progress</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="item in uploader.queue">
+						<td><strong>{{ item.file.name }}</strong></td>
+						<td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+						<td ng-show="uploader.isHTML5">
+							<div class="progress" style="margin-bottom: 0;">
+								<div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+							</div>
+						</td>
+						<td class="text-center">
+							<span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+							<span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+							<span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+						</td>
+						<td nowrap>
+							<button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+								<span class="glyphicon glyphicon-upload"></span> Upload
+							</button>
+							<button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+								<span class="glyphicon glyphicon-ban-circle"></span> Cancel
+							</button>
+							<button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+								<span class="glyphicon glyphicon-trash"></span> Remove
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+	</div>
                                 </div>
                             </div>
                         </div><!-- contact profile wrapper end -->
@@ -496,86 +453,86 @@
 
                     <!-- conversation wrapper start -->
 
-                </div>
-            </div><!-- main content end -->
-        </div><!-- VIDEO CALL START-->
-        <div class="modal fade videocall-modal CallDialogFullscreen-sm" id="incomingVideoStart" tabindex="-1" role="dialog" aria-labelledby="incomingVideoStart" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="icvideocallwrapper">
-
-                            <div class="icvideo-contact"><video id="video" playsinline style="width:100%"></video>
-                                <img id="img" style="width:100%">
-                                <canvas id="canvas" style="display: none;width:100%"></canvas>
-                            </div>
-                            <div class="icvideo-user"><img src="chatbox/assets/images/user/150/01.jpg" alt="">
-                            </div>
-                            <div class="icvideo-actions">
-                                <div class="icvideo-actions__left">
-                                    <div class="icvideo-actions__left--duration">00:36</div>
-                                </div>
-                                <div class="icvideo-actions__middle">
-                                    <div class="">
-                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Speaker"><i class="iconbox__icon mdi mdi-volume-high"></i>
-                                        </div>
-                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Hold"><i class="iconbox__icon mdi mdi-pause"></i></div>
-                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Add Call"><i class="iconbox__icon mdi mdi-phone-plus"></i>
-                                        </div>
-
-                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" ng-click="Admin.CameraStop()" data-placement="top" title="Disbale Video">
-                                            <i class="iconbox__icon mdi mdi-video-off-outline"></i>
-                                        </div>
-                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Mute"><i class="iconbox__icon mdi mdi-microphone-off"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="icvideo-actions__right">
-                                    <div class="iconbox btn-hovered-light bg-danger" ng-click="Admin.CameraStop();" data-dismiss="modal" data-toggle="tooltip" data-placement="top" title="Hangup"><i class="iconbox__icon text-white mdi mdi-phone-hangup"></i>
-                                    </div>
-                                </div>
-                                <button id="RecordBlob" ng-click="Admin.RecordBlob()">RecordBlob</button>
-                                <button id="RecordStopBlob" ng-click="Admin.RecordStopBlob()">RecordStopBlob</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div><!-- OUTGOING VOICE CALL -->
-        <div class="modal CallDialogFullscreen-sm" id="outGoingCall" tabindex="-1" role="dialog" aria-labelledby="outGoingCall" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="text-center">
-                            <div class="user-avatar user-avatar-rounded user-avatar-xl"><img src="chatbox/assets/images/user/80/01.jpg" alt=""></div>
-                            <div class="userprofile-name"><span>Calling...</span>
-                                <h4>Jack P. Angulo</h4><span>Product Manager</span>
-                                <div class="call-duration">00:36</div>
+        </div><!-- main content end -->
+    </div><!-- VIDEO CALL START-->
+    <div class="modal fade videocall-modal CallDialogFullscreen-sm" id="incomingVideoStart" tabindex="-1" role="dialog" aria-labelledby="incomingVideoStart" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="icvideocallwrapper">
+
+                        <div class="icvideo-contact"><video id="video" playsinline style="width:100%"></video>
+                            <img id="img" style="width:100%">
+                            <canvas id="canvas" style="display: none;width:100%"></canvas>
+                        </div>
+                        <div class="icvideo-user"><img src="chatbox/assets/images/user/150/01.jpg" alt="">
+                        </div>
+                        <div class="icvideo-actions">
+                            <div class="icvideo-actions__left">
+                                <div class="icvideo-actions__left--duration">00:36</div>
                             </div>
-                            <div class="call-options">
-                                <div class="row">
-                                    <div class="col-4">
-                                        <div class="call-options__iconbox"><i class="mdi mdi-microphone-off"></i></div>
-                                        <h6>Mute</h6>
+                            <div class="icvideo-actions__middle">
+                                <div class="">
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Speaker"><i class="iconbox__icon mdi mdi-volume-high"></i>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="call-options__iconbox"><i class="mdi mdi-volume-high"></i></div>
-                                        <h6>Speaker</h6>
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Hold"><i class="iconbox__icon mdi mdi-pause"></i></div>
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Add Call"><i class="iconbox__icon mdi mdi-phone-plus"></i>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="call-options__iconbox"><i class="mdi mdi-pause"></i></div>
-                                        <h6>Hold</h6>
+
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" ng-click="Admin.CameraStop()" data-placement="top" title="Disbale Video">
+                                        <i class="iconbox__icon mdi mdi-video-off-outline"></i>
+                                    </div>
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Mute"><i class="iconbox__icon mdi mdi-microphone-off"></i>
                                     </div>
                                 </div>
                             </div>
-                            <div class="call-actions">
-                                <div class="call-hangup" data-dismiss="modal"><i class="mdi mdi-phone-hangup"></i></div>
+                            <div class="icvideo-actions__right">
+                                <div class="iconbox btn-hovered-light bg-danger" ng-click="Admin.CameraStop();" data-dismiss="modal" data-toggle="tooltip" data-placement="top" title="Hangup"><i class="iconbox__icon text-white mdi mdi-phone-hangup"></i>
+                                </div>
                             </div>
+                            <button id="RecordBlob" ng-click="Admin.RecordBlob()">RecordBlob</button>
+                            <button id="RecordStopBlob" ng-click="Admin.RecordStopBlob()">RecordStopBlob</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div><!-- OUTGOING VOICE CALL -->
+    <div class="modal CallDialogFullscreen-sm" id="outGoingCall" tabindex="-1" role="dialog" aria-labelledby="outGoingCall" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="user-avatar user-avatar-rounded user-avatar-xl"><img src="chatbox/assets/images/user/80/01.jpg" alt=""></div>
+                        <div class="userprofile-name"><span>Calling...</span>
+                            <h4>Jack P. Angulo</h4><span>Product Manager</span>
+                            <div class="call-duration">00:36</div>
+                        </div>
+                        <div class="call-options">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="call-options__iconbox"><i class="mdi mdi-microphone-off"></i></div>
+                                    <h6>Mute</h6>
+                                </div>
+                                <div class="col-4">
+                                    <div class="call-options__iconbox"><i class="mdi mdi-volume-high"></i></div>
+                                    <h6>Speaker</h6>
+                                </div>
+                                <div class="col-4">
+                                    <div class="call-options__iconbox"><i class="mdi mdi-pause"></i></div>
+                                    <h6>Hold</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="call-actions">
+                            <div class="call-hangup" data-dismiss="modal"><i class="mdi mdi-phone-hangup"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div><!-- main wrapper end -->
     <script>
         const camera = document.querySelector('#camera')
@@ -584,7 +541,7 @@
         const video = document.querySelector('#video')
     </script>
     <script>
-        adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', '$window', function(sharedData, socket, $scope, $http, $window) {
+        adonis.controller('AdminController', ['sharedData','FileUploader', 'socket', '$scope', '$http', '$window', function(sharedData, FileUploader, socket, $scope, $http, $window) {
             var Admin = this;
             const constraints = {
                 audio: true,
