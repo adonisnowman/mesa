@@ -12,11 +12,11 @@ error_reporting(E_ALL);
 \Swoole\Coroutine\run(
     function () {
         // $server = new Swoole\Coroutine\Http\Server('0.0.0.0', 9501, false);
-       $server = new Swoole\Coroutine\Http\Server('adonis.tw', 9509, true);
+       $server = new Swoole\Coroutine\Http\Server('swoole.bestaup.com', 9509, true);
        $server->set(
            [
-               'ssl_key_file' => '/opt/local/etc/nginx/ssl/private.key',
-               'ssl_cert_file' => '/opt/local/etc/nginx/ssl/certificate.crt',
+               'ssl_key_file' => '/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem',
+               'ssl_cert_file' => '/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem',
            ]
        );
 
