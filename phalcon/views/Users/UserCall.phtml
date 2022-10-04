@@ -636,7 +636,7 @@
                     }).catch(function(e) {
                         alert(e);
                     });
-                    subscribe(subject);
+                    subscribe(Admin.subject);
                 };
                 Admin.Call.onmessage = function(e) {
                     var package = JSON.parse(e.data);
