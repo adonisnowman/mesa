@@ -563,7 +563,7 @@
             function publish(event, data) {
                 Admin.Call.send(JSON.stringify({
                     cmd: 'publish',
-                    subject: subject,
+                    subject: Admin.subject,
                     event: event,
                     data: data
                 }));
@@ -572,7 +572,7 @@
             function subscribe(subject) {
                 Admin.Call.send(JSON.stringify({
                     cmd: 'subscribe',
-                    subject: subject
+                    subject: Admin.subject
                 }));
             }
 
@@ -589,7 +589,7 @@
                 var answer = 0;
 
                 // 基于订阅，把房间id作为主题
-                var subject = 'private-video-room-' + cid;
+                Admin.subject = 'private-video-room-' + cid;
 
                 // 建立与websocket的连接
                 Admin.Call = new WebSocket(WS_ADDRESS);
