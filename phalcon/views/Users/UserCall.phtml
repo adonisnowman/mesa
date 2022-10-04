@@ -1157,7 +1157,7 @@
             var WS_ADDRESS = 'wss://swoole.bestaup.com:9509';
 
             Admin.wsCall = function(cid) {
-
+                console.info(cid);
                 var answer = 0;
 
                 // 基于订阅，把房间id作为主题
