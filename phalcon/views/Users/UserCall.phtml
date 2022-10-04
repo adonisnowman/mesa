@@ -339,6 +339,7 @@
                                                 <h3>{{item.account}}</h3>
                                                 <h6>{{item.logined_time}}</h6>
                                             </div>
+                                            <div class="action-icon" data-toggle="modal" ng-click="Admin.Camera();" data-target="#incomingVideoStart" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-video-outline"></i></div>
                                         </div>
 
                                         <div class="cards-list">
@@ -990,6 +991,49 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal fade videocall-modal CallDialogFullscreen-sm" id="incomingVideoStart" tabindex="-1" role="dialog" aria-labelledby="incomingVideoStart" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="icvideocallwrapper">
+
+                        <div class="icvideo-contact"><video id="video" playsinline style="width:100%"></video>
+                            <img id="img" style="width:100%">
+                            <canvas id="canvas" style="display: none;width:100%"></canvas>
+                        </div>
+                        <div class="icvideo-user"><img src="chatbox/assets/images/user/150/01.jpg" alt="">
+                        </div>
+                        <div class="icvideo-actions">
+                            <div class="icvideo-actions__left">
+                                <div class="icvideo-actions__left--duration">00:36</div>
+                            </div>
+                            <div class="icvideo-actions__middle">
+                                <div class="">
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Speaker"><i class="iconbox__icon mdi mdi-volume-high"></i>
+                                    </div>
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Hold"><i class="iconbox__icon mdi mdi-pause"></i></div>
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Add Call"><i class="iconbox__icon mdi mdi-phone-plus"></i>
+                                    </div>
+
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" ng-click="Admin.CameraStop()" data-placement="top" title="Disbale Video">
+                                        <i class="iconbox__icon mdi mdi-video-off-outline"></i>
+                                    </div>
+                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Mute"><i class="iconbox__icon mdi mdi-microphone-off"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="icvideo-actions__right">
+                                <div class="iconbox btn-hovered-light bg-danger" ng-click="Admin.CameraStop();" data-dismiss="modal" data-toggle="tooltip" data-placement="top" title="Hangup"><i class="iconbox__icon text-white mdi mdi-phone-hangup"></i>
+                                </div>
+                            </div>
+                            <button id="RecordBlob" ng-click="Admin.RecordBlob()">RecordBlob</button>
+                            <button id="RecordStopBlob" ng-click="Admin.RecordStopBlob()">RecordStopBlob</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div><!-- OUTGOING VOICE CALL -->
     <div class="modal CallDialogFullscreen-sm" id="outGoingCall" tabindex="-1" role="dialog" aria-labelledby="outGoingCall" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -1026,9 +1070,65 @@
         </div>
     </div>
     </div><!-- main wrapper end -->
+    <script type="text/javascript">
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+        const configuration = {
+            iceServers: [{
+                urls: 'stun:stun.l.google.com:19302',
+            }, ]
+        };
+        var pc, localStream;
+
+        function icecandidate(localStream) {
+            pc = new RTCPeerConnection(configuration);
+            pc.onicecandidate = function(event) {
+                if (event.candidate) {
+                    publish('client-candidate', event.candidate);
+                }
+            };
+            try {
+                pc.addStream(localStream);
+            } catch (e) {
+                var tracks = localStream.getTracks();
+                for (var i = 0; i < tracks.length; i++) {
+                    pc.addTrack(tracks[i], localStream);
+                }
+            }
+            pc.onaddstream = function(e) {
+                // $('#remoteVideo').removeClass('hidden');
+                // $('#localVideo').remove();
+                remoteVideo.srcObject = e.stream;
+            };
+        }
+
+        function publish(event, data) {
+            ws.send(JSON.stringify({
+                cmd: 'publish',
+                subject: subject,
+                event: event,
+                data: data
+            }));
+        }
+
+        function subscribe(subject) {
+            ws.send(JSON.stringify({
+                cmd: 'subscribe',
+                subject: subject
+            }));
+        }
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+    </script>
     <script>
         const camera = document.querySelector('#camera')
-
         const stop = document.querySelector('#stop')
         const video = document.querySelector('#video')
     </script>
@@ -1049,6 +1149,126 @@
                         max: 1080
                     }
                 }
+            }
+
+            //Call
+
+            var WS_ADDRESS = 'wss://swoole.bestaup.com:9509';
+
+            Admin.wsCall = function(cid) {
+
+                var answer = 0;
+
+                // 基于订阅，把房间id作为主题
+                var subject = 'private-video-room-' + cid;
+
+                // 建立与websocket的连接
+                Admin.ws = new WebSocket(WS_ADDRESS);
+                console.log(Admin.ws);
+
+                function detectMob() {
+                    const toMatch = [
+                        /Android/i,
+                        /webOS/i,
+                        /iPhone/i,
+                        /iPad/i,
+                        /iPod/i,
+                        /BlackBerry/i,
+                        /Windows Phone/i
+                    ];
+
+                    return toMatch.some((toMatchItem) => {
+                        return navigator.userAgent.match(toMatchItem);
+                    });
+                }
+                ws.onopen = function() {
+                    console.log('ws连接');
+
+                    navigator.mediaDevices.getUserMedia({
+                        audio: true,
+                        video: (detectMob()) ? {
+                            width: {
+                                min: 1024,
+                                ideal: 1280,
+                                max: 1920
+                            },
+                            height: {
+                                min: 576,
+                                ideal: 720,
+                                max: 1080
+                            }
+                        } : true
+                    }).then(function(stream) {
+                        localVideo.srcObject = stream;
+                        localStream = stream;
+                        localVideo.addEventListener('loadedmetadata', function() {
+                            publish('client-call', null)
+                        });
+                    }).catch(function(e) {
+                        alert(e);
+                    });
+                    subscribe(subject);
+                };
+                ws.onmessage = function(e) {
+                    var package = JSON.parse(e.data);
+                    var data = package.data;
+                    switch (package.event) {
+                        case 'client-call':
+                            console.log('call');
+
+                            icecandidate(localStream);
+                            pc.createOffer({
+                                offerToReceiveAudio: 1,
+                                offerToReceiveVideo: 1
+                            }).then(function(desc) {
+                                pc.setLocalDescription(desc).then(
+                                    function() {
+                                        publish('client-offer', pc.localDescription);
+                                    }
+                                ).catch(function(e) {
+                                    alert(e);
+                                });
+                            }).catch(function(e) {
+                                alert(e);
+                            });
+                            break;
+                        case 'client-answer':
+                            console.log('answer');
+
+                            pc.setRemoteDescription(new RTCSessionDescription(data), function() {}, function(e) {
+                                alert(e);
+                            });
+                            break;
+                        case 'client-offer':
+                            console.log('offer');
+
+                            icecandidate(localStream);
+                            pc.setRemoteDescription(new RTCSessionDescription(data), function() {
+                                if (!answer) {
+                                    pc.createAnswer(function(desc) {
+                                        pc.setLocalDescription(desc, function() {
+                                            publish('client-answer', pc.localDescription);
+                                        }, function(e) {
+                                            alert(e);
+                                        });
+                                    }, function(e) {
+                                        alert(e);
+                                    });
+                                    answer = 1;
+                                }
+                            }, function(e) {
+                                alert(e);
+                            });
+                            break;
+                        case 'client-candidate':
+                            console.log('candidate');
+
+                            pc.addIceCandidate(new RTCIceCandidate(data), function() {}, function(e) {
+                                alert(e);
+                            });
+                            break;
+                    }
+                };
             }
 
             //Camera
