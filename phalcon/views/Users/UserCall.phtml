@@ -61,27 +61,27 @@
                 ws: new WebSocket(websocket_url),
                 send: function(data) {
                     data = JSON.stringify(data);
-                    if (socket.Admin.Call.readyState == 1) {
-                        socket.Admin.Call.send(data);
+                    if (socket.ws.readyState == 1) {
+                        socket.ws.send(data);
                     } else {
                         stack.push(data);
                     }
                 },
                 onmessage: function(callback) {
-                    if (socket.Admin.Call.readyState == 1) {
-                        socket.Admin.Call.onmessage = callback;
+                    if (socket.ws.readyState == 1) {
+                        socket.ws.onmessage = callback;
                     } else {
                         onmessageDefer = callback;
                     }
                 }
             };
-            socket.Admin.Call.onopen = function(event) {
+            socket.ws.onopen = function(event) {
                 for (i in stack) {
-                    socket.Admin.Call.send(stack[i]);
+                    socket.ws.send(stack[i]);
                 }
                 stack = [];
                 if (onmessageDefer) {
-                    socket.Admin.Call.onmessage = onmessageDefer;
+                    socket.ws.onmessage = onmessageDefer;
                     onmessageDefer = null;
                 }
             };
@@ -332,7 +332,7 @@
                             <ul class="list-unstyled">
                                 <li class="" ng-repeat=" item in Admin.Users_List ">
                                     <div class="profile">
-                                        <div class="photo"><img src="https://s3-us-west-2.amazonaAdmin.Call.com/s.cdpn.io/764024/profile/profile-512.jpg" />
+                                        <div class="photo"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/764024/profile/profile-512.jpg" />
                                         </div>
                                         <div class="content">
                                             <div class="text">
