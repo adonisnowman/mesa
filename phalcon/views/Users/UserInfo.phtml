@@ -882,7 +882,7 @@
                         headers: {
                             'Content-Type': undefined
                         },
-                    }).then(  function successCallback(response) {
+                    }).then( async function successCallback(response) {
                         var data = response.data;
                         console.info(data);
                         await sharedData.Toast('Marked as video file ', 3000);
@@ -891,7 +891,7 @@
                         // downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
                         // downloadLink.click()
                         
-                    }, function errorCallback(response) {
+                    }, async function errorCallback(response) {
                         // called asynchronously if an error occurs
                         // or server returns response with an error status.
 
