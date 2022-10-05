@@ -10,16 +10,26 @@ class UploadsController extends BaseController
         session_set_cookie_params(0, '/', 'angularjs.adonis.tw');
         session_start();
     }
-    // public function indexAction()
-    // {
-    //     extract($_POST, EXTR_OVERWRITE, '');
+    public function imagesAction()
+    {
+        if (empty($_SESSION[Tools::getIp()]['Users'])) exit;
+        else $ImagesDir = "ImagesDir/".$_SESSION[Tools::getIp()]['Users']['UniqueID'];
+        if(file_exists($ImagesDir) == false){
+            mkdir($ImagesDir);
+            chmod($ImagesDir, 0777);
+        }
+        $id =  _UniqueID::shortUniqueID();
+        $fileName = $ImagesDir."/{$id}.jpg";
+        $postdata = file_get_contents("php://input");
+        $postdata = json_decode($postdata,1);
+        
+       
+       
+        Tools::base64_to_jpeg( $postdata['src'], $fileName );
+        $Return['src'] = $fileName;
 
-    // 	// $Token = Tools::Crypt($_SERVER['REMOTE_ADDR']);
-
-    //     // Tools::Crypt($Token,true);
-    //     if(empty($_SESSION)) $this->signInAction();
-    //     else echo $this->viewAction("admin","index",[]);
-    // }
+        echo json_encode($Return);
+    }
     public function webmAction()
     {
         if (empty($_SESSION[Tools::getIp()]['Users'])) exit;

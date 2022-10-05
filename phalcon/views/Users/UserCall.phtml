@@ -343,7 +343,6 @@
                                         </div>
 
                                         <div class="cards-list">
-
                                             <div class="card" ng-repeat=" videos in item.videos ">
                                                 <div class="card_image"> <img src="" ng-src="video/{{videos}}" />
                                                 </div>
@@ -351,8 +350,6 @@
                                                     <p>Card Title</p>
                                                 </div>
                                             </div>
-
-
                                         </div>
                                     </div>
 
@@ -385,7 +382,7 @@
                         <div class="icvideocallwrapper">
 
                             <div class="icvideo-contact">
-                                <video id="remoteVideo" autoplay style="width:100%"></video>
+                                <video id="remoteVideo" autoplay style="width:100%" playsinline></video>
                             </div>
                             <div class="icvideo-user">
                                 <video id="localVideo" autoplay style="width:200px;height:100px;" muted="true" playsinline></video>

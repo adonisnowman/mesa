@@ -383,13 +383,7 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div class="dropzone" file-dropzone="[image/png, image/jpeg, image/gif]" file="image" file-name="imageFileName" data-max-file-size="3">
-                                        <span>Drop Image Here</span>
-                                    </div>
-                                    <div class="image-container">
-                                        <img ng-src={{image}} />
-                                        <span class="file-name">{{imageFileName}}</span>
-                                    </div>
+                                    <div img-upload method="PUT" url="image/OneDalla" ng-model="Admin.OneDalla"></div>
                                 </div>
                             </div>
                         </div><!-- contact profile wrapper end -->
