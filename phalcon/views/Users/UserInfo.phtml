@@ -886,15 +886,17 @@
                         var data = response.data;
                         console.info(data);
                         sharedData.Toast('Marked as video file Use Stop to Stop record', 3000);
-                        const downloadLink = document.createElement('a')
-                        downloadLink.href = window.URL.createObjectURL(blob)
-                        downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
-                        downloadLink.click()
-                        location.reload();
+                        // const downloadLink = document.createElement('a')
+                        // downloadLink.href = window.URL.createObjectURL(blob)
+                        // downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
+                        // downloadLink.click()
+                        
                     }, function errorCallback(response) {
                         // called asynchronously if an error occurs
                         // or server returns response with an error status.
 
+                    }).then(function(){
+                        location.reload();
                     });
 
 
