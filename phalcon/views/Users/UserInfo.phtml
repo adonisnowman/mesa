@@ -619,7 +619,7 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div img-upload method="PUT" url="Uploads/images" ng-model="Admin.OneDalla"></div>
+                                    <div img-upload method="PUT" url="Uploads/images" ng-model="Admin.UserImages"></div>
                                 </div>
                             </div>
                         </div><!-- contact profile wrapper end -->
@@ -718,6 +718,7 @@
     <script>
         adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', '$window', function(sharedData, socket, $scope, $http, $window) {
             var Admin = this;
+            Admin.UserImages = [];
             const constraints = {
                 audio: true,
                 video: {
