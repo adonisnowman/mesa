@@ -381,6 +381,11 @@
         .chatapp-user-list {
             flex: 0 0 25%;
         }
+
+        .ca-profile-pic img {
+            width: 100%;
+            height: 100%;
+        }
     </style>
     <style>
         .bg-gradient-primary {
@@ -621,7 +626,7 @@
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
                                     <div class="cards-list">
                                         <div class="card" ng-repeat=" item in Admin.UserImages " ng-click="Admin.UserCover(item)">
-                                            <div class="card_image"> <img src="" ng-src="{{item}}"  />
+                                            <div class="card_image"> <img src="" ng-src="{{item}}" />
                                             </div>
                                             <div class="card_title title-white">
                                                 <p>Card Title</p>
