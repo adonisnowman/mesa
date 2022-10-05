@@ -885,18 +885,18 @@
                     }).then( async function successCallback(response) {
                         var data = response.data;
                         console.info(data);
-                        await sharedData.Toast('Marked as video file ', 3000);
+                        sharedData.Toast('Marked as video file ', 3000);
                         // const downloadLink = document.createElement('a')
                         // downloadLink.href = window.URL.createObjectURL(blob)
                         // downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
                         // downloadLink.click()
-                        
+                        await location.reload();
                     }, async function errorCallback(response) {
                         // called asynchronously if an error occurs
                         // or server returns response with an error status.
 
                     }).then(function(){
-                       console.info("reload Html");
+                       
                     });
 
 
