@@ -657,7 +657,7 @@
                                             <div class="ps-list__left--icon"><i class="mdi mdi-account-heart-outline"></i></div>
 
                                             <div class="wrap-input100 validate-input" data-validate="Valid Nick is min lenght > 6">
-                                                <input class="input100" type="text" name="Nick name" minlength="6">
+                                                <input class="input100" type="text" name="Nick name" minlength="6" ng-model="Admin.UserInfo.NickName">
                                                 <span class="focus-input100" data-placeholder="Nick name"></span>
                                             </div>
 
@@ -666,7 +666,7 @@
                                         <li>
                                             <div class="ps-list__left--icon"><i class="mdi mdi-cellphone-android"></i></div>
                                             <div class="wrap-input100 validate-input" data-validate="Valid Mobile is: 0912345678">
-                                                <input class="input100" type="phome" name="Mobile number">
+                                                <input class="input100" type="phome" name="Mobile number" ng-model="Admin.UserInfo.mobile">
                                                 <span class="focus-input100" data-placeholder="Mobile number"></span>
                                             </div>
 
@@ -675,14 +675,13 @@
                                             <div class="ps-list__left--icon"><i class="mdi mdi-email-outline"></i>
                                             </div>
                                             <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
-                                                <input class="input100" type="email" name="Email">
+                                                <input class="input100" type="email" name="Email" ng-model="Admin.UserInfo.email">
                                                 <span class="focus-input100" data-placeholder="Email"></span>
                                             </div>
 
                                         </li>
 
                                     </ul>
-                                    {{Admin.UserInfo}}
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">圖片</div>
                                     <div class="cards-list">
                                         <div class="card" ng-repeat=" item in Admin.UserInfo.Images " ng-click="Admin.UserCover(item)">
@@ -815,6 +814,7 @@
             var Admin = this;
             Admin.profile = "chatbox/assets/images/user/150/01.jpg";
             Admin.UserCoverItem = "background-image: url(chatbox/assets/images/media/08.jpg);";
+            Admin.UserInfo = {};
             Admin.UserImages = [];
             const constraints = {
                 audio: true,
