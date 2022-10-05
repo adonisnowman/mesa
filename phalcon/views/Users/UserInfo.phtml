@@ -382,6 +382,127 @@
             flex: 0 0 25%;
         }
     </style>
+    <style>
+    .bg-gradient-primary {
+        background-image: linear-gradient(195deg, #0b1048 0%, #4e5bb9 100%);
+    }
+
+    .shadow-primary {
+        box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(34 10 143 / 37%) !important;
+    }
+
+    .btn-primary,
+    .btn.bg-gradient-primary {
+        box-shadow: 0 3px 3px 0 rgb(51 30 233 / 15%), 0 3px 1px -2px rgb(30 42 233 / 20%), 0 1px 5px 0 rgb(30 39 233 / 15%);
+    }
+
+    #pie {
+        height: 440px;
+    }
+
+    .clearfix {
+        overflow: auto;
+    }
+
+    .dropzone {
+        position: relative;
+        height: 200px;
+        border: 2px dashed #b3b3b3;
+        border-radius: 4px;
+        background-color: #f3f3f3;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .dropzone .msg {
+        font-size: 20px;
+        font-weight: bold;
+        color: #c3c3c3;
+        padding: 0 10px;
+    }
+
+    input.fileUpload {
+        display: none;
+    }
+
+    .preview {
+        margin: 10px 0;
+        padding: 5px;
+    }
+
+    .previewData img {
+        width: 100px;
+        height: 100px;
+        float: left;
+        margin: 5px;
+    }
+
+    .previewDetails {
+        display: inline-block;
+        float: left;
+        margin: 5px;
+        padding: 8px;
+    }
+
+    .detail {
+        font-family: arial;
+        padding: 5px;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .previewControls {
+        display: inline-block;
+        float: left;
+        margin: 40px 30px;
+    }
+
+    .circle {
+        border: 2px solid #5B93F5;
+        border-radius: 20px;
+        display: inline-block;
+        height: 25px;
+        width: 25px;
+        margin: 5px;
+        cursor: pointer;
+        color: #5B93F5;
+        line-height: initial;
+    }
+
+    .circle.upload:hover {
+        border: 2px solid green;
+    }
+
+    .circle.upload:hover i.fa-check {
+        color: green;
+    }
+
+    .circle.remove:hover {
+        border: 2px solid red;
+    }
+
+    .circle.remove:hover i.fa-close {
+        color: red;
+    }
+
+    .circle i {
+        position: relative;
+        font-size: 14px;
+    }
+
+    .circle i.fa-check {
+        top: 3px;
+        left: 5px;
+    }
+
+    .circle i.fa-close {
+        top: 2px;
+        left: 7px;
+    }
+</style>
 </head>
 
 <body class="default-theme" ng-app="Admin">
@@ -498,7 +619,7 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div img-upload method="PUT" url="image/OneDalla" ng-model="Admin.OneDalla"></div>
+                                    <div img-upload method="PUT" url="Uploads/images" ng-model="Admin.OneDalla"></div>
                                 </div>
                             </div>
                         </div><!-- contact profile wrapper end -->
