@@ -54,120 +54,120 @@
     <script>
         var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
         adonis.directive("imgUpload", function($http, $compile, $parse) {
-        return {
-            restrict: 'AE',
-            require: '?ngModel',
-            scope: {
-                url: "@",
-                method: "@"
-            },
-            template: '<input class="fileUpload" type="file" multiple />' +
-                '<div class="dropzone">' +
-                '<p class="msg">Click or Drag and Drop files to upload</p>' +
-                '</div>' +
-                '<div class="preview clearfix">' +
-                '<div class="previewData clearfix" ng-repeat="data in previewData track by $index">' +
-                '<div class="previewDetails">' +
-                '<div class="detail"><b>Name : </b>{{data.name}}</div>' +
-                '<div class="detail"><b>Type : </b>{{data.type}}</div>' +
-                '<div class="detail"><b>Size : </b> {{data.size}}</div>' +
-                '</div>' +
-                '<div class="previewControls">' +
-                '<span ng-click="upload(data)" class="circle upload">' +
-                '<i class="fa fa-check"></i>' +
-                '</span>' +
-                '<span ng-click="remove(data)" class="circle remove">' +
-                '<i class="fa fa-close"></i>' +
-                '</span>' +
-                '</div>' +
-                '</div>' +
-                '</div>',
-            link: function(scope, elem, attrs, ngModelCtrl) {
-                var formData = new FormData();
-                var model = $parse(attrs.ngModel);
+            return {
+                restrict: 'AE',
+                require: '?ngModel',
+                scope: {
+                    url: "@",
+                    method: "@"
+                },
+                template: '<input class="fileUpload" type="file" multiple />' +
+                    '<div class="dropzone">' +
+                    '<p class="msg">Click or Drag and Drop files to upload</p>' +
+                    '</div>' +
+                    '<div class="preview clearfix">' +
+                    '<div class="previewData clearfix" ng-repeat="data in previewData track by $index">' +
+                    '<div class="previewDetails">' +
+                    '<div class="detail"><b>Name : </b>{{data.name}}</div>' +
+                    '<div class="detail"><b>Type : </b>{{data.type}}</div>' +
+                    '<div class="detail"><b>Size : </b> {{data.size}}</div>' +
+                    '</div>' +
+                    '<div class="previewControls">' +
+                    '<span ng-click="upload(data)" class="circle upload">' +
+                    '<i class="fa fa-check"></i>' +
+                    '</span>' +
+                    '<span ng-click="remove(data)" class="circle remove">' +
+                    '<i class="fa fa-close"></i>' +
+                    '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>',
+                link: function(scope, elem, attrs, ngModelCtrl) {
+                    var formData = new FormData();
+                    var model = $parse(attrs.ngModel);
 
-                scope.previewData = [];
+                    scope.previewData = [];
 
-                function previewFile(file) {
-                    var reader = new FileReader();
-                    var obj = new FormData().append('file', file);
-                    reader.onload = function(data) {
-                        var src = data.target.result;
-                        var size = ((file.size / (1024 * 1024)) > 1) ? (file.size / (1024 * 1024)) + ' mB' : (file.size / 1024) + ' kB';
-                        scope.$apply(function() {
-                            scope.previewData.push({
-                                'name': file.name,
-                                'size': size,
-                                'type': file.type,
-                                'src': src,
-                                'data': obj
+                    function previewFile(file) {
+                        var reader = new FileReader();
+                        var obj = new FormData().append('file', file);
+                        reader.onload = function(data) {
+                            var src = data.target.result;
+                            var size = ((file.size / (1024 * 1024)) > 1) ? (file.size / (1024 * 1024)) + ' mB' : (file.size / 1024) + ' kB';
+                            scope.$apply(function() {
+                                scope.previewData.push({
+                                    'name': file.name,
+                                    'size': size,
+                                    'type': file.type,
+                                    'src': src,
+                                    'data': obj
+                                });
                             });
-                        });
-                        console.log(scope.previewData);
+                            console.log(scope.previewData);
+                        }
+                        reader.readAsDataURL(file);
                     }
-                    reader.readAsDataURL(file);
-                }
 
-                function uploadFile(e, type) {
-                    e.preventDefault();
-                    var files = "";
-                    if (type == "formControl") {
-                        files = e.target.files;
-                    } else if (type === "drop") {
-                        files = e.originalEvent.dataTransfer.files;
-                    }
-                    for (var i = 0; i < files.length; i++) {
-                        var file = files[i];
-                        if (file.type.indexOf("image") !== -1) {
-                            previewFile(file);
-                        } else {
-                            alert(file.name + " is not supported");
+                    function uploadFile(e, type) {
+                        e.preventDefault();
+                        var files = "";
+                        if (type == "formControl") {
+                            files = e.target.files;
+                        } else if (type === "drop") {
+                            files = e.originalEvent.dataTransfer.files;
+                        }
+                        for (var i = 0; i < files.length; i++) {
+                            var file = files[i];
+                            if (file.type.indexOf("image") !== -1) {
+                                previewFile(file);
+                            } else {
+                                alert(file.name + " is not supported");
+                            }
                         }
                     }
-                }
-                elem.find('.fileUpload').bind('change', function(e) {
-                    uploadFile(e, 'formControl');
-                });
-
-                elem.find('.dropzone').bind("click", function(e) {
-                    $compile(elem.find('.fileUpload'))(scope).trigger('click');
-                });
-
-                elem.find('.dropzone').bind("dragover", function(e) {
-                    e.preventDefault();
-                });
-
-                elem.find('.dropzone').bind("drop", function(e) {
-                    uploadFile(e, 'drop');
-                });
-                scope.upload = function(obj) {
-                    obj.Seller = ngModelCtrl.$modelValue;
-                    $http({
-                        method: scope.method,
-                        url: scope.url,
-                        data: obj,
-                        headers: {
-                            'Content-Type': undefined
-                        },
-                        // transformRequest: angular.identity
-                    }).then(function successCallback(response) {
-                        var data = response.data;
-                        console.info(data);
-                        if (data.src) ngModelCtrl.$modelValue.push(data.src)
-
-                    }, function errorCallback(response) {
-                        console.info(response);
-
+                    elem.find('.fileUpload').bind('change', function(e) {
+                        uploadFile(e, 'formControl');
                     });
-                }
 
-                scope.remove = function(data) {
-                    var index = scope.previewData.indexOf(data);
-                    scope.previewData.splice(index, 1);
+                    elem.find('.dropzone').bind("click", function(e) {
+                        $compile(elem.find('.fileUpload'))(scope).trigger('click');
+                    });
+
+                    elem.find('.dropzone').bind("dragover", function(e) {
+                        e.preventDefault();
+                    });
+
+                    elem.find('.dropzone').bind("drop", function(e) {
+                        uploadFile(e, 'drop');
+                    });
+                    scope.upload = function(obj) {
+                        obj.Seller = ngModelCtrl.$modelValue;
+                        $http({
+                            method: scope.method,
+                            url: scope.url,
+                            data: obj,
+                            headers: {
+                                'Content-Type': undefined
+                            },
+                            // transformRequest: angular.identity
+                        }).then(function successCallback(response) {
+                            var data = response.data;
+                            console.info(data);
+                            if (data.src) ngModelCtrl.$modelValue.push(data.src)
+
+                        }, function errorCallback(response) {
+                            console.info(response);
+
+                        });
+                    }
+
+                    scope.remove = function(data) {
+                        var index = scope.previewData.indexOf(data);
+                        scope.previewData.splice(index, 1);
+                    }
                 }
             }
-        }
-    });
+        });
         adonis.factory('socket', [function() {
             var stack = [];
             var onmessageDefer;
@@ -383,126 +383,126 @@
         }
     </style>
     <style>
-    .bg-gradient-primary {
-        background-image: linear-gradient(195deg, #0b1048 0%, #4e5bb9 100%);
-    }
+        .bg-gradient-primary {
+            background-image: linear-gradient(195deg, #0b1048 0%, #4e5bb9 100%);
+        }
 
-    .shadow-primary {
-        box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(34 10 143 / 37%) !important;
-    }
+        .shadow-primary {
+            box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(34 10 143 / 37%) !important;
+        }
 
-    .btn-primary,
-    .btn.bg-gradient-primary {
-        box-shadow: 0 3px 3px 0 rgb(51 30 233 / 15%), 0 3px 1px -2px rgb(30 42 233 / 20%), 0 1px 5px 0 rgb(30 39 233 / 15%);
-    }
+        .btn-primary,
+        .btn.bg-gradient-primary {
+            box-shadow: 0 3px 3px 0 rgb(51 30 233 / 15%), 0 3px 1px -2px rgb(30 42 233 / 20%), 0 1px 5px 0 rgb(30 39 233 / 15%);
+        }
 
-    #pie {
-        height: 440px;
-    }
+        #pie {
+            height: 440px;
+        }
 
-    .clearfix {
-        overflow: auto;
-    }
+        .clearfix {
+            overflow: auto;
+        }
 
-    .dropzone {
-        position: relative;
-        height: 200px;
-        border: 2px dashed #b3b3b3;
-        border-radius: 4px;
-        background-color: #f3f3f3;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-    }
+        .dropzone {
+            position: relative;
+            height: 200px;
+            border: 2px dashed #b3b3b3;
+            border-radius: 4px;
+            background-color: #f3f3f3;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
 
-    .dropzone .msg {
-        font-size: 20px;
-        font-weight: bold;
-        color: #c3c3c3;
-        padding: 0 10px;
-    }
+        .dropzone .msg {
+            font-size: 20px;
+            font-weight: bold;
+            color: #c3c3c3;
+            padding: 0 10px;
+        }
 
-    input.fileUpload {
-        display: none;
-    }
+        input.fileUpload {
+            display: none;
+        }
 
-    .preview {
-        margin: 10px 0;
-        padding: 5px;
-    }
+        .preview {
+            margin: 10px 0;
+            padding: 5px;
+        }
 
-    .previewData img {
-        width: 100px;
-        height: 100px;
-        float: left;
-        margin: 5px;
-    }
+        .previewData img {
+            width: 100px;
+            height: 100px;
+            float: left;
+            margin: 5px;
+        }
 
-    .previewDetails {
-        display: inline-block;
-        float: left;
-        margin: 5px;
-        padding: 8px;
-    }
+        .previewDetails {
+            display: inline-block;
+            float: left;
+            margin: 5px;
+            padding: 8px;
+        }
 
-    .detail {
-        font-family: arial;
-        padding: 5px;
-        overflow: hidden;
-        max-width: 200px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+        .detail {
+            font-family: arial;
+            padding: 5px;
+            overflow: hidden;
+            max-width: 200px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-    .previewControls {
-        display: inline-block;
-        float: left;
-        margin: 40px 30px;
-    }
+        .previewControls {
+            display: inline-block;
+            float: left;
+            margin: 40px 30px;
+        }
 
-    .circle {
-        border: 2px solid #5B93F5;
-        border-radius: 20px;
-        display: inline-block;
-        height: 25px;
-        width: 25px;
-        margin: 5px;
-        cursor: pointer;
-        color: #5B93F5;
-        line-height: initial;
-    }
+        .circle {
+            border: 2px solid #5B93F5;
+            border-radius: 20px;
+            display: inline-block;
+            height: 25px;
+            width: 25px;
+            margin: 5px;
+            cursor: pointer;
+            color: #5B93F5;
+            line-height: initial;
+        }
 
-    .circle.upload:hover {
-        border: 2px solid green;
-    }
+        .circle.upload:hover {
+            border: 2px solid green;
+        }
 
-    .circle.upload:hover i.fa-check {
-        color: green;
-    }
+        .circle.upload:hover i.fa-check {
+            color: green;
+        }
 
-    .circle.remove:hover {
-        border: 2px solid red;
-    }
+        .circle.remove:hover {
+            border: 2px solid red;
+        }
 
-    .circle.remove:hover i.fa-close {
-        color: red;
-    }
+        .circle.remove:hover i.fa-close {
+            color: red;
+        }
 
-    .circle i {
-        position: relative;
-        font-size: 14px;
-    }
+        .circle i {
+            position: relative;
+            font-size: 14px;
+        }
 
-    .circle i.fa-check {
-        top: 3px;
-        left: 5px;
-    }
+        .circle i.fa-check {
+            top: 3px;
+            left: 5px;
+        }
 
-    .circle i.fa-close {
-        top: 2px;
-        left: 7px;
-    }
-</style>
+        .circle i.fa-close {
+            top: 2px;
+            left: 7px;
+        }
+    </style>
 </head>
 
 <body class="default-theme" ng-app="Admin">
@@ -598,7 +598,7 @@
                                             </div>
 
 
-                                        </li>                                        
+                                        </li>
                                         <li>
                                             <div class="ps-list__left--icon"><i class="mdi mdi-cellphone-android"></i></div>
                                             <div class="wrap-input100 validate-input" data-validate="Valid Mobile is: 0912345678">
@@ -619,7 +619,16 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div  ><img ng-repeat=" item in Admin.UserImages " ng-src="{{item}}"/ width="100px" ng-click="Admin.UserCover(item)"></div>
+                                    <div class="cards-list">
+                                        <div class="card" ng-repeat=" item in Admin.UserImages ">
+                                            <div class="card_image"> <img src="" ng-src="{{item}}" ng-click="Admin.UserCover(item)" />
+                                            </div>
+                                            <div class="card_title title-white">
+                                                <p>Card Title</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div img-upload method="PUT" url="Uploads/images" ng-model="Admin.UserImages"></div>
                                 </div>
                             </div>
@@ -629,86 +638,86 @@
 
                     <!-- conversation wrapper start -->
 
+                </div>
+            </div><!-- main content end -->
+        </div><!-- VIDEO CALL START-->
+        <div class="modal fade videocall-modal CallDialogFullscreen-sm" id="incomingVideoStart" tabindex="-1" role="dialog" aria-labelledby="incomingVideoStart" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="icvideocallwrapper">
+
+                            <div class="icvideo-contact"><video id="video" playsinline style="width:100%"></video>
+                                <img id="img" style="width:100%">
+                                <canvas id="canvas" style="display: none;width:100%"></canvas>
+                            </div>
+                            <div class="icvideo-user"><img src="chatbox/assets/images/user/150/01.jpg" alt="">
+                            </div>
+                            <div class="icvideo-actions">
+                                <div class="icvideo-actions__left">
+                                    <div class="icvideo-actions__left--duration">00:36</div>
+                                </div>
+                                <div class="icvideo-actions__middle">
+                                    <div class="">
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Speaker"><i class="iconbox__icon mdi mdi-volume-high"></i>
+                                        </div>
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Hold"><i class="iconbox__icon mdi mdi-pause"></i></div>
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Add Call"><i class="iconbox__icon mdi mdi-phone-plus"></i>
+                                        </div>
+
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" ng-click="Admin.CameraStop()" data-placement="top" title="Disbale Video">
+                                            <i class="iconbox__icon mdi mdi-video-off-outline"></i>
+                                        </div>
+                                        <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Mute"><i class="iconbox__icon mdi mdi-microphone-off"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="icvideo-actions__right">
+                                    <div class="iconbox btn-hovered-light bg-danger" ng-click="Admin.CameraStop();" data-dismiss="modal" data-toggle="tooltip" data-placement="top" title="Hangup"><i class="iconbox__icon text-white mdi mdi-phone-hangup"></i>
+                                    </div>
+                                </div>
+                                <button id="RecordBlob" ng-click="Admin.RecordBlob()">RecordBlob</button>
+                                <button id="RecordStopBlob" ng-click="Admin.RecordStopBlob()">RecordStopBlob</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div><!-- main content end -->
-    </div><!-- VIDEO CALL START-->
-    <div class="modal fade videocall-modal CallDialogFullscreen-sm" id="incomingVideoStart" tabindex="-1" role="dialog" aria-labelledby="incomingVideoStart" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="icvideocallwrapper">
-
-                        <div class="icvideo-contact"><video id="video" playsinline style="width:100%"></video>
-                            <img id="img" style="width:100%">
-                            <canvas id="canvas" style="display: none;width:100%"></canvas>
-                        </div>
-                        <div class="icvideo-user"><img src="chatbox/assets/images/user/150/01.jpg" alt="">
-                        </div>
-                        <div class="icvideo-actions">
-                            <div class="icvideo-actions__left">
-                                <div class="icvideo-actions__left--duration">00:36</div>
+        </div><!-- OUTGOING VOICE CALL -->
+        <div class="modal CallDialogFullscreen-sm" id="outGoingCall" tabindex="-1" role="dialog" aria-labelledby="outGoingCall" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <div class="user-avatar user-avatar-rounded user-avatar-xl"><img src="chatbox/assets/images/user/80/01.jpg" alt=""></div>
+                            <div class="userprofile-name"><span>Calling...</span>
+                                <h4>Jack P. Angulo</h4><span>Product Manager</span>
+                                <div class="call-duration">00:36</div>
                             </div>
-                            <div class="icvideo-actions__middle">
-                                <div class="">
-                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Speaker"><i class="iconbox__icon mdi mdi-volume-high"></i>
+                            <div class="call-options">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="call-options__iconbox"><i class="mdi mdi-microphone-off"></i></div>
+                                        <h6>Mute</h6>
                                     </div>
-                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Hold"><i class="iconbox__icon mdi mdi-pause"></i></div>
-                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Add Call"><i class="iconbox__icon mdi mdi-phone-plus"></i>
+                                    <div class="col-4">
+                                        <div class="call-options__iconbox"><i class="mdi mdi-volume-high"></i></div>
+                                        <h6>Speaker</h6>
                                     </div>
-
-                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" ng-click="Admin.CameraStop()" data-placement="top" title="Disbale Video">
-                                        <i class="iconbox__icon mdi mdi-video-off-outline"></i>
-                                    </div>
-                                    <div class="iconbox btn-hovered-light" data-toggle="tooltip" data-placement="top" title="Mute"><i class="iconbox__icon mdi mdi-microphone-off"></i>
+                                    <div class="col-4">
+                                        <div class="call-options__iconbox"><i class="mdi mdi-pause"></i></div>
+                                        <h6>Hold</h6>
                                     </div>
                                 </div>
                             </div>
-                            <div class="icvideo-actions__right">
-                                <div class="iconbox btn-hovered-light bg-danger" ng-click="Admin.CameraStop();" data-dismiss="modal" data-toggle="tooltip" data-placement="top" title="Hangup"><i class="iconbox__icon text-white mdi mdi-phone-hangup"></i>
-                                </div>
+                            <div class="call-actions">
+                                <div class="call-hangup" data-dismiss="modal"><i class="mdi mdi-phone-hangup"></i></div>
                             </div>
-                            <button id="RecordBlob" ng-click="Admin.RecordBlob()">RecordBlob</button>
-                            <button id="RecordStopBlob" ng-click="Admin.RecordStopBlob()">RecordStopBlob</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div><!-- OUTGOING VOICE CALL -->
-    <div class="modal CallDialogFullscreen-sm" id="outGoingCall" tabindex="-1" role="dialog" aria-labelledby="outGoingCall" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="text-center">
-                        <div class="user-avatar user-avatar-rounded user-avatar-xl"><img src="chatbox/assets/images/user/80/01.jpg" alt=""></div>
-                        <div class="userprofile-name"><span>Calling...</span>
-                            <h4>Jack P. Angulo</h4><span>Product Manager</span>
-                            <div class="call-duration">00:36</div>
-                        </div>
-                        <div class="call-options">
-                            <div class="row">
-                                <div class="col-4">
-                                    <div class="call-options__iconbox"><i class="mdi mdi-microphone-off"></i></div>
-                                    <h6>Mute</h6>
-                                </div>
-                                <div class="col-4">
-                                    <div class="call-options__iconbox"><i class="mdi mdi-volume-high"></i></div>
-                                    <h6>Speaker</h6>
-                                </div>
-                                <div class="col-4">
-                                    <div class="call-options__iconbox"><i class="mdi mdi-pause"></i></div>
-                                    <h6>Hold</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="call-actions">
-                            <div class="call-hangup" data-dismiss="modal"><i class="mdi mdi-phone-hangup"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     </div><!-- main wrapper end -->
     <script>
         const camera = document.querySelector('#camera')
@@ -720,7 +729,7 @@
         adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', '$window', function(sharedData, socket, $scope, $http, $window) {
             var Admin = this;
             Admin.profile = "chatbox/assets/images/user/150/01.jpg";
-            Admin.UserCoverItem =  "background-image: url(chatbox/assets/images/media/08.jpg);"; 
+            Admin.UserCoverItem = "background-image: url(chatbox/assets/images/media/08.jpg);";
             Admin.UserImages = [];
             const constraints = {
                 audio: true,
@@ -861,7 +870,7 @@
             Admin.Logout = function() {
                 sharedData.Logout(ReDirect);
             }
-            Admin.UserCover = function(item){
+            Admin.UserCover = function(item) {
 
             }
             Admin.Users = function() {
