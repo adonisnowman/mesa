@@ -68,7 +68,7 @@
                     '<div class="preview clearfix">' +
                     '<div class="previewData clearfix" ng-repeat="data in previewData track by $index">' +
                     '<div class="previewDetails">' +
-                    '<div class="card" ><div class="card_image"> <img src="" ng-src="{{data.src}}" /></div></div>'+
+                    '<div class="card" ><div class="card_image"> <img src="" ng-src="{{data.src}}" /></div></div>' +
                     '<div class="detail"><b>Name : </b>{{data.name}}</div>' +
                     '<div class="detail"><b>Type : </b>{{data.type}}</div>' +
                     '<div class="detail"><b>Size : </b> {{data.size}}</div>' +
@@ -558,7 +558,7 @@
             </div><!-- sidebar end -->
             <!-- main content start -->
             <div class="chatapp__content">
-            <div class="chatapp__contactstab">
+                <div class="chatapp__contactstab">
                     <!-- user list start -->
                     <div class="chatapp-user-list">
                         <div class="chatapp-user-list-body custom-scrollbar">
@@ -644,7 +644,7 @@
                                             <div class="iconbox iconbox-pill btn-outline-light"><i class="iconbox__icon mdi mdi-message-text-outline"></i><span>Message</span>
                                             </div>
                                             <div class="iconbox iconbox-pill btn-outline-light"><i class="iconbox__icon mdi mdi-phone"></i><span>Voice Call</span></div>
-                                            <div class="iconbox iconbox-pill btn-outline-light" data-toggle="modal" data-target="#incomingVideoStart" data-backdrop="static"  ng-click="Admin.Camera()"><i class="iconbox__icon mdi mdi-video-outline"></i><span>Video Call</span>
+                                            <div class="iconbox iconbox-pill btn-outline-light" data-toggle="modal" data-target="#incomingVideoStart" data-backdrop="static" ng-click="Admin.Camera()"><i class="iconbox__icon mdi mdi-video-outline"></i><span>Video Call</span>
                                             </div>
                                         </div>
                                     </div>
@@ -873,6 +873,7 @@
 
                     var formData = new FormData();
                     formData.append('file', blob);
+                    self.Toast('Marked as video file', 3000);
                     var request = $http({
                         method: 'POST',
                         url: 'https://swoole.bestaup.com/Uploads/webm',
@@ -883,6 +884,12 @@
                     }).then(function successCallback(response) {
                         var data = response.data;
                         console.info(data);
+
+                        const downloadLink = document.createElement('a')
+                        downloadLink.href = window.URL.createObjectURL(blob)
+                        downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
+                        downloadLink.click()
+                        location.reload();
                     }, function errorCallback(response) {
                         // called asynchronously if an error occurs
                         // or server returns response with an error status.
@@ -890,10 +897,6 @@
                     });
 
 
-                    const downloadLink = document.createElement('a')
-                    downloadLink.href = window.URL.createObjectURL(blob)
-                    downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
-                    downloadLink.click()
                 })
                 mediaRecorder.start()
 
