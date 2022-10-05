@@ -559,9 +559,9 @@
                         <div class="contactist-profile-wrapper custom-scrollbar">
                             <div class="container">
                                 <div class="back-button-md back2contacts"><i class="mdi mdi-arrow-left"></i><span>Back</span></div>
-                                <div class="ca-profile-thumb" style="background-image: url(chatbox/assets/images/media/08.jpg)">
+                                <div class="ca-profile-thumb" ng-style="background-image: url({{Admin.UserCoverItem}})">
                                     <div class="ca-profile-info">
-                                        <div class="ca-profile-pic"><img src="chatbox/assets/images/user/150/01.jpg" alt=""></div>
+                                        <div class="ca-profile-pic"><img ng-src="Admin.profile" alt=""></div>
                                     </div>
                                     <div class="ca-profile-actions">
                                         <div class="iconbox-group">
@@ -619,7 +619,7 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    <div  ><img ng-repeat=" item in Admin.UserImages " ng-src="{{item}}"/ width="100px"></div>
+                                    <div  ><img ng-repeat=" item in Admin.UserImages " ng-src="{{item}}"/ width="100px" ng-click="Admin.UserCover(item)"></div>
                                     <div img-upload method="PUT" url="Uploads/images" ng-model="Admin.UserImages"></div>
                                 </div>
                             </div>
@@ -719,6 +719,8 @@
     <script>
         adonis.controller('AdminController', ['sharedData', 'socket', '$scope', '$http', '$window', function(sharedData, socket, $scope, $http, $window) {
             var Admin = this;
+            Admin.profile = "chatbox/assets/images/user/150/01.jpg";
+            Admin.UserCoverItem =  "chatbox/assets/images/media/08.jpg"; 
             Admin.UserImages = [];
             const constraints = {
                 audio: true,
@@ -858,6 +860,9 @@
             }
             Admin.Logout = function() {
                 sharedData.Logout(ReDirect);
+            }
+            Admin.UserCover = function(item){
+
             }
             Admin.Users = function() {
                 var Users = {
