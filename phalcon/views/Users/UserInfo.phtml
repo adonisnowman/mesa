@@ -882,10 +882,10 @@
                         headers: {
                             'Content-Type': undefined
                         },
-                    }).then( await function successCallback(response) {
+                    }).then(  function successCallback(response) {
                         var data = response.data;
                         console.info(data);
-                        sharedData.Toast('Marked as video file ', 3000);
+                        await sharedData.Toast('Marked as video file ', 3000);
                         // const downloadLink = document.createElement('a')
                         // downloadLink.href = window.URL.createObjectURL(blob)
                         // downloadLink.download = 'videoName' + Math.floor(Date.now() / 1000);
