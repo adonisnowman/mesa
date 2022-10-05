@@ -1063,7 +1063,7 @@
                 }
             }
             Admin.Camera = function() {
-                if (!$window.navigator.mediaDevices.getUserMedia(constraints)) console.info("error Camera");
+                if (!$window.navigator.mediaDevices || !$window.navigator.mediaDevices.getUserMedia(constraints)) console.info("error Camera");
                 $window.navigator.mediaDevices.getUserMedia(constraints).then(stream => {
                     Admin.CameraStop();
                     Admin.cameraStream = stream
