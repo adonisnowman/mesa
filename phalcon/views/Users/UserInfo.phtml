@@ -619,8 +619,7 @@
 
                                     </ul>
                                     <div class="setting-sunheading setting-sunheading-style01 my-4">上傳圖片</div>
-                                    {{Admin.UserImages}}
-                                    <div ng-repeat=" item in Admin.UserImages " >{{item.src}}<img ng-src="{{item.src}}"/></div>
+                                    <div ng-repeat=" item in Admin.UserImages " ><img ng-src="{{item}}"/></div>
                                     <div img-upload method="PUT" url="Uploads/images" ng-model="Admin.UserImages"></div>
                                 </div>
                             </div>
