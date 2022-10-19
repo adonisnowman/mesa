@@ -18,7 +18,7 @@ $connections = new Table(1024);
 $connections->column('client', Table::TYPE_INT, 4);
 $connections->create();
     //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
-    $ws = new swoole_websocket_server("0.0.0.0", 9501, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+    $ws = new swoole_websocket_server("0.0.0.0", 9509, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
     
     $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
     $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
