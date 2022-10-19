@@ -132,6 +132,8 @@ class UsersApiController extends BaseController
 
         //系統導頁面判斷
         if (!empty($Return['ReDirect'])) {
+            var_dump($Return['ReDirect']);
+            exit;
             $Item = [];
             $History = $Return['ReDirect'];
             $Item['ReDirect'] = $Return['ReDirect'];
