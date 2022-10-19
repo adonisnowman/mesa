@@ -30,9 +30,7 @@ class Users extends BaseModel
 		if (!empty($this->password)) {
 			$this->password = Tools::Crypt($this->password);
 		}
-        if (!empty($this->mobile)) {
-			$this->mobile = Tools::Crypt($this->mobile);
-		}
+        
 	}
 
 	public function afterFetch()
@@ -40,9 +38,7 @@ class Users extends BaseModel
 		if (!empty($this->password)) {
 			$this->password = Tools::Crypt($this->password,true);
 		}
-        if (!empty($this->mobile)) {
-			$this->mobile = Tools::Crypt($this->mobile,true);
-		}
+        
 		return $this;
 	}
 
