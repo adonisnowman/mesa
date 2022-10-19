@@ -31,14 +31,14 @@ class IndexController extends BaseController
         Tools::emailSend("adonisnowman@gmail.com", "signEmail", _Views::RedirectAdmin($Return));
         if (!empty($_GET['token'])) Tools::checkToken($_GET['token']);
     }
-//登入登出功能
-public function LogoutAction()
-{
-    unset($_SESSION[Tools::getIp()]['ReDirect']);
-    session_destroy();
-    $Return['ReDirect'] = "sign-in";
-    return $Return;
-}
+    //登入登出功能
+    public function LogoutAction()
+    {
+        unset($_SESSION[Tools::getIp()]['ReDirect']);
+        session_destroy();
+        $Return['ReDirect'] = "sign-in";
+        return $Return;
+    }
     public function indexAction()
     {
 
@@ -47,16 +47,19 @@ public function LogoutAction()
 
         //預設模板讀取
         $Return = _Views::Init();
-        if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
-        else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
+        if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);
+        else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
+        else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
         else $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);
 
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))  $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
+        else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
+        else if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['ReDirect'] = "UserSign";
         else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['ReDirect'] = "sign-in";
-        else if($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
+
         else $Return['ReDirect'] = "UserSign";
 
-       
+
 
 
         //預設 新增修改 模板讀取

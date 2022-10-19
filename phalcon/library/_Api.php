@@ -60,7 +60,7 @@ class _Api
         if (!empty($Data)) $Data = json_decode($Data, true);
         else   $aResult['ErrorMsg'][] = "參數有誤";
         
-       
+      
         //存在資料 轉成JSON 是ＡＲＲＡＹ 判斷所需輸入資料是否符合
         if (!empty($checkKeys) && is_array($Data)) $result = array_diff($checkKeys, array_keys($Data));
         else $aResult['ErrorMsg'][] = "資料格式有誤";        

@@ -45,6 +45,7 @@ class UsersApiController extends BaseController
     
     public function indexAction()
     {
+        
         if (!empty($_SESSION[Tools::getIp()]['UniqueID']))
             _Api::UsersLocation($_SESSION[Tools::getIp()]['UniqueID']);
 
@@ -56,11 +57,11 @@ class UsersApiController extends BaseController
         $Item = [];
         $Item["ControllerName"] = ucfirst($this->router->getControllerName()) . "Controller";
         $Item["ActionName"]  = $Action;
-
+       
         self::$checkKeys = _Action::_checkKeys($Item);
-
+        
         //這裡只判斷 Action 存不存在
-
+       
         if (empty($Action) || !in_array($Action, array_keys(self::$checkKeys))) {
             $Return['ErrorMsg'][] = "Action not Find";
             $Return['Action'] = $Action;
@@ -68,13 +69,15 @@ class UsersApiController extends BaseController
             echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
             exit;
         }
+        
         //判斷 checkKeys 存不存在 並產生 回傳的 self::$PostData 正確格式
         self::$PostData = _Api::checkPostData(self::$checkKeys[$Action]);
-
+        
        
         //ActionLogs       
-        $Item["ActionName"] = $Action;
+        $Item["ActionName"] = $Action;       
         $Item["ActionPort"] = _Action::ActionPort($_SERVER['HTTP_ORIGIN'],$Item);
+        
         $checkKeys = checkKeys::getObjectByItem($Item);
         
         if (!empty($checkKeys) && $checkKeys->offshelf) {
@@ -86,6 +89,7 @@ class UsersApiController extends BaseController
             var_dump($Item);
             exit;
         }
+
         //checkKeys
         _Action::checkKeys($checkKeys, $Item);
         $Insert = _Action::ActionLogs($this->router, self::$PostData, $checkKeys);
@@ -143,6 +147,7 @@ class UsersApiController extends BaseController
         $Return = [];
         $Item = [];
         $Item['ReDirect'] = self::$PostData['ReDirect'];
+     
         $_SESSION[Tools::getIp()]['ReDirect'] = RedirectAdmin::getOneByItem($Item);
         $_SESSION['Action'] = "Redirect";
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))
@@ -193,6 +198,7 @@ class UsersApiController extends BaseController
 
     public function Login()
     {        
+        
         $Return = [];
         $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile","password"]);
         $UsersLoginLogs = Models::insertTable($Insert, "UsersLoginLogs");
@@ -247,7 +253,7 @@ class UsersApiController extends BaseController
         } else {
             //預設登入後頁面 List_bargain
             $_SESSION[Tools::getIp()]['History'] = "UserSign";
-            $_SESSION[Tools::getIp()]['ReDirect'] = "UserInfo";
+            $_SESSION[Tools::getIp()]['ReDirect'] = "UserCall";
         }
 
         return $Return;

@@ -17,6 +17,13 @@ use Phalcon\Cache\AdapterFactory;
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
+function siteURL()
+{
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $domainName = $_SERVER['HTTP_HOST'].'/';
+    return $protocol.$domainName;
+}
+define( 'SITE_URL', siteURL() );
 
 $dirname = explode("/", dirname(__FILE__));
 if(strpos(dirname(__FILE__),"xampp") != false ){
@@ -28,13 +35,19 @@ $dirname = array_pop($dirname);
 $ConfigFile = "config.ini";
 $dir = "/{$dirname}/";
 
-if (!defined('ROOT_PATH') ) 
+if (!defined('ROOT_PATH') && file_exists("/home/cfd888/public_html")) 
 {
 	// define('ROOT_PATH', "/var/www" . $dir);
-	define('ROOT_PATH', "/home/cfd888/public_html" . $dir);
-
-	
+	define('ROOT_PATH', "/home/cfd888/public_html" . $dir);	
 }
+
+if (!defined('ROOT_PATH') && file_exists("/var/www")) 
+{
+	define('ROOT_PATH', "/var/www" . $dir);
+}
+
+
+
 
 if (!defined('CONFIGFILE_PATH')) {
 	define("CONFIGFILE_PATH", ROOT_PATH . 'phalcon/config/' );

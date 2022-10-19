@@ -214,7 +214,7 @@ class _UniqueID
     public static function checkUniqueID(string $ID ,$Encryptionkey = false)
     {
         
-        if (strlen($ID) > 18 && strlen($ID) < 20 && false == strpos('-', $ID) && 0 == preg_match("/[0-9a-zA-Z]{12}[0-9]{6,8}/",$ID)) return false;
+        if (strlen($ID) > 18 && strlen($ID) < 20 && strpos('-', $ID) != false && 0 == preg_match("/[0-9a-zA-Z]{12}[0-9]{6,8}/",$ID)) return false;
        
         if(!empty($Encryptionkey)){
             $Encryptionkey_new = $Encryptionkey;

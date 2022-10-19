@@ -148,7 +148,7 @@
                 }
                 var request = $http({
                     method: "post",
-                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/UsersApi",
                     data: ReDirect,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -173,7 +173,7 @@
                 console.info(ReDirect);
                 var request = $http({
                     method: "post",
-                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/api",
+                    url: "http://<?PHP echo $_SERVER['HTTP_HOST']; ?>/UsersApi",
                     data: ReDirect,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'

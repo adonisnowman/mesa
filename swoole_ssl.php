@@ -20,12 +20,18 @@ $connections->create();
     //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
     $ws = new swoole_websocket_server("0.0.0.0", 9501, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
     
+    $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
+    $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
+
+    if(file_exists("/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem")) $fullchain = "/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem";
+    if(file_exists("/etc/letsencrypt/live/adonis.tw-0002/privkey.pem")) $privkey = "/etc/letsencrypt/live/adonis.tw-0002/privkey.pem";
+
     //配置参数
     $ws ->set([
   'daemonize' => false, //守护进程化。
   //配置SSL证书和密钥路径
-  'ssl_cert_file' => "/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem",
-  'ssl_key_file'  => "/etc/letsencrypt/live/adonis.tw-0002/privkey.pem"
+  'ssl_cert_file' => $fullchain,
+  'ssl_key_file'  => $privkey
     ]);
  
     //监听WebSocket连接打开事件
