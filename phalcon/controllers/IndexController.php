@@ -60,9 +60,6 @@ class IndexController extends BaseController
         else $Return['ReDirect'] = "UserSign";
 
 
-        var_dump($Return['ReDirect']);
-        exit;
-
         //預設 新增修改 模板讀取
         $Return['Input_Nav'] = _Views::RedirectAdmin(["ReDirect" => "Input_Nav"]);
 
