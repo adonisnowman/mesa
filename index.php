@@ -78,7 +78,7 @@ $loader->registerDirs(
 		ROOT_PATH . $config->application->controllersDir,
 		ROOT_PATH . $config->application->pluginsDir,
 		ROOT_PATH . $config->application->modelsDir,
-		ROOT_PATH . $config->application->modelsDir.'DIYA_DATA/',
+		ROOT_PATH . $config->application->modelsDir.'swoole/',
 		ROOT_PATH . $config->application->modelsDir.'phalcon4/',
 		ROOT_PATH . $config->application->modelsDir.'account/',
 		ROOT_PATH . $config->application->libraryDir,

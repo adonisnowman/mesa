@@ -6,7 +6,7 @@ class UsersLoginLogs extends BaseModel
     public static $tableName = __CLASS__;
 	public function initialize()
 	{
-		
+		$this->setConnectionService('swoole');
         $this->setSource( self::$tableName);
     }
 

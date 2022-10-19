@@ -206,16 +206,16 @@ class UsersApiController extends BaseController
         else $UsersLoginLogs = $UsersLoginLogs['Object'];
 
         //會員帳號判斷
-        $Users = Users::getObjectByItem(["account" => $Insert['account']]);
+        $UsersAccount = Users::getObjectByItem(["account" => $Insert['account']]);
 
-        if (empty(Users::count()) && empty($Users->account)) {
-            //新增會員
-            $Users = Models::insertTable($Insert, "Users", true);
-        }
+        if(empty($UsersAccount)) $Return['ErrorMsg'][] = "請檢查Email後再登入";
+        else $Users = $UsersAccount;
+         //會員手機判斷
+         $UsersMobile = Users::getObjectByItem(["mobile" => $Insert['mobile']]);
 
-
-        //會員帳號判斷
-        $Users = Users::getObjectByItem(["account" => $Insert['account']]);
+        if(empty($UsersMobile)) $Return['ErrorMsg'][] = "請查明後再登入";
+        else $Users = $UsersMobile;
+         
 
         if (!empty($Users->password) && $Users->password == $Insert['password']) {
             //確定登入帳密 寫入該次登入紀錄ＩＤ
@@ -241,7 +241,7 @@ class UsersApiController extends BaseController
             //紀錄UsersLocation
 
             _Api::UsersLocation($Users->UniqueID);
-        } else if (!empty($Users->account)) {
+        } else if (!empty($Users->account) || !empty($Users->mobile) ) {
             $Return['ErrorMsg'][] = "password error";
         } else {
             $Return['ErrorMsg'][] = "post error";
