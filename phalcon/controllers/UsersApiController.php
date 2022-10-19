@@ -228,7 +228,7 @@ class UsersApiController extends BaseController
             //確定登入帳密 寫入該次登入紀錄ＩＤ
             if (!empty($UsersLoginLogs->UniqueID)) $Users->UniqueID_UsersLoginLogs = $UsersLoginLogs->UniqueID;
             //寫入登入紀錄
-            $UsersLoginLogs->UniqueID_account = $Users->UniqueID;
+            $UsersLoginLogs->UniqueID_Users = $Users->UniqueID;
             $UsersLoginLogs->save();
             //寫入會員資料紀錄
             $Users->logined_time = Tools::getDateTime();
