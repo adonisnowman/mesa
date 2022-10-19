@@ -229,7 +229,7 @@ class UsersApiController extends BaseController
             if (!empty($UsersLoginLogs->UniqueID)) $Users->UniqueID_UsersLoginLogs = $UsersLoginLogs->UniqueID;
 
             $Item['UniqueID_Users'] = $Users->UniqueID;
-            $Remove = UsersLoginLogs::getListByItem($Item);
+            $Remove = UsersLoginLogs::getListObjectByItem($Item);
             $Remove->update(["UniqueID_Users" => ""]);
             //寫入登入紀錄
             $UsersLoginLogs->UniqueID_Users = $Users->UniqueID;
