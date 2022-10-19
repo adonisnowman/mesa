@@ -95,4 +95,17 @@ class UsersLoginLogs extends BaseModel
 
         return $List;
     }
+
+    public static function getListObjectByItem($Item)
+    {
+
+        $keys = array_keys($Item);
+        $Object = self::$tableName::find([
+            'conditions' => Models::Conditions($keys),
+            'bind'       => Tools::fix_element_Key($Item, $keys),
+            'for_update' => true,
+        ]);
+
+        return $Object;
+    }
 }
