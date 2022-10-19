@@ -132,13 +132,18 @@ class UsersApiController extends BaseController
 
         //系統導頁面判斷
         if (!empty($Return['ReDirect'])) {
-            var_dump($Return['ReDirect']);
-            exit;
             $Item = [];
             $History = $Return['ReDirect'];
             $Item['ReDirect'] = $Return['ReDirect'];
-            if (!empty($_SESSION[Tools::getIp()]['ReDirect'])) $Return['ReDirect'] = "reload";
-            else $Return['ReDirect'] = $History;
+            if (Tools::getIp() == Tools::ServerIp()){
+                if (!empty($_SESSION['Admin']['ReDirect'])) $Return['ReDirect'] = "reload";
+                else $Return['ReDirect'] = $History;
+            }else {
+                if (!empty($_SESSION['User']['ReDirect'])) $Return['ReDirect'] = "reload";
+                else $Return['ReDirect'] = $History;
+            }
+           
+            
         }
         echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
     }
