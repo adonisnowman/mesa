@@ -118,13 +118,13 @@ $container->set('db', function () use ($config) {
 		'options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config->database->charset)
 	));
 });
-$container->set('DIYA_DATA', function () use ($config) {
+$container->set('swoole', function () use ($config) {
 	return new \Phalcon\Db\Adapter\Pdo\Mysql(array(
-		"host" => $config->database->host,
-		"username" => $config->database->username,
-		"password" => $config->database->password,
-		"dbname" => "DIYA_DATA",
-		'options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config->database->charset)
+		"host" => $config->swoole->host,
+		"username" => $config->swoole->username,
+		"password" => $config->swoole->password,
+		"dbname" => $config->swoole->name,
+		'options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config->swoole->charset)
 	));
 });
  
