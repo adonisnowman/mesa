@@ -34,6 +34,7 @@ class UsersLoginLogs extends BaseModel
 
     public function afterSave()
     {
+        $this->updated_time = Tools::getDateTime();
     }
     
     public static function getObjectById($Item)
