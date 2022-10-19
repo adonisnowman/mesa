@@ -149,12 +149,12 @@ class UsersApiController extends BaseController
     }
 
     //導頁
-    public function Redirect()
+    public function ReDirect()
     {
         $Return = [];
         $Item = [];
         $Item['ReDirect'] = self::$PostData['ReDirect'];
-        var_dump($Item['ReDirect']);
+       
         $_SESSION[Tools::getIp()]['ReDirect'] = RedirectAdmin::getOneByItem($Item);
         $_SESSION['Action'] = "Redirect";
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))
