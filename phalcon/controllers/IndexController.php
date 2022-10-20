@@ -75,15 +75,18 @@ class IndexController extends BaseController
 
 
 
-        if (!empty($Echo)) {
-            _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
+        if (!empty($Echo)) {            
             echo $Echo;
         }
-        else if (!empty($History)) echo $History;
+        else if (!empty($History)) {
+            echo $History;
+        }
         else {
             unset($_SESSION[Tools::getIp()]['ReDirect']);
             $Return['ReDirect'] = "UserSign";
             echo _Views::RedirectAdmin($Return);
         }
+
+        _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
     }
 }

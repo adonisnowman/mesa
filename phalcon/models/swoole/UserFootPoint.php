@@ -1,7 +1,7 @@
 <?php
 
 
-class Users extends BaseModel
+class UserFootPoint extends BaseModel
 {
 
 	public static $tableName = __CLASS__;
@@ -24,7 +24,7 @@ class Users extends BaseModel
 
 	public function beforeValidationOnUpdate()
 	{
-		$this->updated_time = Tools::getDateTime();
+		
 		
 	}
 

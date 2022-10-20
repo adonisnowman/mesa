@@ -135,6 +135,9 @@ class UsersApiController extends BaseController
             else $Return['ReDirect'] = $History;
         }
         echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
+
+        
+        _UsersApi::UserFootPoint(__CLASS__,$Action);
     }
 
     //導頁
