@@ -130,15 +130,11 @@ class UsersApiController extends BaseController
             $Item = [];
             $History = $Return['ReDirect'];
             $Item['ReDirect'] = $Return['ReDirect'];
-            if (Tools::getIp() == Tools::ServerIp()) {
-                if (!empty($_SESSION['Admin']['ReDirect'])) $Return['ReDirect'] = "reload";
-                else $Return['ReDirect'] = $History;
-            } else {
-                if (!empty($_SESSION['User']['ReDirect'])) $Return['ReDirect'] = "reload";
-                else $Return['ReDirect'] = $History;
-            }
+            //$_SESSION[Tools::getIp()]['ReDirect'] = RedirectAdmin::getOneByItem($Item);
+            if(!empty($_SESSION[Tools::getIp()]['ReDirect'])) $Return['ReDirect'] = "reload";
+            else $Return['ReDirect'] = $History;
         }
-        echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
+        echo JSON_encode( $Return, JSON_UNESCAPED_UNICODE);
     }
 
     //導頁
