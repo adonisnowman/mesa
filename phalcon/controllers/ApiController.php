@@ -13,16 +13,10 @@ class ApiController extends BaseController
 
     public function initialize()
     {
-        $some_name = session_name("some_name");
+        session_name("swoole");
         session_set_cookie_params(0, '/', $_SERVER['HTTP_HOST']);
-
         session_start();
-        self::$arrContextOptions = array(
-            "ssl" => array(
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ),
-        );
+       
 
         $response = new Response();
 

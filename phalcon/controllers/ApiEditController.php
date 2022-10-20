@@ -13,15 +13,10 @@ class ApiEditController extends BaseController
     public static $Rule = [];
     public function initialize()
     {
-        $some_name = session_name("some_name");
+        session_name("swoole");
         session_set_cookie_params(0, '/', 'angularjs.adonis.tw');
         session_start();
-        self::$arrContextOptions = array(
-            "ssl" => array(
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ),
-        );
+       
         
         $response = new Response();
         
