@@ -1,68 +1,59 @@
 <?php
 
 
-class KgiBank extends BaseModel
+class SignInList extends BaseModel
 {
-
       public static $tableName = __CLASS__;
       public function initialize()
       {
-            $this->setConnectionService('DIYA_DATA');
+            $this->setConnectionService('swoole');
             $this->setSource(self::$tableName);
       }
 
       public function beforeValidationOnCreate()
       {
-            preg_match_all("/(?P<num>[0-9]+)/", $this->payout, $matchs);
-            $this->payout = (int) join("", $matchs['num']);
-
-            preg_match_all("/(?P<num>[0-9]+)/", $this->deposits, $matchs);
-            $this->deposits = (int) join("", $matchs['num']);
-
-            preg_match_all("/(?P<num>[0-9]+)/", $this->balance, $matchs);
-            $this->balance = (int) join("", $matchs['num']);
-
-            $this->Bank_account = str_pad( $this->Bank_account,16,'0',STR_PAD_LEFT);
-            $this->created_time = date("Y-m-d H:i:s", strtotime($this->created_time));
-            $this->account_date = date("Y-m-d", strtotime($this->account_date));
+            $this->created_time = Tools::getDateTime();
+            $this->HTTP_HOST = $_SERVER['HTTP_HOST'];
+            $this->REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+            $this->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
       }
 
       public function beforeValidationOnUpdate()
       {
+            echo "資料不能修改";
+            exit;
+      }
+      public function afterFetch()
+      {
+
       }
 
       public function beforeSave()
       {
+            $Item['UniqueID'] = $this->UniqueID;
+            if(!empty(self::getObjectById($Item))){
+                  echo "資料不能修改";
+                  exit;
+            }
+            
       }
-
-      public function afterFetch()
-      {
-
-            return $this;
-      }
-
       public function afterSave()
       {
-      }
-
-
-      public static function resetValues($Item)
-      {
-            preg_match_all("/(?P<num>[0-9]+)/", $Item['payout'], $matchs);
-            $Item['payout'] = (int) join("", $matchs['num']);
-
-            preg_match_all("/(?P<num>[0-9]+)/", $Item['deposits'], $matchs);
-            $Item['deposits'] = (int) join("", $matchs['num']);
-
-            preg_match_all("/(?P<num>[0-9]+)/", $Item['balance'], $matchs);
-            $Item['balance'] = (int) join("", $matchs['num']);
-
             
-            $Item['created_time'] = date("Y-m-d H:i:s", strtotime($Item['created_time']));
-            $Item['account_date'] = date("Y-m-d", strtotime($Item['account_date']));
-            $Item['Bank_account'] = str_pad(  $Item['Bank_account'],16,'0',STR_PAD_LEFT);
-            return $Item;
       }
+
+      public function beforeUpdate()
+      {
+            echo "資料不能修改";
+            exit;
+      }
+      public function beforeDelete()
+      {
+            echo "資料不能修改";
+            exit;
+      }
+
+
       public static function getObjectById($Item)
       {
             $keys = ["UniqueID"];
@@ -121,5 +112,18 @@ class KgiBank extends BaseModel
             $List = (empty($List)) ? [] : $List->toArray();
 
             return $List;
+      }
+
+      public static function getListObjectByItem($Item)
+      {
+
+            $keys = array_keys($Item);
+            $Object = self::$tableName::find([
+                  'conditions' => Models::Conditions($keys),
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
+
+            return $Object;
       }
 }

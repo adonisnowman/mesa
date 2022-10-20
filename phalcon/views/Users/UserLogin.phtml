@@ -327,6 +327,33 @@
             Admin.Logout = function() {
                 sharedData.Logout(ReDirect);
             }
+            Admin.SignInSession = function() {
+                console.info("login click");
+                Admin.LoginInfo.UniqueID = "";
+                var data = {
+                    'Action': 'SignInSession',
+                    'Data': JSON.stringify(Admin.LoginInfo),
+                }
+
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>UsersApi",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+
+                    if (data.UniqueID) location.reload();
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
             Admin.Login = function() {
                 console.info("login click");
                 Admin.LoginInfo.UniqueID = "";

@@ -37,6 +37,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-cookies.js"></script>
+    
     <script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.css" />
     <script src="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
@@ -61,7 +63,7 @@
     }
 </style>
     <script>
-        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
+        var adonis = angular.module('Admin', ['ngRoute','ngCookies', 'ngMaterial', 'ngMessages', 'dx']);
         adonis.service('sharedData', function($http, $q, $mdToast) {
             var self = this;
             //Toast 
@@ -327,7 +329,7 @@
 
     <div id="dropDownSelect1"></div>
     <script>
-        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http) {
             var Admin = this;
             if (location.pathname == "/logout") location.href = '';
             Admin.ReDirect = function(ReDirect) {
@@ -338,7 +340,8 @@
                 sharedData.Logout(ReDirect);
             }
             Admin.Create = function() {
-                console.info("Create click");
+                var microtime = (Date.now() % 1000) / 1000;
+                $cookies.put('CreateTime', microtime);
                 Admin.CreateInfo.UniqueID = "";
                 var data = {
                     'Action': 'Create',
@@ -359,8 +362,7 @@
                     if (data.UniqueID) location.reload();
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
                 }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
+                    sharedData.Toast(response.data, 3000);
 
                 });
             };

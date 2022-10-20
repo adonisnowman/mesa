@@ -165,7 +165,9 @@ class UsersApiController extends BaseController
     //註冊
     public function Create()
     {
-        
+        var_dump($_COOKIE);
+
+        exit;
         $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile","password"]);
         
         //會員帳號判斷
@@ -230,7 +232,7 @@ class UsersApiController extends BaseController
 
             $Item['UniqueID_Users'] = $Users->UniqueID;
             $Remove = UsersLoginLogs::getListObjectByItem($Item);
-            $Remove->update(["UniqueID_Users" => "_".$Users->UniqueID]);
+            $Remove->update(["UniqueID_Users" => "_".$Users->UniqueID."_"]);
             //寫入登入紀錄
             $UsersLoginLogs->UniqueID_Users = $Users->UniqueID;
             $UsersLoginLogs->save();
