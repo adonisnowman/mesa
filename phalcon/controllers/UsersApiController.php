@@ -159,7 +159,13 @@ class UsersApiController extends BaseController
             $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
         return $Return;
     }
+    public function SignInSession(){
 
+        $Return = [];
+        if(!empty($_SESSION[Tools::getIp()]['SignInSession'])) $Return = $_SESSION[Tools::getIp()]['SignInSession'];
+
+        return $Return;
+    }
     //註冊
     public function Create()
     {
@@ -186,7 +192,9 @@ class UsersApiController extends BaseController
             if (empty($Users->UniqueID)) return $Users;
 
 
-            $_SESSION[Tools::getIp()]['SignInSession'] = $shortUniqueID;
+            $_SESSION[Tools::getIp()]['SignInSession']['CreateTime'] = $shortUniqueID;
+            $_SESSION[Tools::getIp()]['SignInSession']['account'] = $Users->account;
+            $_SESSION[Tools::getIp()]['SignInSession']['mobile'] = $Users->mobile;
 
 
 
@@ -196,6 +204,12 @@ class UsersApiController extends BaseController
             $_Views['Token'] = Tools::getToken();
 
             Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
+
+
+            //回傳資料
+
+            $_SESSION[Tools::getIp()]['History'] = "UserSign";
+            $_SESSION[Tools::getIp()]['ReDirect'] = "UserLogin";
             $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
             $Return['ReDirect'] = "reload";
             return $Return;

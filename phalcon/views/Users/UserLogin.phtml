@@ -37,6 +37,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-cookies.js"></script>
     <script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.css" />
     <script src="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
@@ -44,7 +45,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
 
     <script>
-        var adonis = angular.module('Admin', ['ngRoute', 'ngMaterial', 'ngMessages', 'dx']);
+        var adonis = angular.module('Admin', ['ngRoute','ngCookies', 'ngMaterial', 'ngMessages', 'dx']);
         adonis.service('sharedData', function($http, $q, $mdToast) {
             var self = this;
             //Toast 
@@ -317,7 +318,7 @@
 
     <div id="dropDownSelect1"></div>
     <script>
-        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http, $cookies) {
             var Admin = this;
             if (location.pathname == "/logout") location.href = '';
             Admin.ReDirect = function(ReDirect) {
@@ -329,10 +330,11 @@
             }
             Admin.SignInSession = function() {
                 console.info("login click");
-                Admin.LoginInfo.UniqueID = "";
+               
+                Admin.SessonInfo.CreateTime = $cookies.get('CreateTime');
                 var data = {
                     'Action': 'SignInSession',
-                    'Data': JSON.stringify(Admin.LoginInfo),
+                    'Data': JSON.stringify(Admin.SessonInfo),
                 }
 
                 var request = $http({
@@ -346,8 +348,11 @@
                 }).then(function successCallback(response) {
                     var data = response.data;
 
-                    if (data.UniqueID) location.reload();
-                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                    if(data.SignInSession){
+                        $cookies.put('CreateTime', null);
+                        Admin.LoginInfo = data.SignInSession;
+                    }
+                    
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
                     // or server returns response with an error status.
