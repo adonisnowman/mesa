@@ -42,10 +42,10 @@ class UsersApiController extends BaseController
         $response->setHeader('Content-type', 'application/json');
         $response->sendHeaders();
     }
-    
+
     public function indexAction()
     {
-        
+
         if (!empty($_SESSION[Tools::getIp()]['UniqueID']))
             _Api::UsersLocation($_SESSION[Tools::getIp()]['UniqueID']);
 
@@ -57,11 +57,11 @@ class UsersApiController extends BaseController
         $Item = [];
         $Item["ControllerName"] = ucfirst($this->router->getControllerName()) . "Controller";
         $Item["ActionName"]  = $Action;
-       
+
         self::$checkKeys = _Action::_checkKeys($Item);
-        
+
         //這裡只判斷 Action 存不存在
-       
+
         if (empty($Action) || !in_array($Action, array_keys(self::$checkKeys))) {
             $Return['ErrorMsg'][] = "Action not Find";
             $Return['Action'] = $Action;
@@ -69,22 +69,22 @@ class UsersApiController extends BaseController
             echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
             exit;
         }
-        
+
         //判斷 checkKeys 存不存在 並產生 回傳的 self::$PostData 正確格式
         self::$PostData = _Api::checkPostData(self::$checkKeys[$Action]);
-        
-       
+
+
         //ActionLogs       
-        $Item["ActionName"] = $Action;       
-        $Item["ActionPort"] = _Action::ActionPort($_SERVER['HTTP_ORIGIN'],$Item);
-        
+        $Item["ActionName"] = $Action;
+        $Item["ActionPort"] = _Action::ActionPort($_SERVER['HTTP_ORIGIN'], $Item);
+
         $checkKeys = checkKeys::getObjectByItem($Item);
-        
+
         if (!empty($checkKeys) && $checkKeys->offshelf) {
             $Return['ErrorMsg'][] = "Api Closed";
             echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
             exit;
-        }else if(empty($checkKeys)){
+        } else if (empty($checkKeys)) {
 
             var_dump($Item);
             exit;
@@ -135,15 +135,13 @@ class UsersApiController extends BaseController
             $Item = [];
             $History = $Return['ReDirect'];
             $Item['ReDirect'] = $Return['ReDirect'];
-            if (Tools::getIp() == Tools::ServerIp()){
+            if (Tools::getIp() == Tools::ServerIp()) {
                 if (!empty($_SESSION['Admin']['ReDirect'])) $Return['ReDirect'] = "reload";
                 else $Return['ReDirect'] = $History;
-            }else {
+            } else {
                 if (!empty($_SESSION['User']['ReDirect'])) $Return['ReDirect'] = "reload";
                 else $Return['ReDirect'] = $History;
             }
-           
-            
         }
         echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
     }
@@ -154,7 +152,7 @@ class UsersApiController extends BaseController
         $Return = [];
         $Item = [];
         $Item['ReDirect'] = self::$PostData['ReDirect'];
-       
+
         $_SESSION[Tools::getIp()]['ReDirect'] = RedirectAdmin::getOneByItem($Item);
         $_SESSION['Action'] = "Redirect";
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))
@@ -165,34 +163,42 @@ class UsersApiController extends BaseController
     //註冊
     public function Create()
     {
-        var_dump(round(((float)microtime(true))));
-        var_dump($_COOKIE);
+        $shortUniqueID = false;
+        if (round(((float)microtime(true))) == $_COOKIE['CreateTime']) {
 
-        exit;
-        $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile","password"]);
-        
+            $shortUniqueID = _UniqueID::shortUniqueID($_COOKIE['CreateTime']);
+            $_COOKIE['CreateTime'] = $shortUniqueID;
+        }
+
+        $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile", "password"]);
+
         //會員帳號判斷
         $Users = Users::getObjectByItem(["account" => $Insert['account']]);
 
-        if ( !empty($Users->account)) {
+        if (!empty($Users->account)) {
 
             $Return['ErrorMsg'][] = "會員已註冊過了";
-            return $Return ;
-            
-        }else {
+            return $Return;
+        } else {
             //新增會員
             $Users = Models::insertTable($Insert, "Users", true);
 
-            if(empty($Users->UniqueID)) return $Users;
-            
+            if (empty($Users->UniqueID)) return $Users;
+
+
+            $_SESSION[Tools::getIp()]['SignInSession'] = $shortUniqueID;
+
+
+
             $_Views = _Views::Init();
             $_Views['ReDirect'] = "signEmail";
             $_Views['UniqueID'] = $Users->UniqueID;
             $_Views['Token'] = Tools::getToken();
-            
-            Tools::emailSend($Insert['account'],"signEmail",_Views::RedirectAdmin($_Views));
+
+            Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
             $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
-            return $Return ;
+            $Return['ReDirect'] = "reload";
+            return $Return;
         }
     }
 
@@ -207,10 +213,10 @@ class UsersApiController extends BaseController
 
 
     public function Login()
-    {        
-        
+    {
+
         $Return = [];
-        $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile","password"]);
+        $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile", "password"]);
         $UsersLoginLogs = Models::insertTable($Insert, "UsersLoginLogs");
         if (empty($UsersLoginLogs['Object']->UniqueID)) return $UsersLoginLogs;
         else $UsersLoginLogs = $UsersLoginLogs['Object'];
@@ -218,14 +224,14 @@ class UsersApiController extends BaseController
         //會員帳號判斷
         $UsersAccount = Users::getObjectByItem(["account" => $Insert['account']]);
 
-        if(empty($UsersAccount)) $Return['ErrorMsg'][] = "請檢查Email後再登入";
+        if (empty($UsersAccount)) $Return['ErrorMsg'][] = "請檢查Email後再登入";
         else $Users = $UsersAccount;
-         //會員手機判斷
-         $UsersMobile = Users::getObjectByItem(["mobile" => $Insert['mobile']]);
+        //會員手機判斷
+        $UsersMobile = Users::getObjectByItem(["mobile" => $Insert['mobile']]);
 
-        if(empty($UsersMobile)) $Return['ErrorMsg'][] = "請查明後再登入";
+        if (empty($UsersMobile)) $Return['ErrorMsg'][] = "請查明後再登入";
         else $Users = $UsersMobile;
-         
+
 
         if (!empty($Users->password) && $Users->password == $Insert['password']) {
             //確定登入帳密 寫入該次登入紀錄ＩＤ
@@ -233,7 +239,7 @@ class UsersApiController extends BaseController
 
             $Item['UniqueID_Users'] = $Users->UniqueID;
             $Remove = UsersLoginLogs::getListObjectByItem($Item);
-            $Remove->update(["UniqueID_Users" => "_".$Users->UniqueID."_"]);
+            $Remove->update(["UniqueID_Users" => "_" . $Users->UniqueID . "_"]);
             //寫入登入紀錄
             $UsersLoginLogs->UniqueID_Users = $Users->UniqueID;
             $UsersLoginLogs->save();
@@ -255,7 +261,7 @@ class UsersApiController extends BaseController
             //紀錄UsersLocation
 
             _Api::UsersLocation($Users->UniqueID);
-        } else if (!empty($Users->account) || !empty($Users->mobile) ) {
+        } else if (!empty($Users->account) || !empty($Users->mobile)) {
             $Return['ErrorMsg'][] = "password error";
         } else {
             $Return['ErrorMsg'][] = "post error";

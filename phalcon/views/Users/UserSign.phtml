@@ -359,8 +359,13 @@
                 }).then(function successCallback(response) {
                     var data = response.data;
 
-                    if (data.UniqueID) location.reload();
-                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                    
+                    if (data.ErrorMsg) {
+                        sharedData.Toast(data.ErrorMsg, 3000);
+                        sleep(3);
+                    }
+
+                    if (data.ReDirect == 'reload') location.reload();
                 }, function errorCallback(response) {
                     sharedData.Toast(response.data, 3000);
 

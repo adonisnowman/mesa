@@ -10,10 +10,13 @@ class _UniqueID
     {
         
     }
-    public static function shortUniqueID(){
+    public static function shortUniqueID($SetTime = false){
         //加入隨機資料ID
         $Encryptionkey = self::$Encryptionkey;
-        $microtime =(int)  round(((float)microtime(true)));
+
+        if($SetTime != false && is_numeric($SetTime)) $microtime = (int) round($SetTime);
+        else $microtime =(int)  round(((float)microtime(true)));
+        
         $shortCode = [];
         while($microtime > 0){
             $num = $Encryptionkey[$microtime % strlen($Encryptionkey)];
