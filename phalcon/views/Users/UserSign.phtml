@@ -329,7 +329,7 @@
 
     <div id="dropDownSelect1"></div>
     <script>
-        adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http) {
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http, $cookies) {
             var Admin = this;
             if (location.pathname == "/logout") location.href = '';
             Admin.ReDirect = function(ReDirect) {
