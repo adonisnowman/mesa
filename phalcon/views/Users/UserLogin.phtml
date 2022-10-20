@@ -330,7 +330,7 @@
             }
             Admin.SignInSession = function() {
                 console.info("login click");
-               
+                Admin.SessonInfo = {};
                 Admin.SessonInfo.CreateTime = $cookies.get('CreateTime');
                 var data = {
                     'Action': 'SignInSession',
