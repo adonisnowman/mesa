@@ -187,7 +187,7 @@ class UsersApiController extends BaseController
             return $Return;
         } else {
             //新增會員
-            $Users = Models::insertTable($Insert, "Users", true);
+            $Users = Models::insertTable($Insert, "SignInList", true);
 
             if (empty($Users->UniqueID)) return $Users;
 
