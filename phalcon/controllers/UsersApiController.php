@@ -164,8 +164,11 @@ class UsersApiController extends BaseController
         $shortUniqueID = false;
         if ( abs(round(((float)microtime(true))) - $_COOKIE['CreateTime']) < 1.5) {
 
-            $shortUniqueID = _UniqueID::shortUniqueID($_COOKIE['CreateTime']);
+            $shortUniqueID = _UniqueID::shortUniqueID();
             $_COOKIE['CreateTime'] = $shortUniqueID;
+        } else {
+
+            var_dump( abs(round(((float)microtime(true))) - $_COOKIE['CreateTime']) );
         }
 
         $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile", "password"]);
