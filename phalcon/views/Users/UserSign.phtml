@@ -340,7 +340,7 @@
                 sharedData.Logout(ReDirect);
             }
             Admin.Create = function() {
-                var microtime = now = (Date.now ? Date.now() : new Date().getTime()) / 1000;
+                var microtime = now = Math.round(Date.now ? Date.now() : new Date().getTime()) / 1000;
                 $cookies.put('CreateTime', microtime);
                 Admin.CreateInfo.UniqueID = "";
                 var data = {
