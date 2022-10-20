@@ -14,7 +14,7 @@ class _UsersApi
             $RedirectAdmin = RedirectAdmin::getOneByItem($Item);
 
             if (!empty($RedirectAdmin)) {
-                $action_name = $Value;
+                $action_name = $Item['ReDirect'];
                 $FootPoint = $RedirectAdmin['label'];
             }
         }
@@ -26,7 +26,7 @@ class _UsersApi
             $checkKeys = checkKeys::getOneByItem($Item);
 
             if (!empty($checkKeys)) {
-                $action_name = $Value;
+                $action_name = $Item['ActionName'];
                 $FootPoint = $checkKeys['label'];
             }
         }
