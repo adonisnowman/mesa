@@ -153,8 +153,9 @@ class UsersApiController extends BaseController
     public function SignInSession(){
 
         $Return['SignInSession'] = [];
-        if(!empty($_SESSION[Tools::getIp()]['SignInSession'])) $Return['SignInSession'] = $_SESSION[Tools::getIp()]['SignInSession'];
-
+        if( round(((float)microtime(true))) == $_COOKIE['CreateTime'] && !empty($_SESSION[Tools::getIp()]['SignInSession'])) 
+            $Return['SignInSession'] = $_SESSION[Tools::getIp()]['SignInSession'];
+        else unset($_SESSION[Tools::getIp()]['SignInSession']);
         return $Return;
     }
     //註冊
