@@ -4,9 +4,7 @@ class _UsersApi
 {
 
     public static function UserFootPoint($ClassName,$Value){
-        var_dump($ClassName);
-        if($ClassName == "IndexController") 
-        exit;
+        
     }
 
     //讀取資料格式
