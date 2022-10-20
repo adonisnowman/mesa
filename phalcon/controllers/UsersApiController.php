@@ -13,7 +13,7 @@ class UsersApiController extends BaseController
 
     public function initialize()
     {
-        $some_name = session_name("some_name");
+        session_name("UsersApi");
         session_set_cookie_params(0, '/', $_SERVER['HTTP_HOST']);
 
         session_start();
