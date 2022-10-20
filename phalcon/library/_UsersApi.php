@@ -3,7 +3,11 @@
 class _UsersApi
 {
 
-    
+    public static function UserFootPoint($Return){
+
+        var_dump($Return);
+        exit;
+    }
 
     //讀取資料格式
 
