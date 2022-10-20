@@ -13,7 +13,7 @@ class _UsersApi
 
             if (!empty($RedirectAdmin)) {
                 $action_name = $Value;
-                $FootPoint = $RedirectAdmin->label;
+                $FootPoint = $RedirectAdmin['label'];
             }
         }
 
@@ -25,7 +25,7 @@ class _UsersApi
 
             if (!empty($checkKeys)) {
                 $action_name = $Value;
-                $FootPoint = $checkKeys->label;
+                $FootPoint = $checkKeys['label'];
             }
         }
 
