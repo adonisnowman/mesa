@@ -65,7 +65,8 @@ class IndexController extends BaseController
             $Return[$item['ReDirect']] = _Views::RedirectAdmin(["ReDirect" => $item['ReDirect']]);
         }
 
-
+        echo 123;
+        exit;
         if (!empty($Return['ReDirect']))
             $Echo = _Views::RedirectAdmin($Return);
             _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
