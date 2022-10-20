@@ -35,8 +35,8 @@
     <link rel="stylesheet" type="text/css" href="login/css/util.css">
     <link rel="stylesheet" type="text/css" href="login/css/main.css">
     <!--===============================================================================================-->
-     <!-- Anti-flicker snippet (recommended)  -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.3.2/flv.min.js"></script>
+    <!-- Anti-flicker snippet (recommended)  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.3.2/flv.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/4e4a114ffc.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
@@ -434,45 +434,53 @@
                                                 <div class="taskdate">20/07/2019 at 03:10PM
                                                 </div>
                                                 <div class="collapse" id="collapseExample">
-                                                    <div class="task-details pt-3">
-                                                        <div class="task-details__title">
-                                                            Checklist</div>
-                                                        <ul class="task-checklist">
-                                                            <li>
-                                                                <div class="custom-control custom-checkbox task-checkbox">
-                                                                    <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
-                                                                        <input class="input100 ng-pristine ng-untouched ng-valid ng-empty" type="text" name="email" ng-model="Admin.CreateInfo.account" aria-invalid="false">
-                                                                        <span class="focus-input100" data-placeholder="Email"></span>
-                                                                    </div>
-                                                                    <label class="custom-control-label" for="customCheck1">Make
-                                                                        Wireframe
-                                                                        Using
-                                                                        Figma</label>
+                                                    <div class="container-login100" style="background:none;">
+                                                        <div class="wrap-login100">
+
+                                                            <span class="login100-form-title p-b-26">
+                                                                Create Account
+                                                            </span>
+                                                            <span class="login100-form-title p-b-48">
+                                                                <i class="zmdi zmdi-font"></i>
+                                                            </span>
+
+                                                            <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
+                                                                <input class="input100" type="text" name="email" ng-model="Admin.CreateInfo.account">
+                                                                <span class="focus-input100" data-placeholder="Email"></span>
+                                                            </div>
+
+                                                            <div class="wrap-input100 validate-input" data-validate="Enter mobile">
+
+                                                                <input class="input100" type="phone" name="mobile" ng-model="Admin.CreateInfo.mobile">
+                                                                <span class="focus-input100" data-placeholder="mobile"></span>
+                                                            </div>
+                                                            <div class="wrap-input100 validate-input" data-validate="Enter password">
+                                                                <span class="btn-show-pass">
+                                                                    <i class="zmdi zmdi-eye"></i>
+                                                                </span>
+                                                                <input class="input100" type="password" name="password" ng-model="Admin.CreateInfo.password">
+                                                                <span class="focus-input100" data-placeholder="password"></span>
+                                                            </div>
+                                                            <div class="container-login100-form-btn">
+                                                                <div class="wrap-login100-form-btn">
+                                                                    <div class="login100-form-bgbtn"></div>
+                                                                    <button class="login100-form-btn" ng-click="Admin.Create()">
+                                                                        Create Account
+                                                                    </button>
                                                                 </div>
-                                                            </li>
-                                                            <li>
-                                                                <div class="custom-control custom-checkbox task-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input" id="customCheck2"><label class="custom-control-label" for="customCheck2">Approve
-                                                                        Design &
-                                                                        Make
-                                                                        PSD</label>
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <div class="custom-control custom-checkbox task-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input" id="customCheck3"><label class="custom-control-label" for="customCheck3">Make
-                                                                        PSD to
-                                                                        Responsive</label>
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <div class="custom-control custom-checkbox task-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input" id="customCheck4"><label class="custom-control-label" for="customCheck4">Test
-                                                                        & Submit to
-                                                                        Clients</label>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
+                                                            </div>
+
+                                                            <div class="text-center p-t-115">
+                                                                <span class="txt1">
+                                                                    have an account?
+                                                                </span>
+
+                                                                <a class="txt2" ng-click="Admin.ReDirect('UserLogin')">
+                                                                    Login In
+                                                                </a>
+                                                            </div>
+
+                                                        </div>
                                                     </div>
                                                     <div class="task-details__title">Deadline
                                                     </div>
