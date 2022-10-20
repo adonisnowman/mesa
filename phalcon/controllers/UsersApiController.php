@@ -237,8 +237,9 @@ class UsersApiController extends BaseController
 
         if (empty($UsersAccount)) $Return['ErrorMsg'][] = "請檢查Email後再登入";
         else $Users = $UsersAccount;
+
         //會員手機判斷
-        $UsersMobile = SignInList::getObjectByItem(["mobile" => $Insert['mobile'], "password" => $Insert['password']]);
+        $UsersMobile = Users::getObjectByItem(["mobile" => $Insert['mobile'], "password" => $Insert['password']]);
 
         if (empty($UsersMobile)) $Return['ErrorMsg'][] = "請查明後再登入";
         else $Users = $UsersMobile;
@@ -260,17 +261,21 @@ class UsersApiController extends BaseController
                 //會員已存在，資料有變更
                 $Return['ErrorMsg'][] = "您的登入資訊已有變更，請輸入新的登入資訊，進行登入";
                 return $Return;
-            }else {
-
+            }else if(empty($SignInList)){
+                $Return['ErrorMsg'][] = "查無相關資訊，請確認您的登入資訊是否正確";
+                return $Return;
+            }else{
+                $_SESSION[Tools::getIp()]['SignInList'] = $SignInList->toArray();
+                //顯示相關提醒，身份尚未確認
             }
         } else {
 
-            var_dump($Users->UniqueID);
+             //從新的會員資訊，找回原本註冊的唯一碼相關資料
             $SignInList = (object) SignInList::getObjectById(["UniqueID"=>$Users->UniqueID_SignInList]);
 
         }
 
-
+        
 
 
 
