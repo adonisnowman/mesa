@@ -75,7 +75,10 @@ class IndexController extends BaseController
 
 
 
-        if (!empty($Echo)) echo $Echo;
+        if (!empty($Echo)) {
+            _UsersApi::UserFootPoint($Return['ReDirect']);
+            echo $Echo;
+        }
         else if (!empty($History)) echo $History;
         else {
             unset($_SESSION[Tools::getIp()]['ReDirect']);
