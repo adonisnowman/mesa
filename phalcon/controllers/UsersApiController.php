@@ -187,9 +187,9 @@ class UsersApiController extends BaseController
             return $Return;
         } else {
             //新增會員
-            $Users = Models::insertTable($Insert, "SignInList", true);
+            $SignInList = Models::insertTable($Insert, "SignInList", true);
 
-            if (empty($Users->UniqueID)) return $Users;
+            if (empty($SignInList->UniqueID)) return $SignInList;
 
 
             $_SESSION[Tools::getIp()]['SignInSession']['CreateTime'] = $shortUniqueID;
