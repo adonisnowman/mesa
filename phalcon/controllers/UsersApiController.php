@@ -152,8 +152,8 @@ class UsersApiController extends BaseController
     }
     public function SignInSession(){
 
-        $Return = [];
-        if(!empty($_SESSION[Tools::getIp()]['SignInSession'])) $Return = $_SESSION[Tools::getIp()]['SignInSession'];
+        $Return['SignInSession'] = [];
+        if(!empty($_SESSION[Tools::getIp()]['SignInSession'])) $Return['SignInSession'] = $_SESSION[Tools::getIp()]['SignInSession'];
 
         return $Return;
     }
