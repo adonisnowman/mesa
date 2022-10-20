@@ -13,16 +13,11 @@ class UsersApiController extends BaseController
 
     public function initialize()
     {
-        session_name("UsersApi");
+        session_name("swoole");
         session_set_cookie_params(0, '/', $_SERVER['HTTP_HOST']);
 
         session_start();
-        self::$arrContextOptions = array(
-            "ssl" => array(
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ),
-        );
+       
 
         $response = new Response();
 
