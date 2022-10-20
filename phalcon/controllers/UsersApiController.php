@@ -260,8 +260,15 @@ class UsersApiController extends BaseController
                 //會員已存在，資料有變更
                 $Return['ErrorMsg'][] = "您的登入資訊已有變更，請輸入新的登入資訊，進行登入";
                 return $Return;
+            }else {
+
             }
-        } else $SignInList = (object) SignInList::getObjectById(["UniqueID"=>$Users->UniqueID_SignInList]);
+        } else {
+
+            var_dump($Users->UniqueID);
+            $SignInList = (object) SignInList::getObjectById(["UniqueID"=>$Users->UniqueID_SignInList]);
+
+        }
 
 
 
