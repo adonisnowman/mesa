@@ -265,7 +265,7 @@ class UsersApiController extends BaseController
                 $Return['ErrorMsg'][] = "查無相關資訊，請確認您的登入資訊是否正確";
                 return $Return;
             }else{
-                
+                unset($Return['ErrorMsg']);
                 //顯示相關提醒，身份尚未確認
             }
         } else {
