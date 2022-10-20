@@ -179,9 +179,9 @@ class UsersApiController extends BaseController
         $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile", "password"]);
 
         //會員帳號判斷
-        $Users = Users::getObjectByItem(["account" => $Insert['account']]);
+        $SignInList = SignInList::getObjectByItem(["account" => $Insert['account']]);
 
-        if (!empty($Users->account)) {
+        if (!empty($SignInList->account)) {
 
             $Return['ErrorMsg'][] = "會員已註冊過了";
             return $Return;
@@ -193,14 +193,14 @@ class UsersApiController extends BaseController
 
 
             $_SESSION[Tools::getIp()]['SignInSession']['CreateTime'] = $shortUniqueID;
-            $_SESSION[Tools::getIp()]['SignInSession']['account'] = $Users->account;
-            $_SESSION[Tools::getIp()]['SignInSession']['mobile'] = $Users->mobile;
+            $_SESSION[Tools::getIp()]['SignInSession']['account'] = $SignInList->account;
+            $_SESSION[Tools::getIp()]['SignInSession']['mobile'] = $SignInList->mobile;
 
 
 
             $_Views = _Views::Init();
             $_Views['ReDirect'] = "signEmail";
-            $_Views['UniqueID'] = $Users->UniqueID;
+            $_Views['UniqueID'] = $SignInList->UniqueID;
             $_Views['Token'] = Tools::getToken();
 
             Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
