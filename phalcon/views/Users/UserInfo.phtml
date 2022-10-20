@@ -27,7 +27,7 @@
                   <!-- navbar start -->
                   <nav id="navbar"
                         class="navbar navbar-expand-md navbar-light fixed-top bg-white border-bottom shadow-sm"><a
-                              class="navbar-brand" href="chatbox/index.html"><img src="assets/images/logo.svg" width="50"
+                              class="navbar-brand" href="chatbox/index.html"><img src="chatbox/assets/images/logo.svg" width="50"
                                     height="50" class="d-inline-block align-top" alt="">
                               <h1>Chatriq</h1>
                         </a>
@@ -727,12 +727,12 @@
                   </div><!-- main content end -->
             </div>
       </div><!-- Javascripts Files -->
-      <script src="dist/js/jquery-3.3.1.slim.min.js"></script>
-      <script src="dist/js/popper.min.js"></script>
-      <script src="assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
-      <script src="assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-      <script src="assets/vendors/shortable/sortable.min.js"></script>
-      <script src="dist/js/main.js"></script>
+      <script src="chatbox/dist/js/jquery-3.3.1.slim.min.js"></script>
+      <script src="chatbox/dist/js/popper.min.js"></script>
+      <script src="chatbox/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+      <script src="chatbox/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+      <script src="chatbox/assets/vendors/shortable/sortable.min.js"></script>
+      <script src="chatbox/dist/js/main.js"></script>
       <script
             class="text/javascript">/*--------------------------------------------------------------    TO-DO LIST START    --------------------------------------------------------------*/        Sortable.create(taskList, { animation: 100, group: 'list-1', draggable: '.taskcard', handle: '.taskcard-dragger', sort: true, chosenClass: 'active', }); Sortable.create(inProcessTask, { group: 'list-1', handle: '.taskcard-dragger' }); Sortable.create(inReviewTask, { group: 'list-1', handle: '.taskcard-dragger' }); Sortable.create(completedTasks, { group: 'list-1', handle: '.taskcard-dragger' }); $('.task-checklist').on('click', '.task-checkbox >label', function () { $(this).toggleClass('done'); }); $(".task-expander-btn").click(function () { $(this).toggleClass("mdi-minus-box-outline mdi-plus-box-outline"); });    /*--------------------------------------------------------------    TO-DO LIST END    --------------------------------------------------------------*/</script>
 </body>
