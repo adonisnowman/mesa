@@ -37,8 +37,7 @@ class _UsersApi
         $Insert['controller_name'] = $ClassName;
         $Insert['action_name'] = $action_name;
         $Insert['label'] = $FootPoint;
-        var_dump($Insert);
-        exit;
+       
         return Models::insertTable($Insert, "UserFootPoint");
     }
 
