@@ -30,7 +30,7 @@ class _UsersApi
         }
 
         if (!empty($_SESSION[Tools::getIp()]['SignInList']))
-            $Insert['UniqueID_SignInList'] = $_SESSION[Tools::getIp()]['SignInList'];
+            $Insert['UniqueID_SignInList'] = $_SESSION[Tools::getIp()]['SignInList']['UniqueID'];
         $Insert['controller_name'] = $ClassName;
         $Insert['action_name'] = $action_name;
         $Insert['label'] = $FootPoint;
