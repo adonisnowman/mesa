@@ -212,7 +212,7 @@ class UsersApiController extends BaseController
             $_SESSION[Tools::getIp()]['History'] = "UserSign";
             $_SESSION[Tools::getIp()]['ReDirect'] = "UserLogin";
             $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
-            $Return['ReDirect'] = "reload";
+            $Return['ReDirect'] = "UserLogin";
             return $Return;
         }
     }

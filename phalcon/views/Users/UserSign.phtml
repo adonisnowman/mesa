@@ -364,7 +364,7 @@
                         sharedData.Toast(data.ErrorMsg, 3000);
                     }
 
-                    if (data.ReDirect) location.reload();
+                    if (data.ReDirect) Admin.ReDirect(data.ReDirect);
                 }, function errorCallback(response) {
                     sharedData.Toast(response.data, 3000);
 
