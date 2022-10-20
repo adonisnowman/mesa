@@ -10,6 +10,9 @@ class _UsersApi
         if ($ClassName == "IndexController") {
             if(is_string($Value)) $Item['ReDirect'] = $Value;
             if(!empty($Value['ReDirect'])) $Item['ReDirect'] = $Value;
+
+            var_dump($Item);
+            exit;
             $RedirectAdmin = RedirectAdmin::getOneByItem($Item);
 
             if (!empty($RedirectAdmin)) {
