@@ -365,7 +365,7 @@
                         sleep(3);
                     }
 
-                    if (data.ReDirect == 'reload') location.reload();
+                    if (data.ReDirect) location.reload();
                 }, function errorCallback(response) {
                     sharedData.Toast(response.data, 3000);
 
