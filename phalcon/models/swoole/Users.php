@@ -8,38 +8,36 @@ class Users extends BaseModel
 	public function initialize()
 	{		
         $this->setSource(self::$tableName);
+        $this->hasOne(
+            'UniqueID_SignInList',
+            SignInList::class,
+            'UniqueID',[]
+        );
 	}
 
 	public function beforeValidationOnCreate()
 	{
 		$this->register_time = Tools::getDateTime();
-		$this->updated_time = Tools::getDateTime();
-		$this->REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
-		$this->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+		
 	}
 
 	public function beforeValidationOnUpdate()
 	{
 		$this->updated_time = Tools::getDateTime();
-		$this->REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
-		$this->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+		
 	}
 
 	public function beforeSave()
 	{
-		if (!empty($this->password)) {
-			$this->password = Tools::Crypt($this->password);
-		}
+		
         
 	}
 
 	public function afterFetch()
 	{
-		if (!empty($this->password)) {
-			$this->password = Tools::Crypt($this->password,true);
-		}
+		
         
-		return $this;
+		
 	}
 
 	public function afterSave()

@@ -17,7 +17,7 @@ class UsersApiController extends BaseController
         session_set_cookie_params(0, '/', $_SERVER['HTTP_HOST']);
 
         session_start();
-       
+
 
         $response = new Response();
 
@@ -131,10 +131,10 @@ class UsersApiController extends BaseController
             $History = $Return['ReDirect'];
             $Item['ReDirect'] = $Return['ReDirect'];
             //$_SESSION[Tools::getIp()]['ReDirect'] = RedirectAdmin::getOneByItem($Item);
-            if(!empty($_SESSION[Tools::getIp()]['ReDirect'])) $Return['ReDirect'] = "reload";
+            if (!empty($_SESSION[Tools::getIp()]['ReDirect'])) $Return['ReDirect'] = "reload";
             else $Return['ReDirect'] = $History;
         }
-        echo JSON_encode( $Return, JSON_UNESCAPED_UNICODE);
+        echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
     }
 
     //導頁
@@ -150,12 +150,13 @@ class UsersApiController extends BaseController
             $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
         return $Return;
     }
-    public function SignInSession(){
+    public function SignInSession()
+    {
 
         $Return['SignInSession'] = [];
-        if( !empty($_SESSION[Tools::getIp()]['SignInSession'])) 
+        if (!empty($_SESSION[Tools::getIp()]['SignInSession']))
             $Return['SignInSession'] = $_SESSION[Tools::getIp()]['SignInSession'];
-        
+
         unset($_SESSION[Tools::getIp()]['SignInSession']);
         return $Return;
     }
@@ -163,7 +164,7 @@ class UsersApiController extends BaseController
     public function Create()
     {
         $shortUniqueID = false;
-        if ( abs(round(((float)microtime(true))) == $_COOKIE['CreateTime']) ) {
+        if (abs(round(((float)microtime(true))) == $_COOKIE['CreateTime'])) {
 
             $shortUniqueID = _UniqueID::shortUniqueID();
             $_COOKIE['CreateTime'] = $shortUniqueID;
@@ -229,50 +230,77 @@ class UsersApiController extends BaseController
         if (empty($UsersLoginLogs['Object']->UniqueID)) return $UsersLoginLogs;
         else $UsersLoginLogs = $UsersLoginLogs['Object'];
 
+
+
         //會員帳號判斷
-        $UsersAccount = Users::getObjectByItem(["account" => $Insert['account']]);
+        $UsersAccount = Users::getObjectByItem(["account" => $Insert['account'], "password" => $Insert['password']]);
 
         if (empty($UsersAccount)) $Return['ErrorMsg'][] = "請檢查Email後再登入";
         else $Users = $UsersAccount;
         //會員手機判斷
-        $UsersMobile = Users::getObjectByItem(["mobile" => $Insert['mobile']]);
+        $UsersMobile = SignInList::getObjectByItem(["mobile" => $Insert['mobile'], "password" => $Insert['password']]);
 
         if (empty($UsersMobile)) $Return['ErrorMsg'][] = "請查明後再登入";
         else $Users = $UsersMobile;
 
 
-        if (!empty($Users->password) && $Users->password == $Insert['password']) {
+        if (empty($Users->UniqueID)) {
+            //註冊帳號判斷
+            $SignInListAccount = SignInList::getObjectByItem(["account" => $Insert['account'], "password" => $Insert['password']]);
+
+            if (empty($SignInListAccount)) $Return['ErrorMsg'][] = "請檢查Email後再登入";
+            else $SignInList = $SignInListAccount;
+            //註冊手機判斷
+            $SignInListMobile = SignInList::getObjectByItem(["mobile" => $Insert['mobile'], "password" => $Insert['password']]);
+
+            if (empty($SignInListMobile)) $Return['ErrorMsg'][] = "請查明後再登入";
+            else $SignInList = $SignInListMobile;
+
+            if (!empty($SignInList) && !empty($SignInList->Users)) {
+                //會員已存在，資料有變更
+                $Return['ErrorMsg'][] = "您的登入資訊已有變更，請輸入新的登入資訊，進行登入";
+                return $Return;
+            }
+        } else $SignInList = SignInList::getObjectById($Users->UniqueID_SignInList);
+
+
+
+
+
+
+        if (!empty($SignInList->UniqueID)) {
             //確定登入帳密 寫入該次登入紀錄ＩＤ
-            if (!empty($UsersLoginLogs->UniqueID)) $Users->UniqueID_UsersLoginLogs = $UsersLoginLogs->UniqueID;
 
-            $Item['UniqueID_Users'] = $Users->UniqueID;
-            $Remove = UsersLoginLogs::getListObjectByItem($Item);
-            $Remove->update(["UniqueID_Users" => "_" . $Users->UniqueID . "_"]);
-            //寫入登入紀錄
-            $UsersLoginLogs->UniqueID_Users = $Users->UniqueID;
-            $UsersLoginLogs->save();
-            //寫入會員資料紀錄
-            $Users->logined_time = Tools::getDateTime();
-            $Users->save();
+            if (!empty($Users->UniqueID)) {
+
+                if (!empty($UsersLoginLogs->UniqueID)) $Users->UniqueID_UsersLoginLogs = $UsersLoginLogs->UniqueID;
+                else {
+                    $Return['ErrorMsg'][] = "登入記錄發生錯誤，請稍後再登入。";
+                    return $Return;
+                }
+
+                $Item['UniqueID_Users'] = $Users->UniqueID;
+                $Remove = UsersLoginLogs::getListObjectByItem($Item);
+                $Remove->update(["UniqueID_Users" => "_" . $Users->UniqueID . "_"]);
+                //寫入登入紀錄
+                $UsersLoginLogs->UniqueID_Users = $Users->UniqueID;
+                $UsersLoginLogs->save();
+                //寫入會員資料紀錄
+                $Users->logined_time = Tools::getDateTime();
+                $Users->save();
+
+                //紀錄UsersLocation
+
+                _Api::UsersLocation($Users->UniqueID);
+                $_SESSION[Tools::getIp()]['Users'] = $Users->toArray();
+            }
 
 
-            $_SESSION[Tools::getIp()]['Users'] = $Users->toArray();
-            $_SESSION['checkKeys'] = checkKeys::getListByItem(["AccountType" => "None"]);
-            $_SESSION['checkKeys'] = array_merge($_SESSION['checkKeys'], checkKeys::getListByItem(["AccountType" => $Users->account]));
+            $_SESSION[Tools::getIp()]['SignInList'] = $Users->toArray();
 
-
-            $Return['UniqueID'] = $Users->UniqueID;
-
-
-
-
-            //紀錄UsersLocation
-
-            _Api::UsersLocation($Users->UniqueID);
-        } else if (!empty($Users->account) || !empty($Users->mobile)) {
-            $Return['ErrorMsg'][] = "password error";
+            $Return['UniqueID'] = $UsersLoginLogs->UniqueID;
         } else {
-            $Return['ErrorMsg'][] = "post error";
+            $Return['ErrorMsg'][] = "登入資訊有誤，請查明後再登入";
         }
 
         if (!empty($Return['ErrorMsg'])) {

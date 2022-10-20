@@ -8,6 +8,11 @@ class SignInList extends BaseModel
       {
             $this->setConnectionService('swoole');
             $this->setSource(self::$tableName);
+            $this->hasOne(
+                  'UniqueID',
+                  Users::class,
+                  'UniqueID_SignInList',[]
+              );
       }
 
       public function beforeValidationOnCreate()
