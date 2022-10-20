@@ -18,6 +18,8 @@ class _UsersApi
         }
 
         if ($ClassName == "UsersApiController") {
+
+            $Item['ControllerName'] = $ClassName;
             $Item['ActionName'] = $Value;
             $checkKeys = checkKeys::getOneByItem($Item);
 
