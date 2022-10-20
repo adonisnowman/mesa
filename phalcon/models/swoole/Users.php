@@ -7,6 +7,7 @@ class Users extends BaseModel
 	public static $tableName = __CLASS__;
 	public function initialize()
 	{		
+        $this->setConnectionService('swoole');
         $this->setSource(self::$tableName);
         $this->hasOne(
             'UniqueID_SignInList',
