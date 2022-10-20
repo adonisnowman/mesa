@@ -67,7 +67,7 @@ class SignInList extends BaseModel
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);
-            return $Object;
+            return (object) $Object;
       }
       public static function getOneById($Item)
       {
