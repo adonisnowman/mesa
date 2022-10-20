@@ -697,6 +697,7 @@
     <script>
         adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http, $cookies) {
             var Admin = this;
+            console.info(123);
             Admin.LoginInfo = {};
             if (location.pathname == "/logout") location.href = '';
             Admin.ReDirect = function(ReDirect) {
