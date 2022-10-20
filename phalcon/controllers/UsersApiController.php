@@ -162,7 +162,7 @@ class UsersApiController extends BaseController
     public function Create()
     {
         $shortUniqueID = false;
-        if (round(((float)microtime(true))) == $_COOKIE['CreateTime']) {
+        if ( abs(round(((float)microtime(true))) - $_COOKIE['CreateTime']) < 1.5) {
 
             $shortUniqueID = _UniqueID::shortUniqueID($_COOKIE['CreateTime']);
             $_COOKIE['CreateTime'] = $shortUniqueID;
