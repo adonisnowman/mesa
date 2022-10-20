@@ -5,7 +5,7 @@ class _UsersApi
 
     public static function UserFootPoint($ClassName,$Value){
         var_dump($ClassName);
-        if($ClassName == "")
+        if($ClassName == "IndexController") 
         exit;
     }
 
