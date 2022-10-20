@@ -425,134 +425,15 @@
                         <hr>
                         <div class="row pt-3 mb-5">
                             <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                                <div class="taskpanel-title">Tasklist</div>
+                                <div class="taskpanel-title">註冊資訊</div>
                                 <div class="taskpanel" id="taskList">
+                                    
                                     <div class="taskcard">
                                         <div class="card">
                                             <div class="card-body">
-                                                <div class="taskname">手機簡訊認證尚未通過
+                                                <div class="taskname">手機號碼。
                                                 </div>
-                                                <div class="taskdate">20/07/2019 at 03:10PM
-                                                </div>
-                                                <div class="collapse" id="MobileChecked">
-
-                                                    <div class="container-login100-form-btn">
-                                                        <div class="wrap-login100-form-btn">
-                                                            <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
-                                                                發送簡訊至您註冊的手機號碼
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="wrap-input100 validate-input" data-validate="Enter mobile_code">
-                                                        <span class="btn-show-pass">
-                                                            <i class="zmdi zmdi-eye"></i>
-                                                        </span>
-                                                        <input class="input100" type="text" name="mobile_code" ng-model="Admin.CreateInfo.mobile_code">
-                                                        <span class="focus-input100" data-placeholder="六位數簡訊驗證碼"></span>
-                                                    </div>
-                                                    <div class="container-login100-form-btn">
-                                                        <div class="wrap-login100-form-btn">
-                                                            <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
-                                                                進行手機簡訊驗證
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="text-center p-t-115">
-                                                        <span class="txt1">
-                                                            手機已更換，前往變更手機資訊
-                                                        </span>
-
-                                                        <a class="txt2" ng-click="Admin.ReDirect('UserLogin')">
-                                                            點我前往
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-footer taskpanel-footer">
-                                                <div class="taskinfo-footer">
-                                                    完成身份認證，開啟會員基本功能
-                                                </div>
-                                            </div>
-                                            <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                            <div class="taskcard-ribbon"><span class="badge badge-danger">Important</span>
-                                            </div>
-                                            <div class="task-expander" role="button" data-toggle="collapse" data-target="#MobileChecked" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="taskcard">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="taskname">電子郵件認證尚未通過
-                                                </div>
-                                                <div class="taskdate">20/07/2019 at 03:10PM
-                                                </div>
-                                                <div class="collapse" id="EmailChecked">
-
-                                                    <div class="wrap-input100 validate-input" data-validate="Enter account">
-                                                        <span class="btn-show-pass">
-                                                            <i class="zmdi zmdi-eye"></i>
-                                                        </span>
-                                                        <input class="input100" type="text" name="account" ng-model="Admin.CreateInfo.account">
-                                                        <span class="focus-input100" data-placeholder="電子郵件資訊確認"></span>
-                                                    </div>
-                                                    <div class="container-login100-form-btn">
-                                                        <div class="wrap-login100-form-btn">
-                                                            <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
-                                                                發送認證信件至您註冊的電子郵件
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="wrap-input100 validate-input" data-validate="Enter account_token">
-                                                        <span class="btn-show-pass">
-                                                            <i class="zmdi zmdi-eye"></i>
-                                                        </span>
-                                                        <input class="input100" type="text" name="account_token" ng-model="Admin.CreateInfo.account_token">
-                                                        <span class="focus-input100" data-placeholder="電子郵件驗證碼"></span>
-                                                    </div>
-                                                    <div class="container-login100-form-btn">
-                                                        <div class="wrap-login100-form-btn">
-                                                            <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
-                                                                進行電子郵件驗證
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="text-center p-t-115">
-                                                        <span class="txt1">
-                                                            電子郵件已更換，前往變更電子郵件資訊
-                                                        </span>
-
-                                                        <a class="txt2" ng-click="Admin.ReDirect('UserLogin')">
-                                                            點我前往
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-footer taskpanel-footer">
-                                                <div class="taskinfo-footer">
-                                                    完成身份認證，開啟會員基本功能
-                                                </div>
-                                            </div>
-                                            <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                            <div class="taskcard-ribbon"><span class="badge badge-danger">Important</span>
-                                            </div>
-                                            <div class="task-expander" role="button" data-toggle="collapse" data-target="#EmailChecked" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="taskcard">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="taskname">每日13:00 將進行資料更新。
-                                                </div>
-                                                <div class="taskdate">20/07/2019 at 03:10PM
+                                                <div class="taskdate">0906777716
                                                 </div>
                                             </div>
                                             <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
@@ -565,9 +446,22 @@
                                     <div class="taskcard">
                                         <div class="card">
                                             <div class="card-body">
-                                                <div class="taskname">你有尚未讀取的個人訊息
+                                                <div class="taskname">電子信箱
                                                 </div>
-                                                <div class="taskdate">20/07/2019 at 03:10PM
+                                                <div class="taskdate">adonisnowman@gmail.com
+                                                </div>
+                                            </div>
+                                            <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                            <div class="taskcard-ribbon"><span class="badge badge-warning">未讀訊息</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="taskcard">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="taskname">串接第三方登入
+                                                </div>
+                                                <div class="taskdate">Line,Google,AppleID
                                                 </div>
                                             </div>
                                             <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
