@@ -68,6 +68,7 @@ class IndexController extends BaseController
 
         if (!empty($Return['ReDirect']))
             $Echo = _Views::RedirectAdmin($Return);
+            _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
         if (!empty($_SESSION[Tools::getIp()]['History'])) {
             $Return['ReDirect'] = $_SESSION[Tools::getIp()]['History'];
             $History = _Views::RedirectAdmin($Return);
@@ -80,13 +81,15 @@ class IndexController extends BaseController
         }
         else if (!empty($History)) {
             echo $History;
+            _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
         }
         else {
             unset($_SESSION[Tools::getIp()]['ReDirect']);
             $Return['ReDirect'] = "UserSign";
             echo _Views::RedirectAdmin($Return);
+            _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
         }
 
-        _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
+       
     }
 }
