@@ -3,9 +3,9 @@
 class _UsersApi
 {
 
-    public static function UserFootPoint($Return){
-
-        var_dump($Return);
+    public static function UserFootPoint($ClassName,$Value){
+        var_dump($ClassName);
+        if($ClassName == "")
         exit;
     }
 

@@ -76,7 +76,7 @@ class IndexController extends BaseController
 
 
         if (!empty($Echo)) {
-            _UsersApi::UserFootPoint($Return['ReDirect']);
+            _UsersApi::UserFootPoint(__CLASS__,$Return['ReDirect']);
             echo $Echo;
         }
         else if (!empty($History)) echo $History;
