@@ -19,7 +19,7 @@ class UserFootPoint extends BaseModel
 	public function beforeValidationOnCreate()
 	{
 		$this->created_time = Tools::getDateTime();
-		
+		if(empty($this->UniqueID_SignInList)) $this->UniqueID_SignInList = $_SERVER['REMOTE_ADDR'];
 	}
 
 	public function beforeValidationOnUpdate()
