@@ -165,7 +165,7 @@ class UsersApiController extends BaseController
     //註冊
     public function Create()
     {
-        var_dump(microtime(false));
+        var_dump(round(((float)microtime(true) - (float)time()) * pow(10, 6)));
         var_dump($_COOKIE);
 
         exit;
