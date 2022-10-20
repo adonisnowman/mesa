@@ -132,7 +132,7 @@
 											</md-select>
 										</md-input-container>
 									</div>
-									<div class="col-md-8 align-self-center">
+									<div class="col-md-4 align-self-center">
 										<label class="form-label mt-4 ms-0">Api權限</label>
 										<md-input-container class="btn btn-lg">
 											<md-select ng-model="Admin.checkKeysRule_selectd" aria-label="Select">
@@ -144,7 +144,11 @@
 											</md-select>
 										</md-input-container>
 									</div>
-
+									<div class="col-md-4 align-self-center">
+									<div class="input-group input-group-static">
+											<input type="text" class="form-control" placeholder="功能說明" ng-model="Admin.Input_RedirectAdmin.label">
+										</div>
+									</div>
 								</div>
 								<div class="row">
 									<div class="card ms-4 mt-2 col-3" ng-repeat="item in Admin.Input_checkKeysRule track by $index" ng-click="Admin.Input_checkKeysRule.splice($index,1)">
