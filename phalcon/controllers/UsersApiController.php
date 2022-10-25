@@ -310,8 +310,8 @@ class UsersApiController extends BaseController
                 $_SESSION[Tools::getIp()]['Users'] = $Users->toArray();
             }
 
-
             
+            $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
             $_SESSION[Tools::getIp()]['SignInList'] = $SignInList->toArray();
             $Return['UniqueID'] = $UsersLoginLogs->UniqueID;
         } else {

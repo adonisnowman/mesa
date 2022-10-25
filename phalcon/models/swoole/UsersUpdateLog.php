@@ -1,7 +1,7 @@
 <?php
 
 
-class Users extends BaseModel
+class UsersUpdateLog extends BaseModel
 {
 
 	public static $tableName = __CLASS__;
@@ -10,18 +10,25 @@ class Users extends BaseModel
         $this->setConnectionService('swoole');
         $this->setSource(self::$tableName);
         $this->hasOne(
-            'UniqueID_SignInList',
-            SignInList::class,
+            'UniqueID_Users',
+            Users::class,
             'UniqueID',[]
         );
-
         $this->hasOne(
-            'UniqueID_UsersLoginLogs',
-            UsersLoginLogs::class,
+            'UniqueID_UsersConnection',
+            UsersConnection::class,
             'UniqueID',[]
         );
-
-        
+        $this->hasOne(
+            'UniqueID_EmailChecked',
+            EmailChecked::class,
+            'UniqueID',[]
+        );
+        $this->hasOne(
+            'UniqueID_MobileChecked',
+            MobileChecked::class,
+            'UniqueID',[]
+        );
 	}
 
 	public function beforeValidationOnCreate()
@@ -32,7 +39,7 @@ class Users extends BaseModel
 
 	public function beforeValidationOnUpdate()
 	{
-		$this->updated_time = Tools::getDateTime();
+		
 		
 	}
 

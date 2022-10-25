@@ -8,8 +8,8 @@ class _UsersApi
 
 
         if ($ClassName == "IndexController") {
-            if(is_string($Value)) $Item['ReDirect'] = $Value;
-            if(!empty($Value['ReDirect'])) $Item['ReDirect'] = $Value['ReDirect'];
+            if (is_string($Value)) $Item['ReDirect'] = $Value;
+            if (!empty($Value['ReDirect'])) $Item['ReDirect'] = $Value['ReDirect'];
 
             $RedirectAdmin = RedirectAdmin::getOneByItem($Item);
 
@@ -34,10 +34,16 @@ class _UsersApi
         if (!empty($_SESSION[Tools::getIp()]['SignInList']))
             $Insert['UniqueID_SignInList'] = $_SESSION[Tools::getIp()]['SignInList']['UniqueID'];
         else $Insert['UniqueID_SignInList'] = Tools::getIp();
+
+
+        if (!empty($_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs']))
+            $Insert['UniqueID_UsersLoginLogs'] = $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'];
+        else $Insert['UniqueID_UsersLoginLogs'] = Tools::getIp();
+
         $Insert['controller_name'] = $ClassName;
         $Insert['action_name'] = $action_name;
         $Insert['label'] = $FootPoint;
-       
+
         return Models::insertTable($Insert, "UserFootPoint");
     }
 
