@@ -4,17 +4,18 @@
 class UsersLoginLogs extends BaseModel
 {
     public static $tableName = __CLASS__;
-	public function initialize()
-	{
-		$this->setConnectionService('swoole');
-        $this->setSource( self::$tableName);
+    public function initialize()
+    {
+        $this->setConnectionService('swoole');
+        $this->setSource(self::$tableName);
         $this->hasOne(
             'UniqueID',
             Users::class,
-            'UniqueID_UsersLoginLogs',[]
+            'UniqueID_UsersLoginLogs',
+            []
         );
-}
     }
+
 
     public function beforeValidationOnCreate()
     {
@@ -35,14 +36,13 @@ class UsersLoginLogs extends BaseModel
 
     public function afterFetch()
     {
-        
     }
 
     public function afterSave()
     {
         $this->updated_time = Tools::getDateTime();
     }
-    
+
     public static function getObjectById($Item)
     {
         $keys = ["UniqueID"];
@@ -68,7 +68,7 @@ class UsersLoginLogs extends BaseModel
     public static function getObjectByItem($Item)
     {
         $keys = array_keys($Item);
-		$Object = self::$tableName::findFirst([
+        $Object = self::$tableName::findFirst([
             'conditions' => Models::Conditions($keys),
             'bind'       => Tools::fix_element_Key($Item, $keys),
             'for_update' => true,
