@@ -177,10 +177,11 @@ class UsersApiController extends BaseController
 
         //會員帳號判斷
         $SignInList = SignInList::getObjectByItem(["account" => $Insert['account']]);
+        
 
         if (!empty($SignInList->account)) {
 
-            $Return['ErrorMsg'][] = "會員已註冊過了";
+            $Return['ErrorMsg'][] = "會員Email已註冊過了";
             return $Return;
         } else {
             //新增會員
@@ -189,6 +190,14 @@ class UsersApiController extends BaseController
 
             if (empty($SignInList->UniqueID)) return $SignInList;
 
+            //新增 身分驗證
+
+            $Insert = [];
+            $Insert['UniqueID_SignInList'] = $SignInList->UniqueID;
+
+            $SignInCkecked = Models::insertTable($Insert, "SignInCkecked", true);
+
+            if (empty($SignInCkecked->UniqueID)) return $SignInCkecked;
 
             $_SESSION[Tools::getIp()]['SignInSession']['CreateTime'] = $shortUniqueID;
             $_SESSION[Tools::getIp()]['SignInSession']['account'] = $SignInList->account;
@@ -196,22 +205,36 @@ class UsersApiController extends BaseController
 
 
 
-            $_Views = _Views::Init();
-            $_Views['ReDirect'] = "signEmail";
-            $_Views['UniqueID'] = $SignInList->UniqueID;
-            $_Views['Token'] = Tools::getToken();
-
-            Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
+            
 
 
             //回傳資料
 
             $_SESSION[Tools::getIp()]['History'] = "UserSign";
             $_SESSION[Tools::getIp()]['ReDirect'] = "UserLogin";
-            $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
+            
             $Return['ReDirect'] = "UserLogin";
             return $Return;
         }
+    }
+
+    public function EmailChecked(){
+
+        
+        
+        $Insert = Tools::fix_element_Key(self::$PostData, ["UniqueID_SignInList","email", "email_token"]);
+
+
+
+
+        $_Views = _Views::Init();
+        $_Views['ReDirect'] = "signEmail";
+        $_Views['UniqueID_SignInList'] = $Insert['UniqueID_SignInList'];
+        $_Views['Token'] = Tools::getToken();
+
+        Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
+        $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
+        return $Return;
     }
 
     //登入登出功能
