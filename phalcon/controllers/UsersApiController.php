@@ -218,22 +218,134 @@ class UsersApiController extends BaseController
         }
     }
 
-    public function EmailChecked(){
+    //電子郵件認證發送
+    public function EmailVerify(){
 
+        if(empty($_SESSION[Tools::getIp()]['SignInList'])) {
+
+            $Return['ErrorMsg'] = "請先登入";
+            return $Return;
+        }
         
-        
-        $Insert = Tools::fix_element_Key(self::$PostData, ["UniqueID_SignInList","email", "email_token"]);
+
+        $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
 
 
+
+        $Insert = Tools::fix_element_Key(self::$PostData, ["email"]);
+        $Insert['email_token'] = "";
+        $Insert['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+
+        $EmailChecked = Models::insertTable($Insert, "EmailChecked", true);
 
 
         $_Views = _Views::Init();
         $_Views['ReDirect'] = "signEmail";
-        $_Views['UniqueID_SignInList'] = $Insert['UniqueID_SignInList'];
+        $_Views['UniqueID'] = $EmailChecked->UniqueID;
         $_Views['Token'] = Tools::getToken();
 
         Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
         $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
+        return $Return;
+    }
+
+    //電子郵件認證確認
+    public function EmailChecked(){
+
+        if(empty($_SESSION[Tools::getIp()]['SignInList'])) {
+
+            $Return['ErrorMsg'] = "請先登入";
+            return $Return;
+        }
+        
+
+        $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
+
+
+
+        $Item = Tools::fix_element_Key(self::$PostData, ["email", "email_token"]);
+        $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+
+        $EmailChecked = EmailChecked::getObjectByItem($Item);
+        if(empty($EmailChecked->UniqueID)){
+
+            $Return['ErrorMsg'][] = "查無相關Email 驗證資料";
+            return $Return;
+
+
+        }else{
+
+            $EmailChecked->HTTP_HOST = $_SERVER['HTTP_HOST'];
+            $EmailChecked->REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+            $EmailChecked->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+            $EmailChecked->checked_time = Tools::getDateTime();
+            $EmailChecked->save();
+        }
+
+        $Return['ErrorMsg'][] = "完成Email驗證";
+        return $Return;
+    }
+
+    //手機號碼認證發送
+    public function MobileVerify(){
+
+        if(empty($_SESSION[Tools::getIp()]['SignInList'])) {
+
+            $Return['ErrorMsg'] = "請先登入";
+            return $Return;
+        }
+        
+
+        $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
+
+
+
+        $Insert = Tools::fix_element_Key(self::$PostData, ["mobile"]);
+        $Insert['mobile_code'] = "";
+        $Insert['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+
+        $MobileChecked = Models::insertTable($Insert, "MobileChecked", true);
+
+        $Return['MobileChecked'] = $MobileChecked->toArray();
+        $Return['ErrorMsg'][] = "系統已發相關驗證碼至您登記的手機號碼，請輸入六位數手機簡訊驗證碼";
+        return $Return;
+    }
+
+    //手機號碼認證發送
+    public function MobileChecked(){
+
+        if(empty($_SESSION[Tools::getIp()]['SignInList'])) {
+
+            $Return['ErrorMsg'] = "請先登入";
+            return $Return;
+        }
+        
+
+        $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
+
+
+
+        $Item = Tools::fix_element_Key(self::$PostData, ["UniqueID","mobile","mobile_code"]);
+        $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+
+        $MobileChecked = MobileChecked::getObjectByItem($Item);
+
+        if(empty($MobileChecked->UniqueID)){
+
+            $Return['ErrorMsg'][] = "簡訊驗證輸入馬輸入錯誤!";
+            return $Return;
+
+
+        }else{
+
+            $MobileChecked->HTTP_HOST = $_SERVER['HTTP_HOST'];
+            $MobileChecked->REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+            $MobileChecked->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+            $MobileChecked->checked_time = Tools::getDateTime();
+            $MobileChecked->save();
+        }
+
+        $Return['ErrorMsg'][] = "完成手機簡訊驗證";
         return $Return;
     }
 
