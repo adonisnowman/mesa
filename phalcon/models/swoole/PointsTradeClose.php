@@ -61,44 +61,44 @@ class PointsTradeClose extends BaseModel
       }
 
 
-      public static function getObjectById($Item)
+      public static function getObjectById($Item, $SqlAnd = "")
       {
             $keys = ["UniqueID"];
             $Object = self::$tableName::findFirst([
-                  'conditions' => Models::Conditions($keys),
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);
-            return (object) $Object;
+            return $Object;
       }
-      public static function getOneById($Item)
+      public static function getOneById($Item, $SqlAnd = "")
       {
 
             $keys = ["UniqueID"];
             $Item = self::$tableName::findFirst([
-                  'conditions' => Models::Conditions($keys),
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);
 
             return (empty($Item)) ? [] : $Item->toArray();
       }
-      public static function getObjectByItem($Item)
+      public static function getObjectByItem($Item, $SqlAnd = "")
       {
             $keys = array_keys($Item);
             $Object = self::$tableName::findFirst([
-                  'conditions' => Models::Conditions($keys),
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);
             return $Object;
       }
-      public static function getOneByItem($Item)
+      public static function getOneByItem($Item, $SqlAnd = "")
       {
 
             $keys = array_keys($Item);
             $Item = self::$tableName::findFirst([
-                  'conditions' => Models::Conditions($keys),
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);
@@ -106,12 +106,12 @@ class PointsTradeClose extends BaseModel
             return (empty($Item->UniqueID)) ? [] : $Item->toArray();
       }
 
-      public static function getListByItem($Item)
+      public static function getListByItem($Item, $SqlAnd = "")
       {
 
             $keys = array_keys($Item);
             $List = self::$tableName::find([
-                  'conditions' => Models::Conditions($keys),
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);
@@ -121,12 +121,12 @@ class PointsTradeClose extends BaseModel
             return $List;
       }
 
-      public static function getListObjectByItem($Item)
+      public static function getListObjectByItem($Item, $SqlAnd = "")
       {
 
             $keys = array_keys($Item);
             $Object = self::$tableName::find([
-                  'conditions' => Models::Conditions($keys),
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
                   'bind'       => Tools::fix_element_Key($Item, $keys),
                   'for_update' => true,
             ]);

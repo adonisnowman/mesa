@@ -233,11 +233,14 @@ class UsersApiController extends BaseController
 
 
         $Insert = Tools::fix_element_Key(self::$PostData, ["email"]);
-        $Insert['email_token'] = "";
         $Insert['UniqueID_SignInList'] =  $SignInList['UniqueID'];
 
-        $EmailChecked = Models::insertTable($Insert, "EmailChecked", true);
+        $EmailChecked = EmailChecked::getListObjectByItem($Insert," invalid_time IS NULL ");
+        $EmailChecked->update(["invalid_time"=>Tools::getDateTime()]);
 
+        $EmailChecked = Models::insertTable($Insert, "EmailChecked", true);
+        $EmailChecked->email_token = Tools::getToken();
+        $EmailChecked->save();
 
         $_Views = _Views::Init();
         $_Views['ReDirect'] = "signEmail";
@@ -301,10 +304,14 @@ class UsersApiController extends BaseController
 
 
         $Insert = Tools::fix_element_Key(self::$PostData, ["mobile"]);
-        $Insert['mobile_code'] = "";
         $Insert['UniqueID_SignInList'] =  $SignInList['UniqueID'];
 
+        $MobileChecked = MobileChecked::getListObjectByItem($Insert," invalid_time IS NULL ");
+        $MobileChecked->update(["invalid_time"=>Tools::getDateTime()]);
+
         $MobileChecked = Models::insertTable($Insert, "MobileChecked", true);
+        $MobileChecked->mobile_code = substr($MobileChecked->UniqueID, -6);
+        $MobileChecked->save();
 
         $Return['MobileChecked'] = $MobileChecked->toArray();
         $Return['ErrorMsg'][] = "系統已發相關驗證碼至您登記的手機號碼，請輸入六位數手機簡訊驗證碼";

@@ -52,64 +52,77 @@ class Users extends BaseModel
 	public function afterSave()
 	{
 	}
-	public static function getObjectById($Item)
-    {
-        $keys = ["UniqueID"];
-        $Object = self::$tableName::findFirst([
-            'conditions' => Models::Conditions($keys),
-            'bind'       => Tools::fix_element_Key($Item, $keys),
-            'for_update' => true,
-        ]);
-        return $Object;
-    }
-    public static function getOneById($Item)
-    {
+	public static function getObjectById($Item, $SqlAnd = "")
+      {
+            $keys = ["UniqueID"];
+            $Object = self::$tableName::findFirst([
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
+            return $Object;
+      }
+      public static function getOneById($Item, $SqlAnd = "")
+      {
 
-        $keys = ["UniqueID"];
-        $Item = self::$tableName::findFirst([
-            'conditions' => Models::Conditions($keys),
-            'bind'       => Tools::fix_element_Key($Item, $keys),
-            'for_update' => true,
-        ]);
+            $keys = ["UniqueID"];
+            $Item = self::$tableName::findFirst([
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
 
-        return (empty($Item)) ? [] : $Item->toArray();
-    }
-    public static function getObjectByItem($Item)
-    {
-        $keys = array_keys($Item);
-		$Object = self::$tableName::findFirst([
-            'conditions' => Models::Conditions($keys),
-            'bind'       => Tools::fix_element_Key($Item, $keys),
-            'for_update' => true,
-        ]);
-        return $Object;
-    }
-    public static function getOneByItem($Item)
-    {
+            return (empty($Item)) ? [] : $Item->toArray();
+      }
+      public static function getObjectByItem($Item, $SqlAnd = "")
+      {
+            $keys = array_keys($Item);
+            $Object = self::$tableName::findFirst([
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
+            return $Object;
+      }
+      public static function getOneByItem($Item, $SqlAnd = "")
+      {
 
-        $keys = array_keys($Item);
-        $Item = self::$tableName::findFirst([
-            'conditions' => Models::Conditions($keys),
-            'bind'       => Tools::fix_element_Key($Item, $keys),
-            'for_update' => true,
-        ]);
+            $keys = array_keys($Item);
+            $Item = self::$tableName::findFirst([
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
 
-        return (empty($Item->UniqueID)) ? [] : $Item->toArray();
-    }
+            return (empty($Item->UniqueID)) ? [] : $Item->toArray();
+      }
 
-    public static function getListByItem($Item)
-    {
+      public static function getListByItem($Item, $SqlAnd = "")
+      {
 
-        $keys = array_keys($Item);
-        $List = self::$tableName::find([
-            'conditions' => Models::Conditions($keys),
-            'bind'       => Tools::fix_element_Key($Item, $keys),
-            'for_update' => true,
-        ]);
+            $keys = array_keys($Item);
+            $List = self::$tableName::find([
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
 
-        $List = (empty($List)) ? [] : $List->toArray();
+            $List = (empty($List)) ? [] : $List->toArray();
 
-        return $List;
-    }
+            return $List;
+      }
+
+      public static function getListObjectByItem($Item, $SqlAnd = "")
+      {
+
+            $keys = array_keys($Item);
+            $Object = self::$tableName::find([
+                  'conditions' => Models::Conditions($keys)." AND ({$SqlAnd}) ",
+                  'bind'       => Tools::fix_element_Key($Item, $keys),
+                  'for_update' => true,
+            ]);
+
+            return $Object;
+      }
 	
 }
