@@ -339,7 +339,7 @@ class UsersApiController extends BaseController
 
         if(empty($MobileChecked->UniqueID)){
 
-            $Return['ErrorMsg'][] = "簡訊驗證輸入馬輸入錯誤!";
+            $Return['ErrorMsg'][] = "簡訊驗證碼，輸入錯誤!";
             return $Return;
 
 
