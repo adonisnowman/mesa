@@ -364,8 +364,8 @@
             Admin.SignInSession();
 
             
-            Admin.UsersLoginLogs = function(UniqueID) {
-               var postData = { UniqueID }
+            Admin.UsersLoginLogs = function() {
+               var postData = { UniqueID : $cookies.get('UniqueID') };
                 
                 var data = {
                     'Action': 'UsersLoginLogs',
@@ -419,7 +419,10 @@
                     
                     
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                    if (data.UniqueID) Admin.UsersLoginLogs(data.UniqueID);
+                    if (data.UniqueID) {
+                        $cookies.put('UniqueID', ata.UniqueID);
+                        Admin.UsersLoginLogs();
+                    }
                    
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
