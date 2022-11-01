@@ -160,7 +160,7 @@ class UsersApiController extends BaseController
         if (!empty($_SESSION[Tools::getIp()]['SignInSession']))
             $Return['SignInSession'] = $_SESSION[Tools::getIp()]['SignInSession'];
 
-        unset($_SESSION[Tools::getIp()]['SignInSession']);
+        
         return $Return;
     }
     //註冊
@@ -232,11 +232,15 @@ class UsersApiController extends BaseController
 
 
 
+        
+        $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $SignInCkecked = SignInCkecked::getObjectByItem($Item);
+
         $Insert = Tools::fix_element_Key(self::$PostData, ["email"]);
-        $Insert['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $Insert['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
 
         $EmailChecked = EmailChecked::getListObjectByItem($Insert," invalid_time IS NULL ");
-        $EmailChecked->update(["invalid_time"=>Tools::getDateTime()]);
+        if(count($EmailChecked)>0) $EmailChecked->update(["invalid_time"=>Tools::getDateTime()]);
 
         $EmailChecked = Models::insertTable($Insert, "EmailChecked", true);
         $EmailChecked->email_token = Tools::getToken();
@@ -247,7 +251,9 @@ class UsersApiController extends BaseController
         $_Views['UniqueID'] = $EmailChecked->UniqueID;
         $_Views['Token'] = Tools::getToken();
 
-        Tools::emailSend($Insert['account'], "signEmail", _Views::RedirectAdmin($_Views));
+        Tools::emailSend($Insert['email'], "signEmail", _Views::RedirectAdmin($_Views));
+
+        $Return['EmailChecked'] = $EmailChecked->toArray();
         $Return['ErrorMsg'][] = "請收您的驗證信件，點擊完成註冊";
         return $Return;
     }
@@ -263,13 +269,15 @@ class UsersApiController extends BaseController
         
 
         $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
-
-
-
-        $Item = Tools::fix_element_Key(self::$PostData, ["email", "email_token"]);
         $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $SignInCkecked = SignInCkecked::getObjectByItem($Item);
+
+
+        $Item = Tools::fix_element_Key(self::$PostData, ["UniqueID","email", "email_token"]);
+        $Item['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
 
         $EmailChecked = EmailChecked::getObjectByItem($Item);
+       
         if(empty($EmailChecked->UniqueID)){
 
             $Return['ErrorMsg'][] = "查無相關Email 驗證資料";
@@ -283,6 +291,10 @@ class UsersApiController extends BaseController
             $EmailChecked->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
             $EmailChecked->checked_time = Tools::getDateTime();
             $EmailChecked->save();
+
+            $SignInCkecked->UniqueID_EmailChecked = $EmailChecked->UniqueID;
+            $SignInCkecked->save();
+            
         }
 
         $Return['ErrorMsg'][] = "完成Email驗證";
@@ -301,13 +313,14 @@ class UsersApiController extends BaseController
 
         $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
 
-
+        $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $SignInCkecked = SignInCkecked::getObjectByItem($Item);
 
         $Insert = Tools::fix_element_Key(self::$PostData, ["mobile"]);
-        $Insert['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $Insert['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
 
         $MobileChecked = MobileChecked::getListObjectByItem($Insert," invalid_time IS NULL ");
-        $MobileChecked->update(["invalid_time"=>Tools::getDateTime()]);
+        if(count($MobileChecked)>0) $MobileChecked->update(["invalid_time"=>Tools::getDateTime()]);
 
         $MobileChecked = Models::insertTable($Insert, "MobileChecked", true);
         $MobileChecked->mobile_code = substr($MobileChecked->UniqueID, -6);
@@ -330,10 +343,11 @@ class UsersApiController extends BaseController
 
         $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
 
-
+        $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $SignInCkecked = SignInCkecked::getObjectByItem($Item);
 
         $Item = Tools::fix_element_Key(self::$PostData, ["UniqueID","mobile","mobile_code"]);
-        $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
+        $Item['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
 
         $MobileChecked = MobileChecked::getObjectByItem($Item);
 
@@ -350,6 +364,9 @@ class UsersApiController extends BaseController
             $MobileChecked->HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
             $MobileChecked->checked_time = Tools::getDateTime();
             $MobileChecked->save();
+
+            $SignInCkecked->UniqueID_MobileChecked = $MobileChecked->UniqueID;
+            $SignInCkecked->save();
         }
 
         $Return['ErrorMsg'][] = "完成手機簡訊驗證";
@@ -368,6 +385,12 @@ class UsersApiController extends BaseController
 
     public function Login()
     {
+        $shortUniqueID = false;
+        if (abs(round(((float)microtime(true))) == $_COOKIE['CreateTime'])) {
+
+            $shortUniqueID = _UniqueID::shortUniqueID();
+            $_COOKIE['CreateTime'] = $shortUniqueID;
+        }
 
         $Return = [];
         $Insert = Tools::fix_element_Key(self::$PostData, ["account", "mobile", "password"]);
@@ -391,6 +414,7 @@ class UsersApiController extends BaseController
 
 
         if (empty($Users->UniqueID)) {
+            $Return['ErrorMsg'] = [];
             //註冊帳號判斷
             $SignInListAccount = SignInList::getObjectByItem(["account" => $Insert['account'], "password" => $Insert['password']]);
 
@@ -452,7 +476,9 @@ class UsersApiController extends BaseController
                 $_SESSION[Tools::getIp()]['Users'] = $Users->toArray();
             }
 
-            
+            $_SESSION[Tools::getIp()]['SignInSession']['CreateTime'] = $shortUniqueID;
+            $_SESSION[Tools::getIp()]['SignInSession']['account'] = $SignInList->account;
+            $_SESSION[Tools::getIp()]['SignInSession']['mobile'] = $SignInList->mobile;
             $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
             $_SESSION[Tools::getIp()]['SignInList'] = $SignInList->toArray();
             $Return['UniqueID'] = $UsersLoginLogs->UniqueID;

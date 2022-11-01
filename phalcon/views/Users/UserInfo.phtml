@@ -437,11 +437,17 @@
                                                 <div class="taskdate">20/07/2019 at 03:10PM
                                                 </div>
                                                 <div class="collapse" id="MobileChecked">
-
+                                                <div class="wrap-input100 validate-input" data-validate="Enter mobile">
+                                                        <span class="btn-show-pass">
+                                                            <i class="zmdi zmdi-eye"></i>
+                                                        </span>
+                                                        <input class="input100" type="text" name="mobile" ng-model="Admin.LoginInfo.mobile">
+                                                        <span class="focus-input100" data-placeholder="手機號碼資訊確認"></span>
+                                                    </div>
                                                     <div class="container-login100-form-btn">
                                                         <div class="wrap-login100-form-btn">
                                                             <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
+                                                            <button class="login100-form-btn" ng-click="Admin.MobileVerify()">
                                                                 發送簡訊至您註冊的手機號碼
                                                             </button>
                                                         </div>
@@ -450,27 +456,19 @@
                                                         <span class="btn-show-pass">
                                                             <i class="zmdi zmdi-eye"></i>
                                                         </span>
-                                                        <input class="input100" type="text" name="mobile_code" ng-model="Admin.CreateInfo.mobile_code">
+                                                        <input class="input100" type="text" name="mobile_code" ng-model="Admin.MobileInfo.mobile_code">
                                                         <span class="focus-input100" data-placeholder="六位數簡訊驗證碼"></span>
                                                     </div>
                                                     <div class="container-login100-form-btn">
                                                         <div class="wrap-login100-form-btn">
                                                             <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
+                                                            <button class="login100-form-btn" ng-click="Admin.MobileChecked()">
                                                                 進行手機簡訊驗證
                                                             </button>
                                                         </div>
                                                     </div>
 
-                                                    <div class="text-center p-t-115">
-                                                        <span class="txt1">
-                                                            手機已更換，前往變更手機資訊
-                                                        </span>
-
-                                                        <a class="txt2" ng-click="Admin.ReDirect('UserLogin')">
-                                                            點我前往
-                                                        </a>
-                                                    </div>
+                                                   
                                                 </div>
                                             </div>
                                             <div class="card-footer taskpanel-footer">
@@ -498,43 +496,35 @@
                                                         <span class="btn-show-pass">
                                                             <i class="zmdi zmdi-eye"></i>
                                                         </span>
-                                                        <input class="input100" type="text" name="account" ng-model="Admin.CreateInfo.account">
+                                                        <input class="input100" type="text" name="email" ng-model="Admin.LoginInfo.email">
                                                         <span class="focus-input100" data-placeholder="電子郵件資訊確認"></span>
                                                     </div>
                                                     <div class="container-login100-form-btn">
                                                         <div class="wrap-login100-form-btn">
                                                             <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
+                                                            <button class="login100-form-btn" ng-click="Admin.EmailVerify()">
                                                                 發送認證信件至您註冊的電子郵件
                                                             </button>
                                                         </div>
                                                     </div>
 
-                                                    <div class="wrap-input100 validate-input" data-validate="Enter account_token">
+                                                    <div class="wrap-input100 validate-input" data-validate="Enter email_token">
                                                         <span class="btn-show-pass">
                                                             <i class="zmdi zmdi-eye"></i>
                                                         </span>
-                                                        <input class="input100" type="text" name="account_token" ng-model="Admin.CreateInfo.account_token">
+                                                        <input class="input100" type="text" name="email_token" ng-model="Admin.EmailInfo.email_token">
                                                         <span class="focus-input100" data-placeholder="電子郵件驗證碼"></span>
                                                     </div>
                                                     <div class="container-login100-form-btn">
                                                         <div class="wrap-login100-form-btn">
                                                             <div class="login100-form-bgbtn"></div>
-                                                            <button class="login100-form-btn" ng-click="Admin.Create()">
+                                                            <button class="login100-form-btn" ng-click="Admin.EmailChecked()">
                                                                 進行電子郵件驗證
                                                             </button>
                                                         </div>
                                                     </div>
 
-                                                    <div class="text-center p-t-115">
-                                                        <span class="txt1">
-                                                            電子郵件已更換，前往變更電子郵件資訊
-                                                        </span>
-
-                                                        <a class="txt2" ng-click="Admin.ReDirect('UserLogin')">
-                                                            點我前往
-                                                        </a>
-                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                             <div class="card-footer taskpanel-footer">
@@ -708,7 +698,7 @@
                 sharedData.Logout(ReDirect);
             }
             Admin.SignInSession = function() {
-                console.info("login click");
+                
                 Admin.SessonInfo = {};
                 Admin.SessonInfo.CreateTime = $cookies.get('CreateTime');
                 var data = {
@@ -728,23 +718,22 @@
                     var data = response.data;
 
                     if(data.SignInSession){
-                        $cookies.put('CreateTime', null);
-                        if(data.SignInSession.account) Admin.LoginInfo.account = data.SignInSession.account;
-                        if(data.SignInSession.mobile) Admin.LoginInfo.account = data.SignInSession.mobile;
+                       
+                        if(data.SignInSession.account) Admin.LoginInfo.email = data.SignInSession.account;
+                        if(data.SignInSession.mobile) Admin.LoginInfo.mobile = data.SignInSession.mobile;
                     }
                     
                 }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
+                    console.info("login click");
 
                 });
             };
             Admin.SignInSession();
-            Admin.Login = function() {
-                console.info("login click");
-                Admin.LoginInfo.UniqueID = "";
+
+            Admin.MobileVerify = function() {
+                
                 var data = {
-                    'Action': 'Login',
+                    'Action': 'MobileVerify',
                     'Data': JSON.stringify(Admin.LoginInfo),
                 }
 
@@ -759,7 +748,7 @@
                 }).then(function successCallback(response) {
                     var data = response.data;
 
-                    if (data.UniqueID) location.reload();
+                    if (data.MobileChecked) Admin.MobileInfo.UniqueID = data.MobileChecked.UniqueID;
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
@@ -768,7 +757,93 @@
                 });
             };
 
-            
+            Admin.MobileChecked = function() {
+                var postData = {
+                    UniqueID: Admin.MobileInfo.UniqueID,
+                    mobile: Admin.LoginInfo.mobile,
+                    mobile_code: Admin.MobileInfo.mobile_code
+                }
+                var data = {
+                    'Action': 'MobileChecked',
+                    'Data': JSON.stringify(postData),
+                }
+
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>UsersApi",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+
+                    
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
+            Admin.EmailVerify = function() {
+                
+                var data = {
+                    'Action': 'EmailVerify',
+                    'Data': JSON.stringify(Admin.LoginInfo),
+                }
+
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>UsersApi",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+
+                    
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
+
+            Admin.EmailChecked = function() {
+                var postData = {
+                    UniqueID: Admin.EmailInfo.UniqueID,
+                    email: Admin.LoginInfo.email,
+                    email_token:Admin.EmailInfo.email_token
+                }
+                var data = {
+                    'Action': 'EmailChecked',
+                    'Data': JSON.stringify(postData),
+                }
+
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>UsersApi",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+
+                    if (data.EmailChecked) Admin.CreateInfo.UniqueID = data.EmailChecked.UniqueID;
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
         }]);
     </script>
     <script src="chatbox/dist/js/jquery-3.3.1.slim.min.js"></script>

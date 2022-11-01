@@ -231,7 +231,7 @@
             }
             var request = $http({
                 method: "post",
-                url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/UsersApi",
+                url: "<?PHP echo SITE_URL; ?>UsersApi",
                 data: ReDirect,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -255,7 +255,7 @@
             console.info(ReDirect);
             var request = $http({
                 method: "post",
-                url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/UsersApi",
+                url: "<?PHP echo SITE_URL; ?>UsersApi",
                 data: ReDirect,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -272,7 +272,7 @@
 
             var request = $http({
                 method: "post",
-                url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/ApiEdit",
+                url: "<?PHP echo SITE_URL; ?>ApiEdit",
                 data: data,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
@@ -297,7 +297,7 @@
             var deferred = $q.defer();
             var request = $http({
                 method: "post",
-                url: "http://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
+                url: "<?PHP echo SITE_URL; ?>api",
                 data: data,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'

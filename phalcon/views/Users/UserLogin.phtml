@@ -350,9 +350,9 @@
                     var data = response.data;
 
                     if(data.SignInSession){
-                        $cookies.put('CreateTime', null);
+                        
                         if(data.SignInSession.account) Admin.LoginInfo.account = data.SignInSession.account;
-                        if(data.SignInSession.mobile) Admin.LoginInfo.account = data.SignInSession.mobile;
+                        if(data.SignInSession.mobile) Admin.LoginInfo.mobile = data.SignInSession.mobile;
                     }
                     
                 }, function errorCallback(response) {
@@ -363,6 +363,8 @@
             };
             Admin.SignInSession();
             Admin.Login = function() {
+                var microtime = Math.round(new Date().getTime() / 1000);
+                $cookies.put('CreateTime', microtime);
                 console.info("login click");
                 Admin.LoginInfo.UniqueID = "";
                 var data = {
@@ -380,7 +382,7 @@
                     },
                 }).then(function successCallback(response) {
                     var data = response.data;
-
+                    
                     if (data.UniqueID) location.reload();
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
                 }, function errorCallback(response) {

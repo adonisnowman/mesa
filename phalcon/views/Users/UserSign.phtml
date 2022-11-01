@@ -331,6 +331,7 @@
     <script>
         adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http, $cookies) {
             var Admin = this;
+            Admin.CreateInfo = {};
             if (location.pathname == "/logout") location.href = '';
             Admin.ReDirect = function(ReDirect) {
                 console.info(ReDirect);
@@ -342,6 +343,7 @@
             Admin.Create = function() {
                 var microtime = Math.round(new Date().getTime() / 1000);
                 $cookies.put('CreateTime', microtime);
+                
                 Admin.CreateInfo.UniqueID = "";
                 var data = {
                     'Action': 'Create',
@@ -350,7 +352,7 @@
 
                 var request = $http({
                     method: "post",
-                    url: "https://<?PHP echo $_SERVER['HTTP_HOST']; ?>/UsersApi",
+                    url: "<?PHP echo SITE_URL; ?>UsersApi",
                     data: data,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'

@@ -15,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>    
+<head>
     <?php echo $header; ?>
 </head>
 
@@ -62,11 +62,11 @@
                                     <div class="input-group input-group-outline mb-3">
                                         <label class="form-label" ng-class="(Admin.SignInfo.password)?'text-success ':''"> 手機 <i ng-show="Admin.LoginInfo.password" class="fas fa-check"></i></label>
                                         <input type="phone" class="form-control" ng-model="Admin.SignInfo.mobile">
-                                    </div>   
+                                    </div>
                                     <div class="input-group input-group-outline mb-3">
                                         <label class="form-label" ng-class="(Admin.SignInfo.password)?'text-success ':''"> 密碼 <i ng-show="Admin.LoginInfo.password" class="fas fa-check"></i></label>
                                         <input type="phone" class="form-control" ng-model="Admin.SignInfo.password">
-                                    </div>                                     
+                                    </div>
                                     <div class="text-center">
                                         <button type="button" class="btn bg-gradient-success w-100 my-4 mb-2" ng-click="Admin.Sign()"> 註冊 </button>
                                     </div>
@@ -79,73 +79,50 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </main>
     <script>
-        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function (sharedData, $scope, $http) {
-			var Admin = this;
-			if (location.pathname == "/logout") location.href = '';
-			Admin.ReDirect = function (ReDirect) {
-				console.info(ReDirect);
-				sharedData.ReDirect(ReDirect);
-			}
-			Admin.Logout = function () {
-				sharedData.Logout(ReDirect);
-			}
-                Admin.Login = function() {
-                    Admin.LoginInfo.UniqueID = "";
-                    var data = {
-                        'Action': 'Login',
-                        'Data': JSON.stringify(Admin.LoginInfo),
-                    }
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http', function(sharedData, $scope, $http) {
+            var Admin = this;
+            if (location.pathname == "/logout") location.href = '';
+            Admin.ReDirect = function(ReDirect) {
+                console.info(ReDirect);
+                sharedData.ReDirect(ReDirect);
+            }
+            Admin.Logout = function() {
+                sharedData.Logout(ReDirect);
+            }
+            Admin.Login = function() {
+                Admin.LoginInfo.UniqueID = "";
+                var data = {
+                    'Action': 'Login',
+                    'Data': JSON.stringify(Admin.LoginInfo),
+                }
 
-                    var request = $http({
-                        method: "post",
-                        url: "https://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/api",
-                        data: data,
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                            
-                        },
-                    }).then(function successCallback(response) {
-                        var data = response.data;
-                        
-                        if (data.UniqueID) location.reload();
-                        if (data.ErrorMsg) sharedData.Toast (data.ErrorMsg, 3000) ;
-                    }, function errorCallback(response) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>api",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
 
-                    });
-                };
-                
-                Admin.Sign = function() {
-                    var data = {
-                        'Action': 'Login',
-                        'Data': JSON.stringify(Admin.SignInfo),
-                    }
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
 
-                    var request = $http({
-                        method: "post",
-                        url: "https://<?PHP ECHO $_SERVER['HTTP_HOST'];?>/index/info",
-                        data: data,
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;',
-                        },
-                    }).then(function successCallback(response) {
-                        var data = response.data;
-                        console.info(data);
-                        if (data.UniqueID) location.reload();
-                        if (data.ErrorMsg) sharedData.Toast (data.ErrorMsg, 3000) ;
-                    }, function errorCallback(response) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
+                    if (data.UniqueID) location.reload();
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
 
-                    });
-                };
+                });
+            };
 
-            }]);
+
+
+        }]);
     </script>
 
 
