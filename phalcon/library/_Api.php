@@ -67,18 +67,7 @@ class _Api
        
         if (!empty($result)) $aResult['ErrorMsg'][] = join(",",$result);  
         
-        //將前台unique_id 轉成後台使用的 UniqueID
-        if(!empty($Data['UniqueID']) && _UniqueID::checkPublicUniqueID($Data['UniqueID']))
-            $Data['UniqueID'] = _UniqueID::privateUniqueID($Data['unique_id']);
-        else if (isset($Data['unique_id']) && !isset($Data['UniqueID']) && 
-                _UniqueID::checkPublicUniqueID($Data['unique_id'])) 
-            $Data['UniqueID'] = _UniqueID::privateUniqueID($Data['unique_id']);
         
-
-        if (!empty($Data['UniqueID']) && false == _UniqueID::checkUniqueID($Data['UniqueID'])) {
-            $aResult['ErrorMsg'][] = "UniqueID 不存在[{$Data['UniqueID']}]";
-            $aResult['ReDirect'] = "Logout";
-        }
         if (!empty($aResult['ErrorMsg'])) {
             echo JSON_encode( $aResult, JSON_UNESCAPED_UNICODE);
             exit;

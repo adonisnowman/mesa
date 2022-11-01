@@ -362,6 +362,40 @@
                 });
             };
             Admin.SignInSession();
+
+            
+            Admin.UsersLoginLogs = function(UniqueID) {
+               var postData = { UniqueID }
+                
+                var data = {
+                    'Action': 'UsersLoginLogs',
+                    'Data': JSON.stringify(postData),
+                }
+
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>UsersApi",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    
+                    if (data.UniqueID) location.reload();
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+
+                });
+            };
+
+
+
+
+
             Admin.Login = function() {
                 var microtime = Math.round(new Date().getTime() / 1000);
                 $cookies.put('CreateTime', microtime);
@@ -383,8 +417,10 @@
                 }).then(function successCallback(response) {
                     var data = response.data;
                     
-                    if (data.UniqueID) location.reload();
+                    
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                    if (data.UniqueID) Admin.UsersLoginLogs(data.UniqueID);
+                   
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
                     // or server returns response with an error status.

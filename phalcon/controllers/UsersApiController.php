@@ -232,13 +232,13 @@ class UsersApiController extends BaseController
 
 
 
-        
+        //讀取身分驗證資料表
         $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
         $SignInCkecked = SignInCkecked::getObjectByItem($Item);
 
+        //電子信箱認證資料表
         $Insert = Tools::fix_element_Key(self::$PostData, ["email"]);
         $Insert['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
-
         $EmailChecked = EmailChecked::getListObjectByItem($Insert," invalid_time IS NULL ");
         if(count($EmailChecked)>0) $EmailChecked->update(["invalid_time"=>Tools::getDateTime()]);
 
@@ -267,12 +267,15 @@ class UsersApiController extends BaseController
             return $Return;
         }
         
+        if(!empty(self::$PostData["email_token"])) Tools::checkToken(self::$PostData["email_token"]);
 
         $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
+
+        //讀取身分驗證資料表
         $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
         $SignInCkecked = SignInCkecked::getObjectByItem($Item);
 
-
+        //電子信箱認證資料表
         $Item = Tools::fix_element_Key(self::$PostData, ["UniqueID","email", "email_token"]);
         $Item['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
 
@@ -313,9 +316,11 @@ class UsersApiController extends BaseController
 
         $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
 
+        //讀取身分驗證資料表
         $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
         $SignInCkecked = SignInCkecked::getObjectByItem($Item);
 
+        //讀取手機號碼認證資料表
         $Insert = Tools::fix_element_Key(self::$PostData, ["mobile"]);
         $Insert['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
 
@@ -343,12 +348,13 @@ class UsersApiController extends BaseController
 
         $SignInList = $_SESSION[Tools::getIp()]['SignInList'];
 
+        //讀取身分驗證資料表
         $Item['UniqueID_SignInList'] =  $SignInList['UniqueID'];
         $SignInCkecked = SignInCkecked::getObjectByItem($Item);
 
+        //讀取手機號碼認證資料表
         $Item = Tools::fix_element_Key(self::$PostData, ["UniqueID","mobile","mobile_code"]);
         $Item['UniqueID_SignInCkecked'] =  $SignInCkecked->UniqueID;
-
         $MobileChecked = MobileChecked::getObjectByItem($Item);
 
         if(empty($MobileChecked->UniqueID)){
@@ -498,6 +504,13 @@ class UsersApiController extends BaseController
         return $Return;
     }
 
+    //登入狀態
+    public function UsersLoginLogs()
+    {      
+        if (empty(self::$PostData['UniqueID'])) $this->Logout();        
+        $Return['UniqueID'] = $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'] ;
+        return  $Return;
+    }
     //顯示會員列表
 
     public function Users()
