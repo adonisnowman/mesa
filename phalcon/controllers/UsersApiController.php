@@ -137,7 +137,7 @@ class UsersApiController extends BaseController
         echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
 
         
-        _UsersApi::UserFootPoint(__CLASS__,$Action);
+        _UsersApi::insertUserFootPoint(__CLASS__,$Action);
     }
 
     //導頁
@@ -523,6 +523,33 @@ class UsersApiController extends BaseController
         if (empty(self::$PostData['UniqueID'])) $this->Logout(); 
         $Return['UniqueID'] = $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'] ;
         return  $Return;
+    }
+
+    //顯示會員足跡
+
+    
+
+    public function UserFootPoint()
+    {
+        $UsersLoginLogs = $this->UsersLoginLogs();
+
+       
+
+        $TableName = __FUNCTION__;
+
+        if (!empty(self::$PostData['Search'])) {
+            $SelectKeys = ["label"];
+            $Select = Models::SelectLike($SelectKeys, self::$PostData['Search'])." AND UniqueID_UsersLoginLogs = '{$UsersLoginLogs['UniqueID']}' ";
+        } else $Select = " UniqueID_UsersLoginLogs = '{$UsersLoginLogs['UniqueID']}' ";
+        self::$Pages = Tools::Pages(self::$Pages, $TableName::count());
+        $Select = Models::DefultSelect(self::$Pages, $Select);
+
+
+        $Return = [];
+        $Return[$TableName] = _UsersApi::$TableName($TableName::find($Select));
+
+
+        return $Return;
     }
     //顯示會員列表
 

@@ -3,7 +3,7 @@
 class _UsersApi
 {
 
-    public static function UserFootPoint($ClassName, $Value)
+    public static function insertUserFootPoint($ClassName, $Value)
     {
 
 
@@ -48,6 +48,18 @@ class _UsersApi
     }
 
     //讀取資料格式
+
+    public static function UserFootPoint($Ojbects)
+    {
+        if (empty($Ojbects)) $Return = [];
+        else {
+            foreach ($Ojbects as $Object) {
+                $Item = $Object->toArray();
+                $Return[] = $Item;
+            }
+        }
+        return $Return;
+    }
 
     public static function Users($Ojbects)
     {

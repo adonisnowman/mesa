@@ -253,7 +253,7 @@ class Tools
         $mail->CharSet = "UTF8"; //設定郵件編碼        
 
         $mail->Username = "adonisnowman@gmail.com"; //設定驗證帳號        
-        $mail->Password = "piqejtexftausgqo"; //設定驗證密碼        
+        $mail->Password = "rbwbohjjlclrxklg"; //設定驗證密碼        
 
         $mail->From = "adonisnowman@gmail.com"; //設定寄件者信箱        
         $mail->FromName = "測試人員"; //設定寄件者姓名        
