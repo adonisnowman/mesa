@@ -520,7 +520,7 @@ class UsersApiController extends BaseController
     //登入狀態
     public function UsersLoginLogs()
     {      
-        if (empty(self::$PostData['UniqueID'])) $this->Logout();        
+        if (empty(self::$PostData['UniqueID'])) $this->Logout(); 
         $Return['UniqueID'] = $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'] ;
         return  $Return;
     }

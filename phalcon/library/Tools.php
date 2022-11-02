@@ -208,7 +208,7 @@ class Tools
         return $Return;
     }
 
-    public static function getToken($expires = '+1 day', $passphrase = 'QcMpZ&b&mo3TPsPk668J6QH8JA$&U&m2')
+    public static function getToken($id = 'abcd123456789', $expires = '+1 day', $passphrase = 'QcMpZ&b&mo3TPsPk668J6QH8JA$&U&m2')
     {
         $signer  = new Hmac();
 
@@ -226,7 +226,7 @@ class Tools
             ->setAudience('https://account.adonis.tw')  // aud
             ->setContentType('application/json')        // cty - header
             ->setExpirationTime($expires)               // exp 
-            ->setId('abcd123456789')                    // JTI id 
+            ->setId($id)                                // JTI id 
             ->setIssuedAt($issued)                      // iat 
             ->setIssuer('https://adonis.tw')           // iss 
             ->setNotBefore($notBefore)                  // nbf
@@ -269,7 +269,7 @@ class Tools
             return "Message sent!";
         }
     }
-    public static function checkToken($tokenReceived)
+    public static function checkToken($tokenReceived,$id = 'abcd123456789')
     {
 
         $audience      = 'https://account.adonis.tw';
@@ -277,7 +277,7 @@ class Tools
         $issued        = $now->getTimestamp();
         $notBefore     = $now->modify('-1 minute')->getTimestamp();
         $expires       = $now->getTimestamp();
-        $id            = 'abcd123456789';
+        $id            = $id;
         $issuer        = 'https://adonis.tw';
 
         // Defaults to 'sha512'
