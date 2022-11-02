@@ -779,7 +779,7 @@
                 }).then(function successCallback(response) {
                     var data = response.data;
 
-                    
+                    if (data.ReDirect) location.reload();
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
@@ -806,6 +806,7 @@
                     var data = response.data;
 
                     
+                    if (data.EmailChecked) Admin.CreateInfo.UniqueID = data.EmailChecked.UniqueID;
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
@@ -836,8 +837,8 @@
                 }).then(function successCallback(response) {
                     var data = response.data;
 
-                    if (data.EmailChecked) Admin.CreateInfo.UniqueID = data.EmailChecked.UniqueID;
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                    if (data.ReDirect) location.reload();
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
                     // or server returns response with an error status.

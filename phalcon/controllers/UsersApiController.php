@@ -296,8 +296,14 @@ class UsersApiController extends BaseController
             $EmailChecked->save();
 
             $SignInCkecked->UniqueID_EmailChecked = $EmailChecked->UniqueID;
+            $SignInCkecked->account_checked_time = Tools::getDateTime();
             $SignInCkecked->save();
             
+            if( !empty($SignInCkecked->account_checked_time) && !empty($SignInCkecked->mobile_checked_time)){
+                
+                $_SESSION[Tools::getIp()]['ReDirect'] = "UserList";
+                $Return['ReDirect'] = "reload";
+            }
         }
 
         $Return['ErrorMsg'][] = "完成Email驗證";
@@ -372,7 +378,14 @@ class UsersApiController extends BaseController
             $MobileChecked->save();
 
             $SignInCkecked->UniqueID_MobileChecked = $MobileChecked->UniqueID;
+            $SignInCkecked->mobile_checked_time = Tools::getDateTime();
             $SignInCkecked->save();
+
+            if( !empty($SignInCkecked->account_checked_time) && !empty($SignInCkecked->mobile_checked_time)){
+                
+                $_SESSION[Tools::getIp()]['ReDirect'] = "UserList";
+                $Return['ReDirect'] = "reload";
+            }
         }
 
         $Return['ErrorMsg'][] = "完成手機簡訊驗證";
