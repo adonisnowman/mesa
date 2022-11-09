@@ -46,7 +46,7 @@
 
     <script>
         var adonis = angular.module('Admin', ['ngRoute','ngCookies', 'ngMaterial', 'ngMessages', 'dx']);
-        adonis.service('sharedData', function($http, $q, $mdToast) {
+        adonis.service('sharedData', function($http, $q, $mdToast,$cookies) {
             var self = this;
             //Toast 
             var last = {
@@ -169,32 +169,14 @@
 
                 });
             }
-            //Edit
-            self.Edit = function(data) {
 
-                var request = $http({
-                    method: "post",
-                    url: "<?PHP echo SITE_URL; ?>ApiEdit",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    }
-                }).then(function successCallback(response) {
-
-                    if (response.data.Data && response.data.Data.action) {
-                        self.Toast('Marked as ' + response.data.Data.action, 3000);
-                    } else if (response.data.ErrorMsg) {
-                        self.Toast('Marked as ' + response.data.ErrorMsg.join(","), 3000);
-                    } else console.info(response.data);
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-
-                });
-            };
-            //List
-            self.LtstData = {};
-            self.List = function(data, key) {
+            self.SignInSession = function() {
+                var SessonInfo = {};
+                SessonInfo.CreateTime = $cookies.get('CreateTime');
+                var data = {
+                    'Action': 'SignInSession',
+                    'Data': JSON.stringify(SessonInfo),
+                }
                 var deferred = $q.defer();
                 var request = $http({
                     method: "post",
@@ -204,11 +186,7 @@
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
                     }
                 }).then(function successCallback(response) {
-                    var data = response.data;
-                    var Data = {};
-                    Data.List = data[data.Action];
-                    Data.Pages = data.Pages;
-                    deferred.resolve(Data);
+                    deferred.resolve(response.data[data.Action]);
                 }, function errorCallback(response) {
                     deferred.reject(response);
 
@@ -216,31 +194,7 @@
 
                 return deferred.promise;
             };
-
-            //Remove
-
-            self.Remove = function(data) {
-                var deferred = $q.defer();
-                var request = $http({
-                    method: "post",
-                    url: "<?PHP echo SITE_URL; ?>ApiRemove",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                    }
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    var Data = {};
-                    Data.List = data[data.Action];
-                    Data.Pages = data.Pages;
-                    deferred.resolve(Data);
-                }, function errorCallback(response) {
-                    deferred.reject(response);
-
-                });
-
-                return deferred.promise;
-            };
+            
 
 
         });
@@ -321,6 +275,16 @@
         adonis.controller('AdminController', ['sharedData', '$scope', '$http','$cookies', function(sharedData, $scope, $http, $cookies) {
             var Admin = this;
             Admin.LoginInfo = {};
+
+            var SignInSession = sharedData.SignInSession();
+            SignInSession.then(function(SignInSession) { // 呼叫承諾API獲取資料 .resolve  
+                if(SignInSession.account) Admin.LoginInfo.account = SignInSession.account;
+                if (SignInSession.mobile) Admin.LoginInfo.mobile = SignInSession.mobile;
+                
+            }, function(data) { // 處理錯誤 .reject  
+                console.info(SignInSession);
+            });
+
             if (location.pathname == "/logout") location.href = '';
             Admin.ReDirect = function(ReDirect) {
                 console.info(ReDirect);
@@ -329,39 +293,7 @@
             Admin.Logout = function() {
                 sharedData.Logout(ReDirect);
             }
-            Admin.SignInSession = function() {
-                console.info("login click");
-                Admin.SessonInfo = {};
-                Admin.SessonInfo.CreateTime = $cookies.get('CreateTime');
-                var data = {
-                    'Action': 'SignInSession',
-                    'Data': JSON.stringify(Admin.SessonInfo),
-                }
-
-                var request = $http({
-                    method: "post",
-                    url: "<?PHP echo SITE_URL; ?>UsersApi",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                    },
-                }).then(function successCallback(response) {
-                    var data = response.data;
-
-                    if(data.SignInSession){
-                        
-                        if(data.SignInSession.account) Admin.LoginInfo.account = data.SignInSession.account;
-                        if(data.SignInSession.mobile) Admin.LoginInfo.mobile = data.SignInSession.mobile;
-                    }
-                    
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-
-                });
-            };
-            Admin.SignInSession();
+            
 
             
             Admin.UsersLoginLogs = function() {

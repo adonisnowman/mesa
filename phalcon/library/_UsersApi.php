@@ -3,6 +3,40 @@
 class _UsersApi
 {
 
+    public static function insertUsedMessagePoints( $MessageDataFile , $points_cost , $points_off){
+        $Insert = [];
+        if(empty($MessageDataFile->UserTempMessages)) {
+            $Return['ErrorMsg'][] = "查無暫存資料表相關資料";
+           
+        }
+        $Insert['UniqueID_UserTempMessages'] = $MessageDataFile->UserTempMessages->UniqueID ;
+        $Insert['UniqueID_SignInList'] = $_SESSION[Tools::getIp()]['SignInList']['UniqueID'] ;
+        $Insert['points_cost'] = $points_cost ;
+        $Insert['points_off'] = $points_off ;
+
+
+        if(!empty($_SESSION[Tools::getIp()]['Users']))
+        $Insert['UniqueID_Users'] = $_SESSION[Tools::getIp()]['Users']['UniqueID'] ;
+
+        $UsedMessagePoints =  models::insertTable($Insert,"UsedMessagePoints" , true);
+
+        if(!empty($UsedMessagePoints->UniqueID)) {
+            
+            $Insert = [];
+            $Insert['UniqueID_MessageDataFile'] = $MessageDataFile->UniqueID;
+            $Insert['UniqueID_UsedMessagePoints'] = $UsedMessagePoints->UniqueID;
+            $MessageSystemRecode = Models::insertTable($Insert, "MessageSystemRecode" ,true);
+
+            $Return['MessageSystemRecode'] = $MessageSystemRecode->toArray();
+            $Return['UsedMessagePoints'] = $UsedMessagePoints->toArray();
+
+        }else{
+            $Return['ErrorMsg'][] = "訊息點數消費紀錄 建立失敗";
+
+        }
+
+        return $Return;
+    }
     public static function insertUserFootPoint($ClassName, $Value)
     {
 
@@ -47,17 +81,46 @@ class _UsersApi
         return Models::insertTable($Insert, "UserFootPoint");
     }
 
-    //讀取資料格式
+    
 
-    public static function UserFootPoint($Ojbects)
+    //讀取資料格式
+    
+    public static function SignInList($Ojbects)
     {
-        if (empty($Ojbects)) $Return = [];
-        else {
+        $Return = [];
+        if (empty($Ojbects)) return [];
+       
             foreach ($Ojbects as $Object) {
                 $Item = $Object->toArray();
                 $Return[] = $Item;
             }
-        }
+       
+        return $Return;
+    }
+
+    public static function UserTempMessages($Ojbects)
+    {
+        $Return = [];
+        if (empty($Ojbects)) return [];
+       
+            foreach ($Ojbects as $Object) {
+                $Item = $Object->toArray();
+                $Return[] = $Item;
+            }
+       
+        return $Return;
+    }
+
+    public static function UserFootPoint($Ojbects)
+    {
+        $Return = [];
+        if (empty($Ojbects)) return [];
+       
+            foreach ($Ojbects as $Object) {
+                $Item = $Object->toArray();
+                $Return[] = $Item;
+            }
+       
         return $Return;
     }
 

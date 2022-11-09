@@ -17,13 +17,24 @@ class IndexController extends BaseController
 
     public function infoAction()
     {
-        $Return = _Views::Init();
-        $Return['ReDirect'] = "signEmail";
-        $Return['Token'] = Tools::getToken();
-        // echo _Views::RedirectAdmin($Return);
+
+        // $Insert = [];
+        // $Insert['name'] = "Notice_Dev";
+        // $Insert['label'] = "通知發送功能[測試專用]";
+        // $Insert['file_type'] = "application/json";
+        // $Insert['system_used'] = "Chrome";
+
+        // $MessageType = models::insertTable($Insert, "MessageType");
+
+        // var_dump($MessageType['SystemMsg']);
         // exit;
-        Tools::emailSend("adonisnowman@gmail.com", "signEmail", _Views::RedirectAdmin($Return));
-        if (!empty($_GET['token'])) Tools::checkToken($_GET['token']);
+        $MongoDB = new MongoAdonis($this->MongoDB);
+        $options = [];
+
+        $options['text'] = "adonis is ";
+
+
+        $MongoDB::insert("adonis",$options);
     }
     //登入登出功能
     public function LogoutAction()

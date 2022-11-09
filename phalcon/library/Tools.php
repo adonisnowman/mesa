@@ -223,7 +223,7 @@ class Tools
 
         // Setup
         $builder
-            ->setAudience('https://account.adonis.tw')  // aud
+            ->setAudience('http://users.adonis.tw')  // aud
             ->setContentType('application/json')        // cty - header
             ->setExpirationTime($expires)               // exp 
             ->setId($id)                                // JTI id 
@@ -272,7 +272,7 @@ class Tools
     public static function checkToken($tokenReceived,$id = 'abcd123456789')
     {
 
-        $audience      = 'https://account.adonis.tw';
+        $audience      = 'http://users.adonis.tw';
         $now           = new DateTimeImmutable();
         $issued        = $now->getTimestamp();
         $notBefore     = $now->modify('-1 minute')->getTimestamp();
@@ -302,5 +302,9 @@ class Tools
             ->validateIssuer($issuer)
             ->validateNotBefore($notBefore)
             ->validateSignature($signer, $passphrase);
+
+
+
+        return true;
     }
 }

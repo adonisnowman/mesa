@@ -1,67 +1,62 @@
 <?php
 
 
-class PointsTradeClose extends BaseModel
+class MessageDataFile extends BaseModel
 {
-      public static $tableName = __CLASS__;
-      public function initialize()
-      {
-            $this->setConnectionService('swoole');
-            $this->setSource(self::$tableName);
-            $this->hasOne(
-                  'UniqueID_PointsOrder',
-                  PointsOrder::class,
-                  'UniqueID',[]
-              );
-              $this->hasOne(
-                  'UniqueID_Users',
-                  Users::class,
-                  'UniqueID',[]
-              );
-              $this->hasOne(
-                  'UniqueID_PointsTrade',
-                  PointsTrade::class,
-                  'UniqueID',[]
-              );
-             
-      }
-
-      public function beforeValidationOnCreate()
-      {
-            $this->created_time = Tools::getDateTime();
-            
-      }
-
-      public function beforeValidationOnUpdate()
-      {
-           
-      }
-      public function afterFetch()
-      {
-
-      }
-
-      public function beforeSave()
-      {
-           
-            
-      }
-      public function afterSave()
-      {
-            
-      }
-
-      public function beforeUpdate()
-      {
-           
-      }
-      public function beforeDelete()
-      {
-            
-      }
+    public static $tableName = __CLASS__;
+    public function initialize()
+    {
+        $this->setConnectionService('swoole');
+        $this->setSource(self::$tableName);
+        $this->hasOne(
+            'UniqueID_UserTempMessages',
+            UserTempMessages::class,
+            'UniqueID',
+            []
+        );
+        $this->hasOne(
+            'UniqueID_UserMessageSchedule',
+            UserMessageSchedule::class,
+            'UniqueID',
+            []
+        );
+        
+    }
 
 
-      public static function getObjectById($Item, $SqlAnd = false)
+    public function beforeValidationOnCreate()
+    {
+        $this->created_time = Tools::getDateTime();
+       
+    }
+
+    public function beforeValidationOnUpdate()
+    {
+       
+    }
+
+    public function beforeSave()
+    {
+      if (!empty($this->encrypted_data) && !empty($this->UniqueID)) {
+            $this->encrypted_data = Json_encode($this->encrypted_data );
+            $this->encrypted_data = Tools::Crypt($this->encrypted_data,false,$this->UniqueID);
+      }
+    }
+
+    public function afterFetch()
+    {
+      if (!empty($this->encrypted_data) && !empty($this->UniqueID)) {
+            $this->encrypted_data = Tools::Crypt($this->encrypted_data,true,$this->UniqueID);
+            $this->encrypted_data = Json_decode($this->encrypted_data , true);
+      }
+    }
+
+    public function afterSave()
+    {
+       
+    }
+
+    public static function getObjectById($Item, $SqlAnd = false)
       {
             $keys = ["UniqueID"];
             $Object = self::$tableName::findFirst([

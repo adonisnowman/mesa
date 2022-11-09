@@ -20,21 +20,25 @@ class _Action
     {
         $domain = str_replace("https://","",$domain);
         $domain = str_replace("http://","",$domain);
-        $checkKeys = checkKeys::getObjectByItem($Item);
+      
+        if(!empty($Item) ){
+            $checkKeys = checkKeys::getObjectByItem($Item);
         
-        foreach( $checkKeys->checkKeysRule->toArray() AS $checkKeysRule) {
-            if (!empty($checkKeysRule) && empty($checkKeysRule->offshelf)) {
-               
-                $AccountGroups = Tools::fix_array_Key(checkKeys::getObjectByItem($Item)->checkKeysRule->toArray(), "AccountGroups");
-                // var_dump($domain,$AccountGroups,$checkKeys->ActionPort);
-                if ($AccountGroups != "Default") $AccountGroups = explode(",", join(",", $AccountGroups));
-
-                if (in_array("Default", $AccountGroups)) return  $checkKeys->ActionPort;           
-                if (in_array($domain, $AccountGroups)) return  $checkKeys->ActionPort;
+           
+            foreach( $checkKeys->checkKeysRule AS $checkKeysRule) {
+                if (!empty($checkKeysRule) && empty($checkKeysRule->offshelf)) {
+                   
+                    $AccountGroups = Tools::fix_array_Key(checkKeys::getObjectByItem($Item)->checkKeysRule->toArray(), "AccountGroups");
+                    // var_dump($domain,$AccountGroups,$checkKeys->ActionPort);
+                    if ($AccountGroups != "Default") $AccountGroups = explode(",", join(",", $AccountGroups));
+    
+                    if (in_array("Default", $AccountGroups)) return  $checkKeys->ActionPort;           
+                    if (in_array($domain, $AccountGroups)) return  $checkKeys->ActionPort;
+                }
             }
         }
         
-
+      
 
         if ($domain == DOMAIN_DEV)   return  "Admin";
         if ($domain == DOMAIN_CRON)   return  "LOCAL";

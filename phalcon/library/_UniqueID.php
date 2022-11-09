@@ -4,27 +4,27 @@ class _UniqueID
 {
 
     private static $Encryptionkey = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
-    
+
 
     function __construct()
     {
-        
     }
-    public static function shortUniqueID($SetTime = false){
+    public static function shortUniqueID($SetTime = false)
+    {
         //加入隨機資料ID
         $Encryptionkey = self::$Encryptionkey;
 
-        if($SetTime != false && is_numeric($SetTime)) $microtime = (int) round($SetTime);
-        else $microtime =(int)  round(((float)microtime(true)));
-        
+        if ($SetTime != false && is_numeric($SetTime)) $microtime = (int) round($SetTime);
+        else $microtime = (int)  round(((float)microtime(true)));
+
         $shortCode = [];
-        while($microtime > 0){
+        while ($microtime > 0) {
             $num = $Encryptionkey[$microtime % strlen($Encryptionkey)];
             $microtime = floor($microtime / strlen($Encryptionkey));
             $shortCode[] = $num;
         }
-        
-        return join("",$shortCode);
+
+        return join("", $shortCode);
     }
     public static function checkEmptyData(string $tableName, array $Item)
     {
@@ -75,7 +75,7 @@ class _UniqueID
 
         $Item['Object'] = $Item['table_name']::getObjectById($Item);
         $Item['data'] = (!empty($field)) ? Tools::fix_element_Key($Item['table_name']::getOneById($Item), $field) : $Item['table_name']::getOneById($Item);
-        
+
         return $Item;
     }
 
@@ -83,27 +83,28 @@ class _UniqueID
     {
 
         $Item = [];
-        $Return = [];
+
         $Item['UniqueID'] = self::formatUniqueID($ID)["UniqueID"];
         $Item['header'] = self::formatUniqueID($ID)["header"];
         if (empty($Item['header'])) unset($Item['header']);
 
         if (!empty($tableName)) {
             $Item['table_name'] = $tableName;
-        } else {
-
-            $UniqueIDsLog = UniqueIDsLog::getObjectById($Item);
-            if (!empty($UniqueIDsLog->table_name)) {
-                $Item['table_name'] = $UniqueIDsLog->table_name;
-            } else {
-                $Item['data'] = ["errorMsg" => "table is null"];
-                return $Item;
-            }
         }
+
+        $UniqueIDsLog = UniqueIDsLog::getObjectById($Item);
+
+        if (!empty($UniqueIDsLog->table_name)) {
+            $Item['table_name'] = $UniqueIDsLog->table_name;
+        } else {
+            $Item['data'] = ["errorMsg" => "table is null"];
+            return $Item;
+        }
+
 
         $Item['Object'] = $Item['table_name']::getObjectById($Item);
         $Item['UniqueID'] = $UniqueIDsLog;
-        
+
         return $Item;
     }
 
@@ -130,13 +131,13 @@ class _UniqueID
 
     public static function insertUniqueID(string $tableName)
     {
-        
+
         if (class_exists($tableName) == false) {
             $Return['ErrorMsg'][] =  "table is not find";
             echo json_encode($Return, JSON_UNESCAPED_UNICODE);
             exit();
         }
-       
+
 
 
 
@@ -182,17 +183,17 @@ class _UniqueID
         $microtimeString =  (string) round(((float)microtime(true) - (float)time()) * pow(10, 6));
         $Encryptionkey = Encryptionkey::getObjectById(["timestamp" => $microtimeString]);
 
-        if(!empty($Encryptionkey->timestamp))  
+        if (!empty($Encryptionkey->timestamp))
             $regex = str_split($Encryptionkey->Encryptionkey);
         else {
             $regex = str_split(self::$Encryptionkey);
-            shuffle($regex) ;            
+            shuffle($regex);
         }
-        
+
         $key = str_split("yjdHis");
         shuffle($key);
         $time = [];
-        
+
         foreach ($key as $k => $char) {
             $microtime = (string) (isset($microtimeString[$k])) ? $microtimeString[$k] : "0";
             $time[$char] = $regex[intval(date($char))] . $microtime;
@@ -200,56 +201,68 @@ class _UniqueID
         $randomCheck = $key[round(rand(0, count($key) - 1))];
         $time['yearheader'] = (string) ((int) date($randomCheck))  * pow(10, 6) - $microtimeString;
 
-        $Return = join("", $time) . "_{$microtimeString}";    
-        
+        $Return = join("", $time) . "_{$microtimeString}";
+
         //寫入新資料
-        if(empty($Encryptionkey->timestamp)) {
+        if (empty($Encryptionkey->timestamp)) {
             $Encryptionkey = new Encryptionkey;
             $Encryptionkey->timestamp = $microtimeString;
-            $Encryptionkey->Encryptionkey = join("",$regex);            
+            $Encryptionkey->Encryptionkey = join("", $regex);
             $Encryptionkey->create();
         }
-        
 
-        return (self::checkUniqueID($Return,join("",$regex))) ? $Return : self::getUniqueID();
+
+        return (self::checkUniqueID($Return, join("", $regex))) ? $Return : self::getUniqueID();
     }
 
-    public static function checkUniqueID(string $ID ,$Encryptionkey = false)
+    public static function checkUniqueID(string $ID, $Encryptionkey = false)
     {
-        
-        if (strlen($ID) > 18 && strlen($ID) < 20 && strpos('-', $ID) != false && 0 == preg_match("/[0-9a-zA-Z]{12}[0-9]{6,8}/",$ID)) return false;
-       
-        if(!empty($Encryptionkey)){
+
+        if (strlen($ID) > 18 && strlen($ID) < 20 && strpos('-', $ID) != false && 0 == preg_match("/[0-9a-zA-Z]{12}[0-9]{6,8}/", $ID)) return false;
+
+        if (!empty($Encryptionkey)) {
             $Encryptionkey_new = $Encryptionkey;
-        }else {
-            
+        } else {
+
             $UniqueIDsLog = UniqueIDsLog::getObjectById(["UniqueID" => self::formatUniqueID($ID)["UniqueID"]]);
-       
-            if(!empty($UniqueIDsLog->header)) {
-                $Encryptionkey = Encryptionkey::getObjectById(["timestamp"=>$UniqueIDsLog->header]);
+
+            if (!empty($UniqueIDsLog->header)) {
+                $Encryptionkey = Encryptionkey::getObjectById(["timestamp" => $UniqueIDsLog->header]);
                 $Encryptionkey_new = $Encryptionkey->Encryptionkey;
                 $Encryptionkey->used_time = Tools::getDateTime();
-                $Encryptionkey->save();                
+                $Encryptionkey->save();
             }
         }
-        
+
         //解碼判斷
         $UniqueID = self::formatUniqueID($ID)["UniqueID"];
-        $microtime = (int)(substr($UniqueID, 12, strlen($UniqueID)) + (int) ($ID[1] . $ID[3] . $ID[5] . $ID[7] . $ID[9] . $ID[11])) / pow(10, 6);
+
+
+        $micro[] = (string) (!empty($ID[1])) ? $ID[1] : "0";
+        $micro[] = (string) (!empty($ID[3])) ? $ID[3] : "0";
+        $micro[] = (string) (!empty($ID[5])) ? $ID[5] : "0";
+        $micro[] = (string) (!empty($ID[7])) ? $ID[7] : "0";
+        $micro[] = (string) (!empty($ID[9])) ? $ID[9] : "0";
+        $micro[] = (string) (!empty($ID[11])) ? $ID[11] : "0";
+
+
+
+        $microtime = (int)((int) substr($UniqueID, 12, strlen($UniqueID)) + (int) (join('', $micro))) / pow(10, 6);
+
         $checkCount = $microtime - floor($microtime);
-        if(empty($Encryptionkey_new)) return false;
+        if (empty($Encryptionkey_new)) return false;
         else $regex = str_split($Encryptionkey_new);
-        if(!isset($regex[$microtime])) return false;
+        if (!isset($regex[$microtime])) return false;
         else $regixCheck = $regex[$microtime];
-       
-        return ($checkCount == 0 && in_array($regixCheck, [$ID[0], $ID[2], $ID[4], $ID[6], $ID[8], $ID[10]]))?$ID:false;
+
+        return ($checkCount == 0 && in_array($regixCheck, [$ID[0], $ID[2], $ID[4], $ID[6], $ID[8], $ID[10]])) ? $ID : false;
     }
 
     public static function formatUniqueID(string $ID)
     {
-        $ID = explode("_",$ID);
+        $ID = explode("_", $ID);
         $Return["UniqueID"] =  $ID[0];
-        $Return["header"] =  isset($ID[1])?$ID[1]:"";
+        $Return["header"] =  isset($ID[1]) ? $ID[1] : "";
         return $Return;
     }
 
@@ -277,7 +290,7 @@ class _UniqueID
         $UniqueID = self::formatUniqueID($privateUniqueID)['UniqueID'];
         $regex = "/([1-9a-zA-Z][0-9]){6}[0-9]+/";
         $keys = [1, 3, 5, 7, 9, 11];
-        if (preg_match($regex, $UniqueID)) 
+        if (preg_match($regex, $UniqueID))
             foreach (str_split($UniqueID) as $k => $char) {
                 $publicUnique[] = (is_numeric($char) && ($k >= 11 || in_array($k, $keys))) ? str_split(self::$Encryptionkey)[(int)$char] : $char;
             }
@@ -291,6 +304,4 @@ class _UniqueID
         $regex = "/([1-9a-zA-Z][a-eA-E]){6}[a-eA-E]+/";
         return preg_match($regex, $publicUnique);
     }
-
-    
 }

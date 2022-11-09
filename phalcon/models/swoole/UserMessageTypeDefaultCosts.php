@@ -1,67 +1,47 @@
 <?php
 
 
-class PointsTradeClose extends BaseModel
+class UserMessageTypeDefaultCosts extends BaseModel
 {
-      public static $tableName = __CLASS__;
-      public function initialize()
-      {
-            $this->setConnectionService('swoole');
-            $this->setSource(self::$tableName);
-            $this->hasOne(
-                  'UniqueID_PointsOrder',
-                  PointsOrder::class,
-                  'UniqueID',[]
-              );
-              $this->hasOne(
-                  'UniqueID_Users',
-                  Users::class,
-                  'UniqueID',[]
-              );
-              $this->hasOne(
-                  'UniqueID_PointsTrade',
-                  PointsTrade::class,
-                  'UniqueID',[]
-              );
-             
-      }
-
-      public function beforeValidationOnCreate()
-      {
-            $this->created_time = Tools::getDateTime();
-            
-      }
-
-      public function beforeValidationOnUpdate()
-      {
-           
-      }
-      public function afterFetch()
-      {
-
-      }
-
-      public function beforeSave()
-      {
-           
-            
-      }
-      public function afterSave()
-      {
-            
-      }
-
-      public function beforeUpdate()
-      {
-           
-      }
-      public function beforeDelete()
-      {
-            
-      }
+    public static $tableName = __CLASS__;
+    public function initialize()
+    {
+        $this->setConnectionService('swoole');
+        $this->setSource(self::$tableName);
+        $this->hasOne(
+            'UniqueID_MessageType',
+            MessageType::class,
+            'UniqueID',
+            []
+        );
+    }
 
 
-      public static function getObjectById($Item, $SqlAnd = false)
+    public function beforeValidationOnCreate()
+    {
+        $this->created_time = Tools::getDateTime();
+       
+    }
+
+    public function beforeValidationOnUpdate()
+    {
+        $this->updated_time = Tools::getDateTime();
+    }
+
+    public function beforeSave()
+    {
+    }
+
+    public function afterFetch()
+    {
+    }
+
+    public function afterSave()
+    {
+        $this->updated_time = Tools::getDateTime();
+    }
+
+    public static function getObjectById($Item, $SqlAnd = false)
       {
             $keys = ["UniqueID"];
             $Object = self::$tableName::findFirst([

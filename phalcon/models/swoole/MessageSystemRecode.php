@@ -1,7 +1,7 @@
 <?php
 
 
-class PointsTradeClose extends BaseModel
+class MessageSystemRecode extends BaseModel
 {
       public static $tableName = __CLASS__;
       public function initialize()
@@ -9,18 +9,13 @@ class PointsTradeClose extends BaseModel
             $this->setConnectionService('swoole');
             $this->setSource(self::$tableName);
             $this->hasOne(
-                  'UniqueID_PointsOrder',
-                  PointsOrder::class,
+                  'UniqueID_MessageDataFile',
+                  MessageDataFile::class,
                   'UniqueID',[]
               );
               $this->hasOne(
-                  'UniqueID_Users',
-                  Users::class,
-                  'UniqueID',[]
-              );
-              $this->hasOne(
-                  'UniqueID_PointsTrade',
-                  PointsTrade::class,
+                  'UniqueID_UsedMessagePoints',
+                  UsedMessagePoints::class,
                   'UniqueID',[]
               );
              
@@ -29,7 +24,7 @@ class PointsTradeClose extends BaseModel
       public function beforeValidationOnCreate()
       {
             $this->created_time = Tools::getDateTime();
-            
+          
       }
 
       public function beforeValidationOnUpdate()
@@ -43,7 +38,7 @@ class PointsTradeClose extends BaseModel
 
       public function beforeSave()
       {
-           
+            
             
       }
       public function afterSave()
@@ -57,7 +52,7 @@ class PointsTradeClose extends BaseModel
       }
       public function beforeDelete()
       {
-            
+           
       }
 
 
