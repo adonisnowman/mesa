@@ -69,7 +69,7 @@ $SwooleSetting = [
     // 'dispatch_func' => 'my_dispatch_function',
 
     // Worker
-    'max_request' => 0,
+    'max_request' => 100,
     'max_request_grace' => $max_request / 2,
 
     // HTTP Server max execution time, since v4.8.0
