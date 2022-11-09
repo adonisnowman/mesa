@@ -212,6 +212,12 @@ $SwooleSetting = [
 
 ];
 
+echo $_SERVER['SERVER_NAME'];
+exit;
+if($_SERVER['SERVER_NAME']) $SwooleUrl = "https://adonis.bestaup.com/Swoole";
+    else $SwooleUrl = "http://mesa.adonis.tw/Swoole";
+
+
 //環境參數設定
 $SwooleSetting = [];
 $SwooleSetting['daemonize'] = false; 
@@ -221,7 +227,7 @@ $SwooleSetting['ssl_key_file'] = $privkey;
 $ws->set($SwooleSetting);
 
 //监听WebSocket连接打开事件
-$ws->on('open', function ($ws, $request) use ($connections) {
+$ws->on('open', function ($ws, $request) use ($connections , $SwooleUrl) {
 
 
     if ((int)  round(((float)microtime(true))) == $request->server['master_time'])
@@ -233,7 +239,7 @@ $ws->on('open', function ($ws, $request) use ($connections) {
     $user_md5 = md5($request->header['user-agent'] . $request->server['remote_addr']);
     echo "client-{$request->fd} is open [{$user_md5}] \n";
 
-    $url = "http://mesa.adonis.tw/Swoole";
+    $url = $SwooleUrl;
 
 
     $Data['shortUniqueID'] = $shortUniqueID;
@@ -271,7 +277,7 @@ $ws->on('open', function ($ws, $request) use ($connections) {
 
 
 //监听WebSocket消息事件
-$ws->on('message', function ($ws, $frame) use ($messages, $connections) {
+$ws->on('message', function ($ws, $frame) use ($messages, $connections , $SwooleUrl) {
 
     // frame data comes in as a string
     $output = json_decode($frame->data, true);
@@ -380,7 +386,7 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections) {
 });
 
 //监听WebSocket连接关闭事件
-$ws->on('close', function ($ws, $fd) use ($connections) {
+$ws->on('close', function ($ws, $fd) use ($connections , $SwooleUrl) {
     echo "client-{$fd} is closed\n";
     $DisClient = $connections->get($fd);
 
