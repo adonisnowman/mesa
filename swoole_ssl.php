@@ -140,11 +140,11 @@ $SwooleSetting = [
     'open_mqtt_protocol' => true,
 
     // HTTP2
-    'http2_header_table_size' => 4095,
-    'http2_initial_window_size' => 65534,
-    'http2_max_concurrent_streams' => 1281,
-    'http2_max_frame_size' => 16383,
-    'http2_max_header_list_size' => 4095,
+    // 'http2_header_table_size' => 4095,
+    // 'http2_initial_window_size' => 65534,
+    // 'http2_max_concurrent_streams' => 1281,
+    // 'http2_max_frame_size' => 16383,
+    // 'http2_max_header_list_size' => 4095,
 
     // SSL
     'ssl_cert_file' => __DIR__ . '/config/ssl.cert',
