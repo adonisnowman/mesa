@@ -32,7 +32,8 @@ if(strpos(dirname(__FILE__),"xampp") != false ){
 
 $dirname = array_pop($dirname);
 
-$ConfigFile = "config.ini";
+$DefaultConfigFile = "config.ini";
+$ConfigFile = "config_{$_SERVER['SERVER_ADDR']}.ini";
 $dir = "/{$dirname}/";
 
 if (!defined('ROOT_PATH') && file_exists("/home/cfd888/public_html")) 
@@ -55,16 +56,20 @@ if (!defined('CONFIGFILE_PATH')) {
 require_once ROOT_PATH . '/phalcon/extend/Extendphalcon.php'; // controller view 基本extand
 
 $ConfigFile = CONFIGFILE_PATH.$ConfigFile;
-if(!is_file($ConfigFile)) {
-	echo $ConfigFile ." FAILD";
+$DefaultConfigFile = CONFIGFILE_PATH.$DefaultConfigFile;
+if(!is_file($DefaultConfigFile)) {
+	echo $DefaultConfigFile ." FAILD";
 	$images = glob(CONFIGFILE_PATH.'*.{ini}', GLOB_BRACE);
 	var_dump($images);	
 	exit;
 }
 
+if(file_exists($ConfigFile)) 
+	$config = new PhConfig($ConfigFile);
+else $config = new PhConfig($DefaultConfigFile);
 
 // Create the new object
-$config = new PhConfig($ConfigFile);
+
 define('INIT_RESET', $config->init->reset);
 //設定前端讀取網址
 define('DOMAIN_VUE', $config->domain->vue);
