@@ -53,8 +53,8 @@ $SwooleSetting = [
 
     // Process
     'daemonize' => 1,
-    'user' => 'www-data',
-    'group' => 'www-data',
+    'user' => 'cfd888',
+    'group' => 'cfd888',
     'chroot' => '/data/server/',
     'open_cpu_affinity' => true,
     'cpu_affinity_ignore' => [0, 1],
