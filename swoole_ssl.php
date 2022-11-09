@@ -73,7 +73,7 @@ $SwooleSetting = [
     'max_request_grace' => $max_request / 2,
 
     // HTTP Server max execution time, since v4.8.0
-    'max_request_execution_time' => 30, // 30s
+    // 'max_request_execution_time' => 30, // 30s
 
     // Task worker
     'task_ipc_mode' => 1,
