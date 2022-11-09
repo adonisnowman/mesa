@@ -33,7 +33,7 @@ if(strpos(dirname(__FILE__),"xampp") != false ){
 $dirname = array_pop($dirname);
 
 $DefaultConfigFile = "config.ini";
-$ConfigFile = "config_{$_SERVER['SERVER_ADDR']}.ini";
+$ConfigFile = "config_{$_SERVER['SERVER_NAME']}.ini";
 $dir = "/{$dirname}/";
 
 if (!defined('ROOT_PATH') && file_exists("/home/cfd888/public_html")) 
