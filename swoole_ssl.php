@@ -169,7 +169,7 @@ $SwooleSetting = [
     // ],
 
     // Static Files
-    'document_root' => __DIR__ . '/public',
+    'document_root' => __DIR__ . '/',
     'enable_static_handler' => true,
     'static_handler_locations' => ['/static', '/app/images'],
     'http_index_files' => ['index.html', 'index.txt'],
