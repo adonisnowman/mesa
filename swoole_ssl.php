@@ -66,7 +66,7 @@ $SwooleSetting = [
     'message_queue_key' => 'mq1',
     'dispatch_mode' => 2,
     'discard_timeout_request' => true,
-    'dispatch_func' => 'my_dispatch_function',
+    // 'dispatch_func' => 'my_dispatch_function',
 
     // Worker
     'max_request' => 0,
