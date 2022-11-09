@@ -49,15 +49,15 @@ function SendAction($ws, $fd, $Action)
     $ws->push($fd, json_encode($Action));
 }
 
-
-
-//配置参数
-$ws->set([
+$SwooleSetting = [
     'daemonize' => false, //守护进程化。
     //配置SSL证书和密钥路径
     'ssl_cert_file' => $fullchain,
     'ssl_key_file'  => $privkey
-]);
+];
+var_dump($SwooleSetting);
+//配置参数
+$ws->set($SwooleSetting);
 
 //监听WebSocket连接打开事件
 $ws->on('open', function ($ws, $request) use ($connections) {
