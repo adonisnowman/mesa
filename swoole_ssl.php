@@ -76,12 +76,12 @@ $SwooleSetting = [
     // 'max_request_execution_time' => 30, // 30s
 
     // Task worker
-    'task_ipc_mode' => 1,
-    'task_max_request' => 100,
-    'task_tmpdir' => '/tmp',
-    'task_worker_num' => 8,
-    'task_enable_coroutine' => true,
-    'task_use_object' => true,
+    // 'task_ipc_mode' => 1,
+    // 'task_max_request' => 100,
+    // 'task_tmpdir' => '/tmp',
+    // 'task_worker_num' => 8,
+    // 'task_enable_coroutine' => true,
+    // 'task_use_object' => true,
 
     // Logging
     // 'log_level' => 1,
