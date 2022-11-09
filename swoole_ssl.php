@@ -212,7 +212,7 @@ $SwooleSetting = [
 
 ];
 
-echo $_SERVER['SERVER_ADDR'];
+var_dump($_SERVER);
 exit;
 if($_SERVER['SERVER_NAME']) $SwooleUrl = "https://adonis.bestaup.com/Swoole";
     else $SwooleUrl = "http://mesa.adonis.tw/Swoole";
