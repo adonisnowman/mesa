@@ -213,6 +213,8 @@ $SwooleSetting = [
 ];
 
 //環境參數設定
+$SwooleSetting = [];
+$SwooleSetting['daemonize'] = 1; 
 $SwooleSetting['ssl_cert_file'] = $fullchain;
 $SwooleSetting['ssl_key_file'] = $privkey;
 //配置参数
