@@ -340,14 +340,21 @@
                     socket.ws.addEventListener('error', (event) => {
                         sharedData.Toast("訊息服務連線失敗", 3000);
                     });
+                    socket.ws.addEventListener('close', (event) => { 
+
+                        sharedData.Toast("連線關閉，系統登出", 3000);
+                        sharedData.Logout();
+                    })
 
                     socket.ws.onopen = function(event) {
-                        socket.send(socket.SignInSession);
+                       
 
                         if (onmessageDefer) {
                             socket.ws.onmessage = onmessageDefer;
                             onmessageDefer = null;
                         }
+
+                        socket.send(socket.SignInSession);
                     };
                 },
                 readyState: function() {

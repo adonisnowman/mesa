@@ -448,14 +448,15 @@ class UsersApiController extends BaseController
 
             $Return['ErrorMsg'][] = ['登出異常，請聯絡系統人員'];
             return $Return;
-        } else {
+        } else if (!empty($UsersLoginLogs->UniqueID)) {
             $UsersLoginLogs->logout_time = Tools::getDateTime();
             $UsersLoginLogs->save();
 
-            unset($_SESSION[Tools::getIp()]);
-            session_destroy();
+            
         }
 
+        unset($_SESSION[Tools::getIp()]);
+        session_destroy();
 
         $Return['ReDirect'] = "UserSign";
         return $Return;

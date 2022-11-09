@@ -33,21 +33,44 @@ $connections->column('UniqueID_UsersLoginLogs', Table::TYPE_STRING, 750);
 $connections->column('user_md5', Table::TYPE_STRING, 750);
 
 $connections->create();
-//创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
-$ws = new swoole_websocket_server("0.0.0.0", 8080, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
-$Response = new Response();
+
 $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
 $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
-if (file_exists($fullchain)) $BestaupDefault = true;
+$BestaupDefault = (file_exists($fullchain));
 if (file_exists("/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem")) $fullchain = "/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem";
 if (file_exists("/etc/letsencrypt/live/adonis.tw-0002/privkey.pem")) $privkey = "/etc/letsencrypt/live/adonis.tw-0002/privkey.pem";
 
+$SwoolePort  = ($BestaupDefault)?"8080":"9509";
+//创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
+$ws = new swoole_websocket_server("0.0.0.0", $SwoolePort , SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+$Response = new Response();
 
 function SendAction($ws, $fd, $Action)
 {
     var_dump($Action);
     $ws->push($fd, json_encode($Action));
 }
+
+function ReFreshConnections($ws,  $connections ){
+
+    //傳送線上名單
+    $Action = [];
+    $Action['Type'] = "Connections";
+    foreach ($connections as $client) {
+        $Action["Connections"][] = ["shortUniqueID" => $client["shortUniqueID"]];
+    }
+    foreach ($connections as $client) {
+
+        SendAction($ws, $client['client'], $Action);
+    }
+}
+
+function DisConnect($ws ,$client) {
+
+    $ws->disconnect( (int) $client, 1003, 'Pleace Login first');
+}
+
+
 $max_request = 100;
 $SwooleSetting = [
 
@@ -216,6 +239,7 @@ $SwooleSetting = [
 if ($BestaupDefault) $SwooleUrl = "https://adonis.bestaup.com/Swoole";
 else $SwooleUrl = "http://mesa.adonis.tw/Swoole";
 
+    echo $SwooleUrl;
 
 //環境參數設定
 $SwooleSetting = [];
@@ -238,7 +262,7 @@ $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
     $user_md5 = md5($request->header['user-agent'] . $request->server['remote_addr']);
     echo "client-{$request->fd} is open [{$user_md5}] \n";
 
-    $SwooleUrl = $SwooleUrl;
+    
 
 
     $Data['shortUniqueID'] = $shortUniqueID;
@@ -263,13 +287,14 @@ $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
         return false;
     }
 
-    if (!empty($Return['Action']) &&  !empty($Return[$Return['Action']]))
-        $Return = Tools::fix_element_Key($Return[$post['Action']], ["UniqueID", "shortUniqueID", "UniqueID_UsersToken", "UniqueID_UsersLoginLogs", "user_md5"]);
-    else  return $ws->disconnect($request->fd, 1003, 'Pleace Login first');
+    if (empty($Return['Action']) ||  empty($Return[$Return['Action']])) return DisConnect($ws, (int) $request->fd);
 
-
+    $Return = Tools::fix_element_Key($Return[$post['Action']], ["UniqueID", "shortUniqueID", "UniqueID_UsersToken", "UniqueID_UsersLoginLogs", "user_md5"]);
     $Return['client'] = $request->fd;
+
     $connections->set($request->fd, $Return);
+
+    
 });
 //
 
@@ -315,7 +340,7 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleU
             return false;
         }
 
-        
+
         $Data['shortUniqueID'] = $client['shortUniqueID'];
 
         $post['Action'] = "MessageToken";
@@ -332,7 +357,7 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleU
 
         if (!empty($Return['MessageToken'])) $MessageToken = $Return['MessageToken'];
 
-        if (!empty($output['account'])) {
+        if (!empty($output['UniqueID']) && !empty($output['account'])) {
             //首次連線訊息
             $Action = [];
             $Action['shortUniqueID'] = $client['shortUniqueID'];
@@ -341,17 +366,20 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleU
             $Action['Toast'][] = "首次連線";
             SendAction($ws, $frame->fd, $Action);
 
-            //傳送線上名單
-            $Action = [];
-            $Action['Type'] = "Connections";
+           
+           
             foreach ($connections as $client) {
-                $Action["Connections"][] = ["shortUniqueID" => $client["shortUniqueID"]];
+                //判斷重複連線
+
+                if ( $frame->fd != (int) $client['client'] && $client['UniqueID_UsersLoginLogs'] == $output['UniqueID']) 
+                    DisConnect($ws, (int) $client['client'] );
+               
             }
 
-            foreach ($connections as $client) {
+           //傳送線上名單
+    
+            ReFreshConnections($ws, $connections);
 
-                SendAction($ws, $client['client'], $Action);
-            }
         } else if (!empty($output['MessageType']) && !empty($MessageToken[$output['MessageType']]) && $output['shortUniqueID'] == $client['shortUniqueID']) {
 
 
@@ -372,11 +400,7 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleU
             SendAction($ws, $frame->fd, $Action);
         }
     } else {
-
-        $Action = [];
-        $Action['Type'] = "Action";
-        $Action['Action'] = " sharedData.Logout(); ";
-        SendAction($ws, $frame->fd, $Action);
+        DisConnect($ws, (int) $frame->fd);
     }
 });
 
@@ -386,7 +410,7 @@ $ws->on('close', function ($ws, $fd) use ($connections, $SwooleUrl) {
     $DisClient = $connections->get($fd);
 
 
-    
+
 
     $Data = $DisClient;
     unset($Data['client']);
@@ -408,19 +432,10 @@ $ws->on('close', function ($ws, $fd) use ($connections, $SwooleUrl) {
     }
 
     //傳送線上名單
-    $Action = [];
-    $Action['Type'] = "Connections";
-    foreach ($connections as $client) {
-        $Action["Connections"][] = ["shortUniqueID" => $client["shortUniqueID"]];
-    }
-
-    foreach ($connections as $client) {
-
-        SendAction($ws, $client['client'], $Action);
-    }
-
-
+    
     $connections->del($fd);
+
+    ReFreshConnections($ws, $connections);
 });
 
 $ws->start();

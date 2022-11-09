@@ -131,8 +131,8 @@ class SwooleController extends BaseController
       public function SocketList(){
             $UniqueID = self::$PostData['UniqueID'];
             
-
-            if($_SERVER['SERVER_ADDR'] == "220.134.74.180") $SocketLost[] = [ 'wss' => "adonis.tw" , "port" => "9509"];
+            
+            if($_SERVER['SERVER_ADDR'] == "10.0.1.2") $SocketLost[] = [ 'wss' => "adonis.tw" , "port" => "9509"];
             else $SocketLost[] = [ 'wss' => "swoole.bestaup.com" , "port" => "8080"];
 
 
