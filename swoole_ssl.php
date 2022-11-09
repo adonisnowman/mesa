@@ -48,7 +48,7 @@ function SendAction($ws, $fd, $Action)
     var_dump($Action);
     $ws->push($fd, json_encode($Action));
 }
-
+$max_request = 100;
 $SwooleSetting = [
 
     // Process
@@ -69,7 +69,7 @@ $SwooleSetting = [
     // 'dispatch_func' => 'my_dispatch_function',
 
     // Worker
-    'max_request' => 100,
+    'max_request' => $max_request,
     'max_request_grace' => $max_request / 2,
 
     // HTTP Server max execution time, since v4.8.0
