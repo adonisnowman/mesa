@@ -102,7 +102,7 @@ $SwooleSetting = [
     'tcp_defer_accept' => 5,
     'open_tcp_keepalive' => true,
     'open_tcp_nodelay' => false,
-    'pipe_buffer_size' => 32 * 1024*1024,
+    // 'pipe_buffer_size' => 32 * 1024*1024,
     'socket_buffer_size' => 128 * 1024*1024,
 
     // Kernel
