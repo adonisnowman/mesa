@@ -84,15 +84,15 @@ $SwooleSetting = [
     'task_use_object' => true,
 
     // Logging
-    'log_level' => 1,
-    'log_file' => '/data/swoole.log',
-    'log_rotation' => SWOOLE_LOG_ROTATION_DAILY,
-    'log_date_format' => '%Y-%m-%d %H:%M:%S',
-    'log_date_with_microseconds' => false,
-    'request_slowlog_file' => false,
+    // 'log_level' => 1,
+    // 'log_file' => '/data/swoole.log',
+    // 'log_rotation' => SWOOLE_LOG_ROTATION_DAILY,
+    // 'log_date_format' => '%Y-%m-%d %H:%M:%S',
+    // 'log_date_with_microseconds' => false,
+    // 'request_slowlog_file' => false,
 
     // Enable trace logs
-    'trace_flags' => SWOOLE_TRACE_ALL,
+    // 'trace_flags' => SWOOLE_TRACE_ALL,
 
     // TCP
     'input_buffer_size' => 2097152,
