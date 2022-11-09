@@ -34,7 +34,7 @@ $connections->column('user_md5', Table::TYPE_STRING, 750);
 
 $connections->create();
 //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
-$ws = new swoole_websocket_server("0.0.0.0", 9501, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+$ws = new swoole_websocket_server("0.0.0.0", 8080, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 $Response = new Response();
 $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
 $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
@@ -214,7 +214,7 @@ $SwooleSetting = [
 
 //環境參數設定
 $SwooleSetting = [];
-$SwooleSetting['daemonize'] = 1; 
+$SwooleSetting['daemonize'] = false; 
 $SwooleSetting['ssl_cert_file'] = $fullchain;
 $SwooleSetting['ssl_key_file'] = $privkey;
 //配置参数
