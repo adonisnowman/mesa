@@ -119,7 +119,7 @@ $SwooleSetting = [
     'package_body_offset' => 8,
     'package_length_offset' => 8,
     'package_max_length' => 2 * 1024 * 1024, // 2MB
-    'package_length_func' => 'my_package_length_func',
+    // 'package_length_func' => 'my_package_length_func',
 
     // Coroutine
     'enable_coroutine' => true,
