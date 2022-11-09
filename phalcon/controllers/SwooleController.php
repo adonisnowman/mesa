@@ -133,7 +133,7 @@ class SwooleController extends BaseController
             
 
             if($_SERVER['SERVER_ADDR'] == "220.134.74.180") $SocketLost[] = [ 'wss' => "adonis.tw" , "port" => "9509"];
-            else $SocketLost[] = [ 'wss' => "swoole.bestaup.com" , "port" => "9509"];
+            else $SocketLost[] = [ 'wss' => "swoole.bestaup.com" , "port" => "8080"];
 
 
             $Return[__FUNCTION__] = $SocketLost;
