@@ -203,12 +203,12 @@ $SwooleSetting = [
     'dns_cache_refresh_time' => 60,
     'enable_preemptive_scheduler' => 0,
 
-    'open_fastcgi_protocol' => 0,
+    // 'open_fastcgi_protocol' => 0,
     'open_redis_protocol' => 0,
 
     'stats_file' => './stats_file.txt', // removed from v4.9.0
 
-    'enable_object' => true,
+    // 'enable_object' => true,
 
 ];
 
