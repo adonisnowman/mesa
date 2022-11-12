@@ -811,9 +811,9 @@
                                                 <div class="card-body">
                                                     <div class="taskname">來自 Adonis 的訊息
                                                     </div>
-                                                    <div class="taskdate">20/07/2019 at 03:10PM
+                                                    <div class="taskdate"> {{ item.close_time }}
                                                     </div>
-                                                    <div class="collapse" id="{{item.UniqueID}}">
+                                                    <div class="collapse" id="MessageToUsers_{{item.UniqueID}}">
                                                         <div class="text-center p-t-30">
                                                             <span class="txt1">
                                                                 {{ item.MessageDataFile.encrypted_data.encrypted_data }}
@@ -850,9 +850,13 @@
                                                 <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
                                                 <div class="card-footer taskpanel-footer">
                                                     <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
+                                                    <div class="taskinfo-footer">
+                                                        <div class="attachment"><i class="mdi mdi-account-heart-outline"></i></div>
+                                                        <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{item.ReMessage.length}}</span></div>
+                                                    </div>
                                                 </div>
-
-                                                <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#{{item.UniqueID}}" aria-expanded="false" aria-controls="{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
+                                                
+                                                <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#MessageToUsers_{{item.UniqueID}}" aria-expanded="false" aria-controls="MessageToUsers_{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -935,11 +939,12 @@
             var Admin = this;
             Admin.LoginInfo = {};
             Admin.Connections = [];
-
+            Admin.SignInCkecked = {};
 
             var SignInSession = sharedData.SignInSession();
             SignInSession.then(function(SignInSession) { // 呼叫承諾API獲取資料 .resolve  
 
+                    if (SignInSession.SignInCkecked) Admin.SignInCkecked = SignInSession.SignInCkecked;
                     if (SignInSession.account) Admin.LoginInfo.email = SignInSession.account;
                     if (SignInSession.mobile) Admin.LoginInfo.mobile = SignInSession.mobile;
                     if (SignInSession.UniqueID) {
@@ -1040,7 +1045,8 @@
                         $socket.send(SendData);
                     }
 
-
+                    if ( data.UserMessageSchedule && data.UserMessageSchedule.length > 0 ) $cookies.put('UserMessageSchedule', JSON.stringify( data.UserMessageSchedule ));
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg,3000);
 
 
 

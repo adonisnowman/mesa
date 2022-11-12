@@ -14,6 +14,7 @@ class SwooleConnections extends BaseModel
             'UniqueID',
             []
         );
+        
     }
 
 

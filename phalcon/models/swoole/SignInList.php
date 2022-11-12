@@ -13,6 +13,27 @@ class SignInList extends BaseModel
                   Users::class,
                   'UniqueID_SignInList',[]
               );
+              $this->hasOne(
+                  'UniqueID',
+                  UsersConnection::class,
+                  'UniqueID_SignInList',[]
+              );
+              $this->hasOne(
+                  'UniqueID',
+                  PointsOrder::class,
+                  'UniqueID_SignInList',[]
+              );
+              $this->hasOne(
+                  'UniqueID',
+                  SignInCkecked::class,
+                  'UniqueID_SignInList',[]
+              );
+              $this->hasOne(
+                  'UniqueID',
+                  SignInProfile::class,
+                  'UniqueID_SignInList',[]
+              );
+             
       }
 
       public function beforeValidationOnCreate()

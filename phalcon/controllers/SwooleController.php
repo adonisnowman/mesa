@@ -268,6 +268,14 @@ class SwooleController extends BaseController
 
             $SwooleConnections->logout_time = Tools::getDateTime();
             $SwooleConnections->save();
+
+            $Item = [];
+            $Item['shortUniqueID_SwooleConnections'] = $SwooleConnections->shortUniqueID;
+           
+            $MessageToken = MessageToken::getListObjectByItem($Item," used_time IS NULL ");
+            $MessageToken->update(["faild_time" => Tools::getDateTime()]);
+
+
       }
       public function SignTokenAction($UniqueID = "", $Token = "")
       {

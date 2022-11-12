@@ -311,14 +311,10 @@ class UsersApiController extends BaseController
             $EmailChecked->save();
 
             $SignInCkecked->UniqueID_EmailChecked = $EmailChecked->UniqueID;
-            $SignInCkecked->account_checked_time = Tools::getDateTime();
+            $SignInCkecked->email_checked_time = Tools::getDateTime();
             $SignInCkecked->save();
 
-            if (!empty($SignInCkecked->account_checked_time) && !empty($SignInCkecked->mobile_checked_time)) {
-
-                $_SESSION[Tools::getIp()]['ReDirect'] = "UserList";
-                $Return['ReDirect'] = "reload";
-            }
+            
         }
 
         $Return['ErrorMsg'][] = "完成Email驗證";
@@ -396,11 +392,7 @@ class UsersApiController extends BaseController
             $SignInCkecked->mobile_checked_time = Tools::getDateTime();
             $SignInCkecked->save();
 
-            if (!empty($SignInCkecked->account_checked_time) && !empty($SignInCkecked->mobile_checked_time)) {
-
-                $_SESSION[Tools::getIp()]['ReDirect'] = "UserList";
-                $Return['ReDirect'] = "reload";
-            }
+           
         }
 
         $Return['ErrorMsg'][] = "完成手機簡訊驗證";
@@ -529,9 +521,14 @@ class UsersApiController extends BaseController
 
 
         if (!empty($SignInList->UniqueID)) {
+
             //確定登入帳密 寫入該次登入紀錄ＩＤ
             $UsersLoginLogs->UniqueID_SignInList = $SignInList->UniqueID;
             $UsersLoginLogs->save();
+
+            //讀取身份驗證資料
+            $SignInCkecked = $SignInList->SignInCkecked;
+            //已是會員
             if (!empty($Users->UniqueID)) {
 
                 if (!empty($UsersLoginLogs->UniqueID)) $Users->UniqueID_UsersLoginLogs = $UsersLoginLogs->UniqueID;
@@ -560,6 +557,8 @@ class UsersApiController extends BaseController
             $_SESSION[Tools::getIp()]['SignInSession']['account'] = $SignInList->account;
             $_SESSION[Tools::getIp()]['SignInSession']['mobile'] = $SignInList->mobile;
             $_SESSION[Tools::getIp()]['SignInSession']['UniqueID'] = $UsersLoginLogs->UniqueID;
+            $_SESSION[Tools::getIp()]['SignInSession']['SignInCkecked'] = Tools::fix_element_Key( $SignInCkecked->toArray() ,["email_checked_time","mobile_checked_time","password_checked_time"]);
+            
             $_SESSION[Tools::getIp()]['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
             $_SESSION[Tools::getIp()]['SignInList'] = $SignInList->toArray();
 
@@ -618,14 +617,7 @@ class UsersApiController extends BaseController
 
         if (!empty(self::$PostData['Message'])) $Message = self::$PostData['Message'];
 
-        $points_cost = 30;
-        $points_off = 30;
-
-        $encrypted_data['MessageType'] = self::$PostData['MessageType'];
-        $encrypted_data['points_cost'] = $points_cost;
-        $encrypted_data['points_off'] = $points_off;
-        $encrypted_data['encrypted_data'] = $Message;
-
+        
         $Item = [];
         $Item['UniqueID_UsersLoginLogs'] = self::$PostData['MessageType']['UniqueID_UsersLoginLogs'];
         $Item['action_token'] = self::$PostData['MessageToken'];
@@ -643,10 +635,22 @@ class UsersApiController extends BaseController
 
         $Insert = [];
         $Insert['UniqueID_UsersLoginLogs'] = $UniqueID;
+        $Insert['UniqueID_MessageType'] = $MessageToken->UniqueID_MessageType;
         $UserTempMessages = Models::insertTable($Insert, "UserTempMessages", true);
         $MessageDataFile = (object) null;
+
         //建立訊息暫存資料
         if (!empty($UserTempMessages->UniqueID)) {
+            //建立訊息檔案
+            $points_cost = 30;
+            $points_off = 30;
+
+            $encrypted_data['MessageType'] = self::$PostData['MessageType'];
+            $encrypted_data['points_cost'] = $points_cost;
+            $encrypted_data['points_off'] = $points_off;
+            $encrypted_data['encrypted_data'] = $Message;
+
+
             $Insert = [];
             $Insert['UniqueID_UserTempMessages'] = $UserTempMessages->UniqueID;
             $Insert['encrypted_data'] = $encrypted_data;
@@ -732,8 +736,9 @@ class UsersApiController extends BaseController
                         $MessageReceiver = models::insertTable($Insert, "MessageReceiver");
                     }
 
-                    //使用者不在線上
+                    //使用者不在線上 將送往排程紀錄，並回傳建立的UniqueID 當作client 端備用紀錄
                     if (!empty($SwooleConnections->logout_time)) {
+                        
                         $Insert = [];
                         $Insert['UniqueID_UserTempMessages'] = $UserTempMessages->UniqueID;
 
@@ -746,7 +751,7 @@ class UsersApiController extends BaseController
                         $UserMessageSchedule  = models::insertTable($Insert, "UserMessageSchedule");
 
                         if (!empty($UserMessageSchedule->UniqueID)) {
-                            $Return['UserMessageSchedule'][] = $UserMessageSchedule->toArray();
+                            $Return['UserMessageSchedule'][] = $UserMessageSchedule->UniqueID;
                         }
                     }
                 } else {

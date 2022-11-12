@@ -32,12 +32,7 @@ class UserTempMessages extends BaseModel
             'UniqueID',
             []
         );
-        $this->hasOne(
-            'UniqueID_UsedPoints',
-            UsedPoints::class,
-            'UniqueID',
-            []
-        );
+       
     }
 
 
