@@ -54,13 +54,11 @@
     <script src="js/ngStorage.js"></script>
 
 
-    <script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
-
     <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
 
     <script>
-        var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages', 'dx']);
+        var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages']);
 
         adonis.service('sharedData', function($http, $q, $mdToast, $cookies) {
             var self = this;
@@ -289,13 +287,13 @@
             };
 
         });
-        adonis.factory('$socket', ['$http', '$q', '$cookies' , 'sharedData', function($http, $q, $cookies , sharedData) {
+        adonis.factory('$socket', ['$http', '$q', '$cookies', 'sharedData', function($http, $q, $cookies, sharedData) {
 
             console.info("訊息連線測試", $cookies.get('UniqueID'));
             var $socket = this;
 
             var SocketList = function(UniqueID) {
-                
+
                 var data = {
                     'Action': 'SocketList',
                     'Data': JSON.stringify({
@@ -340,14 +338,14 @@
                     socket.ws.addEventListener('error', (event) => {
                         sharedData.Toast("訊息服務連線失敗", 3000);
                     });
-                    socket.ws.addEventListener('close', (event) => { 
+                    socket.ws.addEventListener('close', (event) => {
 
                         sharedData.Toast("連線關閉，系統登出", 3000);
                         sharedData.Logout();
                     })
 
                     socket.ws.onopen = function(event) {
-                       
+
 
                         if (onmessageDefer) {
                             socket.ws.onmessage = onmessageDefer;
@@ -412,37 +410,48 @@
                     </a>
                     <div class="ml-auto d-flex align-items-center">
                         <div class="iconbox iconbox-search btn-hovered-light"><i class="iconbox__icon mdi mdi-magnify"></i></div>
-                        <div class="navbar-nav">
-                            <div class="iconbox-group">
-                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-wallet-outline"></i></div>
-                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i></div>
-                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i></div>
-                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-dots-vertical"></i></div>
+                        <div class="iconbox-group">
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-gift"></i></div>
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i></div>
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i></div>
+                            <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-dots-vertical"></i></div>
+                        </div>
+                        <div class="iconbox-searchbar">
+                            <form><input type="text" class="form-control" placeholder="Search here..." autofocus><button class="search-submit" type="submit"><i class="mdi mdi-magnify"></i></button><a href="chatbox/javascript:void(0)" class="search-close"><i class="mdi mdi-arrow-left"></i></a></form>
+                        </div>
+
+                    </div>
+                    <div class="navbar-nav">
+
+                        <div class="dropdown user-nav">
+                            <div class="user-avatar user-avatar-sm user-avatar-rounded" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="chatriq-user chatriq-user-01"></div>
                             </div>
-                            <div class="dropdown user-nav">
-                                <div class="user-avatar user-avatar-sm user-avatar-rounded" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <div class="chatriq-user chatriq-user-01"></div>
-                                </div>
-                                <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" ng-click="Admin.ReDirect('Profile')"><span><i class="mdi mdi-account-outline"></i></span><span>Profile</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-account-multiple-plus-outline"></i></span><span>Invite
-                                            People</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-settings-outline"></i></span><span>Settings</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-help-circle-outline"></i></span><span>Help</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-comment-quote-outline"></i></span><span>Feedback</span></a>
-                                    <div class="dropdown-divider"></div><a class="dropdown-item" ng-click="Admin.Logout();"><span><i class="mdi mdi-logout-variant"></i></span><span>Logout</span></a>
-                                </div>
-                            </div>
-                            <div class="iconbox-searchbar">
-                                <form><input type="text" class="form-control" placeholder="Search here..." autofocus><button class="search-submit" type="submit"><i class="mdi mdi-magnify"></i></button><a href="chatbox/javascript:void(0)" class="search-close"><i class="mdi mdi-arrow-left"></i></a></form>
+                            <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" ng-click="Admin.ReDirect('Profile')"><span><i class="mdi mdi-account-outline"></i></span><span>Profile</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-account-multiple-plus-outline"></i></span><span>Invite
+                                        People</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-settings-outline"></i></span><span>Settings</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-help-circle-outline"></i></span><span>Help</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-comment-quote-outline"></i></span><span>Feedback</span></a>
+                                <div class="dropdown-divider"></div><a class="dropdown-item" ng-click="Admin.Logout();"><span><i class="mdi mdi-logout-variant"></i></span><span>Logout</span></a>
                             </div>
                         </div>
+
                     </div>
                 </nav><!-- navbar end -->
                 <!-- sidebar start -->
                 <div class="chatapp__sidebar">
-                    <ul class="nav" id="myTab" role="tablist">
-                        <li class="nav-item"><a class="nav-link" href="chatbox/index.html"><i class="mdi mdi-message-text-outline"></i><span>Chats</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="chatbox/calls.html"><i class="mdi mdi-phone-outline"></i><span>Calls</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="chatbox/contacts.html"><i class="mdi mdi-account-box-outline"></i><span>Contacts</span></a></li>
-                        <li class="nav-item nav-item-todo"><a class="nav-link active" ng-click="Admin.ReDirect('UserInfo')">
-                                <i class="mdi mdi-checkbox-marked-outline"></i><span>UserInfo</span></a></li>
-                        <li class="nav-item sidebar-bottom-nav nav-item-help"><a class="nav-link" href="chatbox/help.html" title="Help"><i class="mdi mdi-help-circle-outline"></i><span>Help</span></a>
+                <ul class="nav" id="myTab" role="tablist">
+                        <li class="nav-item"><a class="nav-link " ng-click="Admin.ReDirect('UserChats');">
+                                <i class="mdi mdi-message-text-outline"></i><span>泡湯聊天</span></a></li>
+                        <li class="nav-item nav-item-todo"><a class="nav-link " ng-click="Admin.ReDirect('UserInfo')">
+                                <i class="mdi mdi-checkbox-marked-outline"></i><span>個人資訊</span></a></li>
+                        <li class="nav-item nav-item-todo"><a class="nav-link active" ng-click="Admin.ReDirect('UserProinfo')">
+                                <i class="mdi mdi-checkbox-marked-outline"></i><span>基本資料</span></a></li>
+                                
+                        <li class="nav-item"><a class="nav-link" ng-click="Admin.ReDirect('UserStored');">
+                                <i class="iconbox__icon mdi mdi-wallet-outline"></i><span>儲值功能</span></a></li>
+                        <li class="nav-item"><a class="nav-link" ng-click="Admin.ReDirect('UserTrade');">
+                                <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>交易紀錄</span></a></li>
+
+                        <li class="nav-item sidebar-bottom-nav nav-item-help">
+                            <a class="nav-link" href="chatbox/help.html" title="Help"><i class="mdi mdi-help-circle-outline"></i><span>聯絡我們</span></a>
                         </li>
                     </ul>
                 </div><!-- sidebar end -->
@@ -572,7 +581,7 @@
                                                             <span class="btn-show-pass">
                                                                 <i class="zmdi zmdi-eye"></i>
                                                             </span>
-                                                            <input class="input100" type="text" name="mobile" ng-model="Admin.LoginInfo.mobile">
+                                                            <input class="input100" type="text" name="mobile" ng-model="Admin.LoginInfo.mobile" ng-class="(this.value)?'has-val':''">
                                                             <span class="focus-input100" data-placeholder="手機號碼資訊確認"></span>
                                                         </div>
                                                         <div class="container-login100-form-btn">
@@ -855,7 +864,7 @@
                                                         <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{item.ReMessage.length}}</span></div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#MessageToUsers_{{item.UniqueID}}" aria-expanded="false" aria-controls="MessageToUsers_{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
                                                 </div>
                                             </div>
@@ -1045,8 +1054,8 @@
                         $socket.send(SendData);
                     }
 
-                    if ( data.UserMessageSchedule && data.UserMessageSchedule.length > 0 ) $cookies.put('UserMessageSchedule', JSON.stringify( data.UserMessageSchedule ));
-                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg,3000);
+                    if (data.UserMessageSchedule && data.UserMessageSchedule.length > 0) $cookies.put('UserMessageSchedule', JSON.stringify(data.UserMessageSchedule));
+                    if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
 
 
 

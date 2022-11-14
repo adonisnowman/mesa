@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Chatriq - Chat & Taskmanager</title>
+      <meta name="description" content="The ultimate Bootstrap based Messaging framework to help build Messaging or Chat application fast and easy. Fully responsive and crafted with modern elements and latest design">
+      <meta name="keywords" content="Chatriq, chat, messaging, theme, platform" />
+      <meta name="subject" content="">
+      <meta name="copyright" content="">
+      <link rel="icon" href="chatbox/assets/images/favicon.ico" type="image/x-icon" />
+      <link rel="stylesheet" type="text/css" href="chatbox/dist/css/materialdesignicons.min.css">
+      <link rel="stylesheet" type="text/css" href="chatbox/assets/vendors/material-floating-button/dist/mfb.min.css">
+      <link rel="stylesheet" type="text/css" href="chatbox/dist/css/app.css">
+      <link rel="stylesheet" type="text/css" href="chatbox/dist/css/theme/default-theme.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/vendor/bootstrap/css/bootstrap.min.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/fonts/iconic/css/material-design-iconic-font.min.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/vendor/animate/animate.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/vendor/css-hamburgers/hamburgers.min.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/vendor/animsition/css/animsition.min.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/vendor/select2/select2.min.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/vendor/daterangepicker/daterangepicker.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="login/css/util.css">
+      <link rel="stylesheet" type="text/css" href="login/css/main.css">
+      <!--===============================================================================================-->
+      <link rel="stylesheet" type="text/css" href="task.css" />
+
+      <!-- AngularJS Material CSS now available via Google CDN; version 1.2.1 used here -->
+      <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.css">
+      <link id="pagestyle" href="material-dashboard-master/assets/css/material-dashboard.min.css?v=3.0.2" rel="stylesheet" />
+      <!-- Anti-flicker snippet (recommended)  -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.3.2/flv.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://kit.fontawesome.com/4e4a114ffc.js" crossorigin="anonymous"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-cookies.js"></script>
+
+      <script src="js/ngStorage.js"></script>
+
+
+      <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
+      <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
+
+      <script>
+            var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages']);
+
+            adonis.service('sharedData', function($http, $q, $mdToast, $cookies) {
+                  var self = this;
+                  //Toast 
+                  var last = {
+                        bottom: true,
+                        top: false,
+                        left: false,
+                        right: true
+                  };
+                  self.toastPosition = angular.extend({}, last);
+
+                  self.getToastPosition = function() {
+                        sanitizePosition();
+
+                        return Object.keys(self.toastPosition)
+                              .filter(function(pos) {
+                                    return self.toastPosition[pos];
+                              }).join(' ');
+                  };
+
+                  function sanitizePosition() {
+                        var current = self.toastPosition;
+
+                        if (current.bottom && last.top) {
+                              current.top = false;
+                        }
+                        if (current.top && last.bottom) {
+                              current.bottom = false;
+                        }
+                        if (current.right && last.left) {
+                              current.left = false;
+                        }
+                        if (current.left && last.right) {
+                              current.right = false;
+                        }
+
+                        last = angular.extend({}, current);
+                  };
+
+                  self.Toast = function(Msg, timeout) {
+                        console.info('Toast', Msg, timeout);
+                        var pinTo = self.getToastPosition();
+                        var toast = $mdToast.simple()
+                              .textContent(Msg)
+                              .highlightAction(true)
+                              // Accent is used by default, this just demonstrates the usage.
+                              .highlightClass('md-accent')
+                              .position(pinTo)
+                              .hideDelay(timeout);
+
+                        $mdToast.show(toast)
+                  }
+                  self.showActionToast = function() {
+                        var pinTo = self.getToastPosition();
+                        var toast = $mdToast.simple()
+                              .textContent('Marked as read')
+                              .actionKey('z')
+                              .actionHint('Press the Control-"z" key combination to ')
+                              .action('UNDO')
+                              .dismissHint('Activate the Escape key to dismiss this toast.')
+                              .highlightAction(true)
+                              // Accent is used by default, this just demonstrates the usage.
+                              .highlightClass('md-accent')
+                              .position(pinTo)
+                              .hideDelay(0);
+
+                        $mdToast.show(toast)
+                              .then(function(response) {
+                                    if (response === 'ok') {
+                                          alert('You selected the \'UNDO\' action.');
+                                    } else {
+                                          $log.log('Toast dismissed.');
+                                    }
+                              }).catch(function() {
+                                    $log.log('Toast failed or was forced to close early by another toast.');
+                              });
+                  };
+                  self.Logout = function() {
+                        var Data = {}
+                        Data.UniqueID = $cookies.get('UniqueID');;
+                        var ReDirect = {
+                              'Action': 'Logout',
+                              'Data': JSON.stringify(Data),
+                        }
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: ReDirect,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              location.reload();
+
+                        }, function errorCallback(response) {
+
+                        });
+                  }
+                  self.ReDirect = function(ReDirect) {
+                        var ReDirect = {
+                              UniqueID: "",
+                              ReDirect: ReDirect
+                        }
+                        var ReDirect = {
+                              'Action': 'ReDirect',
+                              'Data': JSON.stringify(ReDirect),
+                        }
+                        console.info(ReDirect);
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: ReDirect,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              location.reload();
+                        }, function errorCallback(response) {
+
+                        });
+                  }
+                  self.UsersLoginLogs = function() {
+                        var postData = {
+                              UniqueID: $cookies.get('UniqueID')
+                        };
+
+                        var data = {
+                              'Action': 'UsersLoginLogs',
+                              'Data': JSON.stringify(postData),
+                        }
+                        var deferred = $q.defer();
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                              if (data.ReDirect) self.ReDirect(data.ReDirect);
+                              if (data.UniqueID) {
+                                    deferred.resolve(data);
+                              }
+                        }, function errorCallback(response) {
+                              deferred.reject(response);
+                        });
+                  };
+                  self.SignInSession = function() {
+                        var SessonInfo = {};
+                        SessonInfo.CreateTime = $cookies.get('CreateTime');
+                        var data = {
+                              'Action': 'SignInSession',
+                              'Data': JSON.stringify(SessonInfo),
+                        }
+                        var deferred = $q.defer();
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              }
+                        }).then(function successCallback(response) {
+                              deferred.resolve(response.data[data.Action]);
+                        }, function errorCallback(response) {
+                              deferred.reject(response);
+
+                        });
+
+                        return deferred.promise;
+                  };
+                  //Edit
+                  self.Edit = function(data) {
+
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>ApiEdit",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              }
+                        }).then(function successCallback(response) {
+
+                              if (response.data.Data && response.data.Data.action) {
+                                    self.Toast('Marked as ' + response.data.Data.action, 3000);
+                              } else if (response.data.ErrorMsg) {
+                                    self.Toast('Marked as ' + response.data.ErrorMsg.join(","), 3000);
+                              } else console.info(response.data);
+                        }, function errorCallback(response) {
+                              // called asynchronously if an error occurs
+                              // or server returns response with an error status.
+
+                        });
+                  };
+                  //List
+                  self.LtstData = {};
+                  self.List = function(data, key) {
+                        var deferred = $q.defer();
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              }
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              var Data = {};
+                              Data.List = data[data.Action];
+                              Data.Pages = data.Pages;
+                              deferred.resolve(Data);
+                        }, function errorCallback(response) {
+                              deferred.reject(response);
+
+                        });
+
+                        return deferred.promise;
+                  };
+
+            });
+            adonis.factory('$socket', ['$http', '$q', '$cookies', 'sharedData', function($http, $q, $cookies, sharedData) {
+
+                  console.info("訊息連線測試", $cookies.get('UniqueID'));
+                  var $socket = this;
+
+                  var SocketList = function(UniqueID) {
+
+                        var data = {
+                              'Action': 'SocketList',
+                              'Data': JSON.stringify({
+                                    UniqueID
+                              }),
+                        }
+                        var deferred = $q.defer();
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>Swoole",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+                              if (data.SocketList) {
+                                    var Socket_url = data.SocketList.pop();
+                                    var websocket_url = 'wss://' + Socket_url.wss + ':' + Socket_url.port + '?' + UniqueID;
+                                    deferred.resolve(websocket_url);
+                              } else deferred.resolve('wss://swoole.bestaup.com:9509?' + UniqueID);
+                        }, function errorCallback(response) {
+                              deferred.reject(response);
+                        });
+
+                        return deferred.promise;
+                  };
+
+
+
+                  var websocket_url = 'wss://swoole.bestaup.com:9509?' + $cookies.get('UniqueID');
+
+                  var onmessageDefer;
+                  var socket = {
+                        ws: null,
+                        SocketList: SocketList,
+                        SignInSession: null,
+                        connect: function(websocket_url, SignInSession) {
+                              socket.SignInSession = SignInSession;
+                              socket.ws = new WebSocket(websocket_url);
+                              socket.ws.addEventListener('error', (event) => {
+                                    sharedData.Toast("訊息服務連線失敗", 3000);
+                              });
+                              socket.ws.addEventListener('close', (event) => {
+
+                                    sharedData.Toast("連線關閉，系統登出", 3000);
+                                    sharedData.Logout();
+                              })
+
+                              socket.ws.onopen = function(event) {
+
+
+                                    if (onmessageDefer) {
+                                          socket.ws.onmessage = onmessageDefer;
+                                          onmessageDefer = null;
+                                    }
+
+                                    socket.send(socket.SignInSession);
+                              };
+                        },
+                        readyState: function() {
+                              if (!socket.ws || !socket.ws.readyState) return 0;
+                              return socket.ws.readyState
+                        },
+                        send: function(data) {
+
+                              data = JSON.stringify(data);
+                              if (socket.ws.readyState == 1) {
+                                    socket.ws.send(data);
+                              } else {
+                                    sharedData.Toast("訊息服務連線失敗", 3000);
+                              }
+                        },
+                        close: function() {
+                              socket.ws.close();
+                        },
+                        onmessage: function(callback) {
+                              if (socket.ws && socket.ws.readyState == 1) {
+                                    socket.ws.onmessage = callback;
+                              } else {
+                                    onmessageDefer = callback;
+                              }
+
+                        },
+                  };
+                  // socket.ws.addEventListener('error', (event) => {
+                  //     socket.ws = socket.connect($cookies.get('UniqueID'));
+                  // });
+
+                  return socket;
+
+
+            }]);
+      </script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet">
+      <style>
+            .chatapp-user-list {
+                  flex: 0 0 25%;
+            }
+      </style>
+</head>
+
+<body class="default-theme" ng-app="Admin">
+      <!-- Preloader Start -->
+      <div class="preloader"></div><!-- Preloader end -->
+      <!-- main wrapper start -->
+      <main ng-controller="AdminController as Admin">
+            <div class="main-wrapper">
+                  <div class="chatapp">
+                        <!-- navbar start -->
+                        <nav id="navbar" class="navbar navbar-expand-md navbar-light fixed-top bg-white border-bottom shadow-sm"><a class="navbar-brand" href="chatbox/index.html"><img src="chatbox/assets/images/logo.svg" width="50" height="50" class="d-inline-block align-top" alt="">
+                                    <h1>儲值流程</h1>
+                              </a>
+                              <div class="ml-auto d-flex align-items-center">
+                                    <div class="iconbox iconbox-search btn-hovered-light"><i class="iconbox__icon mdi mdi-magnify"></i></div>
+                                    <div class="navbar-nav">
+                                          <div class="iconbox-group">
+                                          <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-gift"></i></div>
+                                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i></div>
+                                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i></div>
+                                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-dots-vertical"></i></div>
+                                          </div>
+                                          <div class="dropdown user-nav">
+                                                <div class="user-avatar user-avatar-rounded" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                     
+                                                      <span><i class="mdi mdi-account-plus-outline base-font-size"></i></span>
+                                                </div>
+                                                <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" ng-click="Admin.ReDirect('Profile')"><span><i class="mdi mdi-account-outline"></i></span><span>Profile</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-account-multiple-plus-outline"></i></span><span>Invite
+                                                                  People</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-settings-outline"></i></span><span>Settings</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-help-circle-outline"></i></span><span>Help</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-comment-quote-outline"></i></span><span>Feedback</span></a>
+                                                      <div class="dropdown-divider"></div><a class="dropdown-item" ng-click="Admin.Logout();"><span><i class="mdi mdi-logout-variant"></i></span><span>Logout</span></a>
+                                                </div>
+                                          </div>
+                                          <div class="iconbox-searchbar">
+                                                <form><input type="text" class="form-control" placeholder="Search here..." autofocus><button class="search-submit" type="submit"><i class="mdi mdi-magnify"></i></button><a href="chatbox/javascript:void(0)" class="search-close"><i class="mdi mdi-arrow-left"></i></a></form>
+                                          </div>
+                                    </div>
+                              </div>
+                        </nav><!-- navbar end -->
+                        <!-- sidebar start -->
+                        <div class="chatapp__sidebar">
+                        <ul class="nav" id="myTab" role="tablist">
+                                    <li class="nav-item"><a class="nav-link " ng-click="Admin.ReDirect('UserChats');">
+                                                <i class="mdi mdi-message-text-outline"></i><span>泡湯聊天</span></a></li>
+                                    <li class="nav-item nav-item-todo"><a class="nav-link" ng-click="Admin.ReDirect('UserInfo')">
+                                                <i class="mdi mdi-checkbox-marked-outline"></i><span>個人資訊</span></a></li>
+
+                                    <li class="nav-item"><a class="nav-link active" ng-click="Admin.ReDirect('UserStored');">
+                                    <i class="iconbox__icon mdi mdi-wallet-outline"></i><span>儲值功能</span></a></li>
+                                    <li class="nav-item"><a class="nav-link" ng-click="Admin.ReDirect('UserTrade');">
+                                    <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>交易紀錄</span></a></li>
+
+                                    <li class="nav-item sidebar-bottom-nav nav-item-help">
+                                          <a class="nav-link" href="chatbox/help.html" title="Help"><i class="mdi mdi-help-circle-outline"></i><span>聯絡我們</span></a>
+                                    </li>
+                              </ul>
+                        </div><!-- sidebar end -->
+                        <!-- main content start -->
+                        <div class="chatapp__content">
+                              <div class="taskmanager-wrapper">
+                                    <div class="container-fluid">
+                                          <div class="row pt-3 mb-5">                                                
+                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                      <div class="taskpanel-title">會員註冊</div>
+                                                      <div class="taskpanel" id="completedTasks">
+                                                            <div class="taskcard">
+                                                                  <div class="card">
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">藝名</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="藝名"></span>
+                                                                              </div>
+                                                                              <div class="taskname">註冊帳號</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="註冊帳號"></span>
+                                                                              </div>
+                                                                              <div class="taskname">註冊手機</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="註冊手機"></span>
+                                                                              </div>
+                                                                              <div class="taskname">登入密碼</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="登入密碼"></span>
+                                                                              </div>
+                                                                              <div class="container-login100-form-btn">
+                                                                                    <div class="wrap-login100-form-btn">
+                                                                                          <div class="login100-form-bgbtn"></div>
+                                                                                          <button class="login100-form-btn" >
+                                                                                                註冊會員
+                                                                                          </button>
+                                                                                    </div>
+                                                                              </div>
+                                                                        </div>
+
+
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                      <div class="taskpanel-title">身份認證</div>
+                                                      <div class="taskpanel" id="completedTasks">
+                                                            <div class="taskcard">
+                                                                  <div class="card">
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">電子信箱驗證</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="電子信箱驗證"></span>
+                                                                              </div>
+                                                                              <div class="taskname">手機驗證</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="簡訊驗證碼"></span>
+                                                                              </div>
+                                                                              <div class="taskname">密碼確認</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="密碼確認"></span>
+                                                                              </div>                                                                              
+                                                                              <div class="container-login100-form-btn">
+                                                                                    <div class="wrap-login100-form-btn">
+                                                                                          <div class="login100-form-bgbtn"></div>
+                                                                                          <button class="login100-form-btn" >
+                                                                                                進行驗證
+                                                                                          </button>
+                                                                                    </div>
+                                                                              </div>
+                                                                        </div>
+
+
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                      <div class="taskpanel-title">相關資料驗證</div>
+                                                      <div class="taskpanel" id="completedTasks">
+                                                            <div class="taskcard">
+                                                                  <div class="card">
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">真實姓名</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="真實姓名"></span>
+                                                                              </div>
+                                                                              <div class="taskname">目前手機號碼</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="目前手機號碼"></span>
+                                                                              </div>
+                                                                              <div class="taskname">目前電子郵件</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="目前電子郵件"></span>
+                                                                              </div>   
+                                                                              <div class="taskname">目前聯絡地址</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="目前聯絡地址"></span>
+                                                                              </div>                                                                              
+                                                                              <div class="container-login100-form-btn">
+                                                                                    <div class="wrap-login100-form-btn">
+                                                                                          <div class="login100-form-bgbtn"></div>
+                                                                                          <button class="login100-form-btn" >
+                                                                                                進行驗證
+                                                                                          </button>
+                                                                                    </div>
+                                                                              </div>
+                                                                        </div>
+
+
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                      <div class="taskpanel-title">點數訂購</div>
+                                                      <div class="taskpanel" id="completedTasks">
+                                                            <div class="taskcard">
+                                                                  <div class="card">
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">真實姓名</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="真實姓名"></span>
+                                                                              </div>
+                                                                              <div class="taskname">目前手機號碼</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="目前手機號碼"></span>
+                                                                              </div>
+                                                                              <div class="taskname">目前電子郵件</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="目前電子郵件"></span>
+                                                                              </div>   
+                                                                              <div class="taskname">目前聯絡地址</div>
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <span class="focus-input100" data-placeholder="目前聯絡地址"></span>
+                                                                              </div>                                                                              
+                                                                              <div class="container-login100-form-btn">
+                                                                                    <div class="wrap-login100-form-btn">
+                                                                                          <div class="login100-form-bgbtn"></div>
+                                                                                          <button class="login100-form-btn" >
+                                                                                                購買點數
+                                                                                          </button>
+                                                                                    </div>
+                                                                              </div>
+                                                                        </div>
+                                                                        
+
+                                                                  </div>
+                                                            </div>
+                                                            <div class="taskcard">
+                                                                  <div class="card">
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">新手禮包
+                                                                              </div>
+                                                                              <div class="taskdate">
+                                                                              會員完成註冊之後，可以免費獲得相關儲值優會，每個會員只能購買一次
+                                                                              </div>
+                                                                              <div class="taskdate">
+                                                                                    <span><i class="mdi mdi-account-box-outline"></i>30</span>
+                                                                                    <span><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>306</span>
+                                                                                    <span><i class="iconbox__icon mdi mdi-diamond-stone"></i>30</span>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                        <div class="taskcard-ribbon"><span class="badge badge-danger">首次儲值專用</span>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                            <div class="taskcard">
+                                                                  <div class="card">
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">包廂專用
+                                                                              </div>
+                                                                              <div class="taskdate">
+                                                                              適合所有喜歡開設包廂的會員
+                                                                              </div>
+                                                                              <div class="taskdate">
+                                                                                    <span><i class="mdi mdi-account-box-outline"></i>30</span>
+                                                                                    <span><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>306</span>
+                                                                                    <span><i class="iconbox__icon mdi mdi-diamond-stone"></i>30</span>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                        <div class="taskcard-ribbon"><span class="badge badge-danger">會員獨享</span>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    </div><!-- main content end -->
+                              </div>
+                        </div><!-- Javascripts Files -->
+      </main>
+      <script>
+            adonis.controller('AdminController', ['sharedData', '$scope', '$http', '$cookies', '$socket', function(sharedData, $scope, $http, $cookies, $socket) {
+
+                  var Admin = this;
+                  Admin.LoginInfo = {};
+                  Admin.Connections = [];
+                  Admin.SignInCkecked = {};
+
+                  var SignInSession = sharedData.SignInSession();
+                  SignInSession.then(function(SignInSession) { // 呼叫承諾API獲取資料 .resolve  
+
+                              if (SignInSession.SignInCkecked) Admin.SignInCkecked = SignInSession.SignInCkecked;
+                              if (SignInSession.account) Admin.LoginInfo.email = SignInSession.account;
+                              if (SignInSession.mobile) Admin.LoginInfo.mobile = SignInSession.mobile;
+                              if (SignInSession.UniqueID) {
+                                    $cookies.put('UniqueID', SignInSession.UniqueID);
+                                    $cookies.put('user_md5', SignInSession.user_md5);
+                                    var SocketList = $socket.SocketList(SignInSession.UniqueID);
+                                    SocketList.then(function(websocket_url) {
+
+                                          $socket.connect(websocket_url, SignInSession);
+                                    });
+
+                                    $socket.onmessage((event) => {
+
+
+                                          var user_md5 = $cookies.get('user_md5');
+                                          var data = JSON.parse(event.data);
+                                          console.info("收到訊息", event, data);
+                                          if (!user_md5) $socket.close();
+                                          if (data.shortUniqueID) $cookies.put('shortUniqueID', data.shortUniqueID);
+                                          if (data.MessageTokenUniqueID) Admin.MessageToUsers(data.MessageTokenUniqueID);
+                                          if (data.Type == "Action") eval(data[data.Type]);
+                                          if (data.Type == "Toast") sharedData.Toast(data[data.Type], 3000);
+                                          if (data.Type == "Connections") {
+                                                Admin.Connections = data[data.Type];
+                                                $scope.$apply();
+                                                Admin.MessageUsersRefresh();
+                                          }
+
+                                          if (data.Type == "MessageType" && data.MessageToken) Admin.MessageBox(data[data.Type], data.MessageToken);
+
+                                    });
+
+
+
+                              } else sharedData.Logout();
+                        },
+                        function(data) { // 處理錯誤 .reject  
+                              console.info(SignInSession);
+                        });
+
+                  Admin.SendData = {
+                        MessageType: 'Notice_Dev'
+                  };
+                  Admin.SendBox = function() {
+                        if (!Admin.Message) {
+
+                              sharedData.Toast("請輸入訊息內容", 3000);
+                              return false;
+
+                        }
+                        var SendData = {
+                              UniqueID: $cookies.get('UniqueID'),
+                              user_md5: $cookies.get('user_md5'),
+                              shortUniqueID: $cookies.get('shortUniqueID'),
+                              MessageType: Admin.SendData.MessageType,
+                        }
+
+                        $socket.send(SendData);
+
+
+                  }
+                  Admin.MessageBox = function(MessageType, MessageToken) {
+
+
+                        var MessageBox = {
+                              'Action': 'MessageBox',
+                              'Data': JSON.stringify({
+                                    UniqueID: $cookies.get('UniqueID'),
+                                    MessageUsers: (Admin.MessageUsers.length > 0) ? Admin.MessageUsers : Admin.Connections,
+                                    Message: Admin.Message,
+                                    MessageType,
+                                    MessageToken,
+                              }),
+                        }
+                        var MessageBox = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: MessageBox,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+                              if (data.UserTempMessages && data.UserTempMessages.UniqueID) {
+                                    Admin.Message = '';
+                              }
+                              if (data.MessageToken && data.MessageToken.UniqueID) {
+                                    var SendData = {
+                                          Action: "MessageToUsers",
+                                          UniqueID: $cookies.get('UniqueID'),
+                                          user_md5: $cookies.get('user_md5'),
+                                          shortUniqueID: $cookies.get('shortUniqueID'),
+                                          MessageUsers: (Admin.MessageUsers.length > 0) ? Admin.MessageUsers : Admin.Connections,
+                                          MessageTokenUniqueID: data.MessageToken.UniqueID,
+                                    }
+
+                                    $socket.send(SendData);
+                              }
+
+                              if (data.UserMessageSchedule && data.UserMessageSchedule.length > 0) $cookies.put('UserMessageSchedule', JSON.stringify(data.UserMessageSchedule));
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+
+
+
+
+                        }, function errorCallback(response) {
+
+
+                        });
+                  };
+                  Admin.REVIEW = [];
+                  Admin.MessageToUsers = function(UniqueID_MessageToken) {
+                        var MessageToUsers = {
+                              'Action': 'MessageToUsers',
+                              'Data': JSON.stringify({
+                                    'UniqueID': $cookies.get('UniqueID'),
+                                    'UniqueID_MessageToken': UniqueID_MessageToken,
+                              }),
+                        }
+                        var MessageToUsers = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: MessageToUsers,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              console.info(data);
+                              Admin.REVIEW.push(data.MessageToUsers);
+                        }, function errorCallback(response) {
+
+
+                        });
+                  }
+
+                  Admin.UserMessageUsed = function(REVIEW) {
+
+                        var UserMessageUsed = {
+                              'Action': 'UserMessageUsed',
+                              'Data': JSON.stringify({
+                                    UniqueID: $cookies.get('UniqueID'),
+                                    UniqueID_MessageToUsers: REVIEW.UniqueID,
+                                    UniqueID_MessageDataFile: REVIEW.UniqueID_MessageDataFile,
+                              }),
+                        }
+
+                        if (!REVIEW.UserMessageUsed || !REVIEW.UserMessageUsed.created_time) {
+                              var UserMessageUsed = $http({
+                                    method: "post",
+                                    url: "<?PHP echo SITE_URL; ?>UsersApi",
+                                    data: UserMessageUsed,
+                                    headers: {
+                                          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                                    },
+                              }).then(function successCallback(response) {
+                                    var data = response.data;
+                                    REVIEW.UserMessageUsed = data.UserMessageUsed;
+                                    REVIEW.MessageDataFile = data.MessageDataFile;
+                              }, function errorCallback(response) {
+
+
+                              });
+                        }
+
+                  }
+
+                  if (location.pathname == "/logout") location.href = '';
+                  Admin.ReDirect = function(ReDirect) {
+                        console.info(ReDirect);
+                        sharedData.ReDirect(ReDirect);
+                  }
+                  Admin.Logout = function() {
+                        sharedData.Logout();
+                  }
+
+                  Admin.CheckUniqueID = function() {
+
+                  }
+
+
+                  Admin.Search = "";
+
+
+
+                  //暫存訊息資料
+                  Admin.UserTempMessagesPages = {};
+                  Admin.UserTempMessages = function() {
+
+
+                        var UserTempMessages = {
+                              'Action': 'UserTempMessages',
+                              'Data': JSON.stringify({
+                                    'UniqueID': $cookies.get('UniqueID'),
+                                    'Pages': Admin.UserTempMessagesPages,
+                                    'Search': Admin.Search,
+                              }),
+                        }
+                        var UserTempMessages = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: UserTempMessages,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              Admin.UserTempMessages_List = data.UserTempMessages;
+                              Admin.UserTempMessagesPages = data.Pages;
+                        }, function errorCallback(response) {
+
+
+                        });
+                  };
+                  Admin.UserTempMessages();
+
+
+                  Admin.UserFootPointPages = {};
+
+                  //個人足跡紀錄
+                  Admin.UserFootPoint = function() {
+
+
+                        var UserFootPoint = {
+                              'Action': 'UserFootPoint',
+                              'Data': JSON.stringify({
+                                    'UniqueID': $cookies.get('UniqueID'),
+                                    'Pages': Admin.UserFootPointPages,
+                                    'Search': Admin.Search,
+                              }),
+                        }
+                        var UserFootPoint = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: UserFootPoint,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              Admin.UserFootPoint_List = data.UserFootPoint;
+                              Admin.UserFootPointPages = data.Pages;
+                        }, function errorCallback(response) {
+
+
+                        });
+                  };
+
+
+                  Admin.UserFootPoint();
+
+                  //發送訊息會員列表更新
+                  Admin.MessageUsers = [];
+                  Admin.MessageUsersRefresh = function() {
+
+                        Admin.MessageUsers = [];
+                        Admin.Connections.forEach(element => {
+                              if (element.checked) Admin.MessageUsers.push(element);
+                        });
+                  }
+
+                  Admin.ReMessage = function(UniqueID, ReMessage) {
+
+                        var postData = {};
+                        postData.UniqueID = $cookies.get('UniqueID');
+                        postData.ReUniqueID = UniqueID;
+                        postData.ReMessage = ReMessage;
+                        postData.UniqueID_MessageType = "";
+
+                        var data = {
+                              'Action': 'ReMessage',
+                              'Data': JSON.stringify(postData),
+                        }
+
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+                              console.info(data);
+                              if (data.UserTempMessages.UniqueID) Admin.UserTempMessages();
+
+                        }, function errorCallback(response) {
+
+
+                        });
+
+                  }
+
+
+                  Admin.MobileVerify = function() {
+
+                        var data = {
+                              'Action': 'MobileVerify',
+                              'Data': JSON.stringify(Admin.LoginInfo),
+                        }
+
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+                              if (data.MobileChecked) Admin.MobileInfo.UniqueID = data.MobileChecked.UniqueID;
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                        }, function errorCallback(response) {
+                              // called asynchronously if an error occurs
+                              // or server returns response with an error status.
+
+                        });
+                  };
+
+                  Admin.MobileChecked = function() {
+                        var postData = {
+                              UniqueID: Admin.MobileInfo.UniqueID,
+                              mobile: Admin.LoginInfo.mobile,
+                              mobile_code: Admin.MobileInfo.mobile_code
+                        }
+                        var data = {
+                              'Action': 'MobileChecked',
+                              'Data': JSON.stringify(postData),
+                        }
+
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+                              if (data.ReDirect) location.reload();
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                        }, function errorCallback(response) {
+                              // called asynchronously if an error occurs
+                              // or server returns response with an error status.
+
+                        });
+                  };
+                  Admin.EmailVerify = function() {
+
+                        var data = {
+                              'Action': 'EmailVerify',
+                              'Data': JSON.stringify(Admin.LoginInfo),
+                        }
+
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+
+                              if (data.EmailChecked) Admin.CreateInfo.UniqueID = data.EmailChecked.UniqueID;
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                        }, function errorCallback(response) {
+                              // called asynchronously if an error occurs
+                              // or server returns response with an error status.
+
+                        });
+                  };
+
+                  Admin.EmailChecked = function() {
+                        var postData = {
+                              UniqueID: Admin.EmailInfo.UniqueID,
+                              email: Admin.LoginInfo.email,
+                              email_token: Admin.EmailInfo.email_token
+                        }
+                        var data = {
+                              'Action': 'EmailChecked',
+                              'Data': JSON.stringify(postData),
+                        }
+
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                              if (data.ReDirect) location.reload();
+                        }, function errorCallback(response) {
+                              // called asynchronously if an error occurs
+                              // or server returns response with an error status.
+
+                        });
+                  };
+            }]);
+      </script>
+      <script src="chatbox/dist/js/jquery-3.3.1.slim.min.js"></script>
+      <script src="chatbox/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+      <script src="chatbox/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+      <script src="chatbox/assets/vendors/shortable/sortable.min.js"></script>
+      <script src="chatbox/dist/js/main.js"></script>
+      <script class="text/javascript">
+            /*--------------------------------------------------------------    TO-DO LIST START    --------------------------------------------------------------*/
+            Sortable.create(taskList, {
+                  animation: 100,
+                  group: 'list-1',
+                  draggable: '.taskcard',
+                  handle: '.taskcard-dragger',
+                  sort: true,
+                  chosenClass: 'active',
+            });
+            Sortable.create(inProcessTask, {
+                  group: 'list-1',
+                  handle: '.taskcard-dragger'
+            });
+            Sortable.create(inReviewTask, {
+                  group: 'list-1',
+                  handle: '.taskcard-dragger'
+            });
+            Sortable.create(completedTasks, {
+                  group: 'list-1',
+                  handle: '.taskcard-dragger'
+            });
+            $('.task-checklist').on('click', '.task-checkbox >label', function() {
+                  $(this).toggleClass('done');
+            });
+            $(".task-expander-btn").click(function() {
+                  $(this).toggleClass("mdi-minus-box-outline mdi-plus-box-outline");
+            }); /*--------------------------------------------------------------    TO-DO LIST END    --------------------------------------------------------------*/
+      </script>
+</body>
+
+</html>
