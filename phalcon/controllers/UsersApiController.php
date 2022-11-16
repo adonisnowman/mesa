@@ -751,7 +751,31 @@ class UsersApiController extends BaseController
                         $UserMessageSchedule  = models::insertTable($Insert, "UserMessageSchedule");
 
                         if (!empty($UserMessageSchedule->UniqueID)) {
+                            //訊息檔案加入排程UniqueID，
+                            $MessageDataFile->UniqueID_UserMessageSchedule = $UserMessageSchedule->UniqueID;
+                            $MessageDataFile->save();
                             $Return['UserMessageSchedule'][] = $UserMessageSchedule->UniqueID;
+                        }
+                         //設定訊息接收對象 的 進入排程時間
+                        if (!empty($MessageReceiver->UniqueID)) $MessageReceiver->schedule_time = Tools::getDateTime();
+                        else {
+                            //查無接收對象資料
+                            $Insert = [];
+                            $Insert['UniqueID_SignInList'] = $_SESSION[Tools::getIp()]['SignInList']['UniqueID'];
+                            if (!empty($_SESSION[Tools::getIp()]['Users']))
+                                $Insert['UniqueID_Users'] = $_SESSION[Tools::getIp()]['Users']['UniqueID'];
+                            $Insert['UniqueID_MessageType'] = $MessageToken->UniqueID_MessageType;
+                            $Insert['UniqueID_UserTempMessages'] = $UserTempMessages->UniqueID;
+                            $Insert['UniqueID_UserMessageSchedule'] = $UserMessageSchedule->UniqueID;
+                            $Insert['UniqueID_MessageToUsers'] = $MessageToUsers->UniqueID;
+                            $Insert['UniqueID_MessageDataFile'] = $MessageDataFile->UniqueID;
+                            $Insert['UniqueID_UsedMessagePoints'] = $UsedMessagePoints['UsedMessagePoints']['UniqueID'];
+
+                            $MessageUniqueidRecord = models::insertTable($Insert, "MessageUniqueidRecord");
+
+                            if (!empty($MessageUniqueidRecord->UniqueID)) {
+                                $Return['MessageUniqueidRecord'][] = $MessageUniqueidRecord->toArray();
+                            }
                         }
                     }
                 } else {
@@ -797,6 +821,13 @@ class UsersApiController extends BaseController
 
         $MessageToUsers->close_time = Tools::getDateTime();
         $MessageToUsers->save();
+
+        if(!empty($MessageToUsers->MessageReceiver)) {
+            $MessageReceiver = $MessageToUsers->MessageReceiver;
+            $MessageReceiver->schedule_time = Null;
+            $MessageReceiver->save();
+
+        }
 
         $Return[__FUNCTION__] = $MessageToUsers->toArray();
 

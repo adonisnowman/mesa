@@ -325,8 +325,6 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleU
                         if (in_array($client['shortUniqueID'], $MessageUsers))
                             SendAction($ws, $client['client'], $Action);
                     }
-
-
                     break;
                 default:
                     $Action = [];
