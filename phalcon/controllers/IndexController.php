@@ -56,8 +56,7 @@ class IndexController extends BaseController
     {
 
         if (!empty($_GET['Token'])) Tools::checkToken($_GET['Token']);
-        echo $_SERVER['SERVER_NAME'];
-        exit;
+        
 
         //預設模板讀取
         $Return = _Views::Init();
@@ -71,6 +70,7 @@ class IndexController extends BaseController
         
         else if ($_SERVER['SERVER_NAME'] == "sms.adonis.tw") $Return['ReDirect'] = "SoakedLogin";
         else if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['ReDirect'] = "UserSign";
+        else if ($_SERVER['SERVER_NAME'] == "swoole.bestaup.com") $Return['ReDirect'] = "UserSign";
         else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
         else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['ReDirect'] = "sign-in";
 
