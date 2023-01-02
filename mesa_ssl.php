@@ -43,7 +43,7 @@ $BestaupDefault = (file_exists($fullchain));
 if (file_exists("/opt/local/etc/nginx/ssl/fullchain")) $fullchain = "/opt/local/etc/nginx/ssl/fullchain";
 if (file_exists("/opt/local/etc/nginx/ssl/privkey")) $privkey = "/opt/local/etc/nginx/ssl/privkey";
 
-$SwoolePort  = ($BestaupDefault)?"8080":"9501";
+$SwoolePort  = ($BestaupDefault)?"9501":"9501";
 //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
 $ws = new swoole_websocket_server("0.0.0.0", $SwoolePort , SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 $Response = new Response();
