@@ -56,7 +56,8 @@ class IndexController extends BaseController
     {
 
         if (!empty($_GET['Token'])) Tools::checkToken($_GET['Token']);
-
+        echo $_SERVER['SERVER_NAME'];
+        exit;
 
         //預設模板讀取
         $Return = _Views::Init();
