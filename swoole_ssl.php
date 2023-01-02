@@ -12,6 +12,9 @@ use Swoole\WebSocket\Frame;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Table;
+use Swoole\Client;
+use Swoole\Coroutine;
+use function Swoole\Coroutine\run;
 
 date_default_timezone_set('asia/taipei');
 
@@ -29,7 +32,7 @@ $connections->column('client', Table::TYPE_INT, 4);
 $connections->column('UniqueID', Table::TYPE_STRING, 20);
 $connections->column('shortUniqueID', Table::TYPE_STRING, 20);
 $connections->column('UniqueID_UsersToken', Table::TYPE_STRING, 750);
-$connections->column('UniqueID_UsersLoginLogs', Table::TYPE_STRING, 750);
+$connections->column('UniqueID_UsersLoginLogs', Table::TYPE_STRING, 20);
 $connections->column('user_md5', Table::TYPE_STRING, 750);
 
 $connections->create();
@@ -37,8 +40,8 @@ $connections->create();
 $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
 $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
 $BestaupDefault = (file_exists($fullchain));
-if (file_exists("/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem")) $fullchain = "/etc/letsencrypt/live/adonis.tw-0002/fullchain.pem";
-if (file_exists("/etc/letsencrypt/live/adonis.tw-0002/privkey.pem")) $privkey = "/etc/letsencrypt/live/adonis.tw-0002/privkey.pem";
+if (file_exists("/opt/local/etc/nginx/ssl/fullchain")) $fullchain = "/opt/local/etc/nginx/ssl/fullchain";
+if (file_exists("/opt/local/etc/nginx/ssl/privkey")) $privkey = "/opt/local/etc/nginx/ssl/privkey";
 
 $SwoolePort  = ($BestaupDefault)?"8080":"9509";
 //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
@@ -252,7 +255,7 @@ $ws->set($SwooleSetting);
 //监听WebSocket连接打开事件
 $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
 
-
+   
     if ((int)  round(((float)microtime(true))) == $request->server['master_time'])
         $shortUniqueID = _UniqueID::shortUniqueID($request->server['master_time']);
     else
@@ -303,6 +306,22 @@ $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
 //监听WebSocket消息事件
 $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleUrl) {
 
+
+    
+   
+    // run(function () {
+    //     echo "coro " . Coroutine::getcid() . " start\n";
+    //     Coroutine::create(function () {
+    //         $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP | SWOOLE_SSL);
+    //         if (!$client->connect("220.134.74.180", 4444)) {
+    //             echo("connect failed\n");
+    //         }
+    //         $client->send("hello world");
+           
+    //     });
+      
+    // });
+    // $ws->sendto('10.0.1.2', 888, "hello world");
     // frame data comes in as a string
     $output = json_decode($frame->data, true);
     echo "Message: \n";
@@ -407,6 +426,7 @@ $ws->on('close', function ($ws, $fd) use ($connections, $SwooleUrl) {
     echo "client-{$fd} is closed\n";
     $DisClient = $connections->get($fd);
 
+        //如果 $DisClient 找無資料 表示 Server 可能快掛了！
 
 
 

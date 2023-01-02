@@ -19,6 +19,12 @@ class EmailChecked extends BaseModel
       public function beforeValidationOnCreate()
       {
             $this->created_time = Tools::getDateTime();
+            
+
+            if (empty($this->user_token) && !empty( $this->UniqueID)) {
+                  $TokenId =  $this->UniqueID;
+                  $this->user_token = Tools::getToken($TokenId);
+            }
       }
 
       public function beforeValidationOnUpdate()

@@ -9,9 +9,9 @@ class MessageToken extends BaseModel
             $this->setConnectionService('swoole');
             $this->setSource(self::$tableName);
             $this->hasOne(
-                  'UniqueID',
-                  UserMessageTypeDefaultCosts::class,
                   'UniqueID_MessageType',
+                  MessageType::class,
+                  'UniqueID',
                   []
             );
       }
@@ -19,12 +19,21 @@ class MessageToken extends BaseModel
 
       public function beforeValidationOnCreate()
       {
+            if( empty($this->MessageType) || ( !empty($this->MessageType->start_time) && strtotime($this->MessageType->start_time) > time() )  ){
+                  echo "訊息類型尚未啟用，無法新增該項資料";
+                  exit;
+            }
+            if( !empty($this->MessageType) && empty($this->MessageType->UserMessageTypeDefaultCosts) ){
+                  echo "查無訊息類型收費標準，無法新增該項資料";
+                  exit;
+            }
+            $UserMessageTypeDefaultCosts = $this->MessageType->UserMessageTypeDefaultCosts;
             $this->created_time = Tools::getDateTime();
-
+            $UserMessageTypeDefaultCosts = Tools::fix_element_Key( $UserMessageTypeDefaultCosts->toArray() , ["action_offshelf","used_offshelf","action_cost","used_cost"]);
 
             $TokenId =  $this->UniqueID_MessageType . $this->UniqueID_UsersLoginLogs . $this->shortUniqueID_SwooleConnections;
 
-           if(empty( $this->action_token)) $this->action_token = Tools::getToken(  $TokenId );
+           if(empty( $this->action_token)) $this->action_token = Tools::getToken(  $TokenId , " +30 minutes " , $UserMessageTypeDefaultCosts );
 
       }
 

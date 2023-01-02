@@ -17,17 +17,25 @@ class IndexController extends BaseController
 
     public function infoAction()
     {
+        $SwooleUrl = "http://mesa.adonis.tw/Swoole";
+        $Data['shortUniqueID'] = "QhM9Za";
+        $post['Action'] = "MessageToken";
+        $post['Data'] = json_encode($Data);
 
-        // $Insert = [];
-        // $Insert['name'] = "Notice_Dev";
-        // $Insert['label'] = "通知發送功能[測試專用]";
-        // $Insert['file_type'] = "application/json";
-        // $Insert['system_used'] = "Chrome";
+        $Return = Tools::httpPost($SwooleUrl, $post);
+        var_dump($Return);
+        exit;
+        $Insert = [];
+        $Insert['UniqueID_MessageType'] = "95A1y0r097n97489921";
+        $Insert['action_offshelf'] = 0;
+        $Insert['used_offshelf'] = 0;
+        $Insert['action_cost'] = 30;
+        $Insert['used_cost'] = 30;
 
-        // $MessageType = models::insertTable($Insert, "MessageType");
+        $MessageTypeDefaultCost = models::insertTable($Insert, "UserMessageTypeDefaultCosts");
 
-        // var_dump($MessageType['SystemMsg']);
-        // exit;
+        var_dump($MessageTypeDefaultCost['SystemMsg']);
+        exit;
         $MongoDB = new MongoAdonis($this->MongoDB);
         $options = [];
 
@@ -58,8 +66,11 @@ class IndexController extends BaseController
         else $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);
 
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))  $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
-        else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
+
+        
+        else if ($_SERVER['SERVER_NAME'] == "sms.adonis.tw") $Return['ReDirect'] = "SoakedLogin";
         else if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['ReDirect'] = "UserSign";
+        else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
         else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['ReDirect'] = "sign-in";
 
         else $Return['ReDirect'] = "UserSign";

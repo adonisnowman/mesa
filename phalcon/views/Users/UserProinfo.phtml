@@ -59,7 +59,127 @@
 
       <script>
             var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages']);
+            adonis.directive("imgUpload", function($http, $compile, $parse) {
+                  return {
+                        restrict: 'AE',
+                        require: '?ngModel',
+                        scope: {
+                              url: "@",
+                              method: "@"
+                        },
+                        template: '<input class="fileUpload" type="file" multiple style="display: none"/>' +
+                              '<div class="dropzone">' +
+                              '<p class="msg">Click or Drag and Drop files to upload</p>' +
+                              '</div>' +
+                              '<div class="preview clearfix">' +
+                              '<div class="previewData clearfix" ng-repeat="data in previewData track by $index">' +
+                              '<div class="previewDetails">' +
+                              '<div class="detail"><b>Name : </b>{{data.name}}</div>' +
+                              '<div class="detail"><b>Type : </b>{{data.type}}</div>' +
+                              '<div class="detail"><b>Size : </b> {{data.size}}</div>' +
+                              '</div>' +
+                              '<div class="previewControls">' +
+                              '<span ng-click="upload(data)" class="circle upload">' +
+                              '<i class=" mdi mdi-cloud-upload "></i>' +
+                              '</span>' +
+                              '<span ng-click="remove(data)" class="circle remove">' +
+                              '<i class="mdi mdi-delete"></i>' +
+                              '</span>' +
+                              '<div class="card Message">' +
+                              '<div class="card_image"> <img ng-src="{{data.src}}">' +
+                              '</div>' +
+                              '</div>' +
+                              '</div>' +
+                              '</div>' +
+                              '</div>',
+                        link: function(scope, elem, attrs, ngModelCtrl) {
+                              var formData = new FormData();
+                              var model = $parse(attrs.ngModel);
 
+                              scope.previewData = [];
+
+                              function previewFile(file) {
+                                    var reader = new FileReader();
+                                    var obj = new FormData().append('file', file);
+                                    reader.onload = function(data) {
+                                          var src = data.target.result;
+                                          var size = ((file.size / (1024 * 1024)) > 1) ? (file.size / (1024 * 1024)) + ' mB' : (file.size / 1024) + ' kB';
+                                          var fileSize = file.size;
+                                          scope.$apply(function() {
+                                                scope.previewData.push({
+                                                      'name': file.name,
+                                                      'size': size,
+                                                      'fileSize' : fileSize,
+                                                      'type': file.type,
+                                                      'src': src,
+                                                      'data': obj
+                                                });
+                                          });
+                                          console.log(scope.previewData);
+                                    }
+                                    reader.readAsDataURL(file);
+                              }
+
+                              function uploadFile(e, type) {
+                                    e.preventDefault();
+                                    var files = "";
+                                    if (type == "formControl") {
+                                          files = e.target.files;
+                                    } else if (type === "drop") {
+                                          files = e.originalEvent.dataTransfer.files;
+                                    }
+                                    for (var i = 0; i < files.length; i++) {
+                                          var file = files[i];
+                                          if (file.type.indexOf("image") !== -1) {
+                                                previewFile(file);
+                                          } else {
+                                                alert(file.name + " is not supported");
+                                          }
+                                    }
+                              }
+                              elem.find('.fileUpload').bind('change', function(e) {
+                                    uploadFile(e, 'formControl');
+                              });
+
+                              elem.find('.dropzone').bind("click", function(e) {
+                                    $compile(elem.find('.fileUpload'))(scope).trigger('click');
+                              });
+
+                              elem.find('.dropzone').bind("dragover", function(e) {
+                                    e.preventDefault();
+                              });
+
+                              elem.find('.dropzone').bind("drop", function(e) {
+                                    uploadFile(e, 'drop');
+                              });
+                              scope.upload = function(obj) {
+                                    obj.Seller = ngModelCtrl.$modelValue;
+                                    $http({
+                                          method: scope.method,
+                                          url: scope.url,
+                                          data: obj,
+                                          headers: {
+                                                'Content-Type': undefined
+                                          },
+                                          // transformRequest: angular.identity
+                                    }).then(function successCallback(response) {
+                                          var data = response.data;
+                                          console.info(data);
+                                          if (data.src) ngModelCtrl.$modelValue.push(data.src)
+
+                                    }, function errorCallback(response) {
+                                          console.info(response);
+
+                                    });
+                              }
+
+                              scope.remove = function(data) {
+                                    var index = scope.previewData.indexOf(data);
+                                    scope.previewData.splice(index, 1);
+                              }
+                        }
+                  }
+            });
             adonis.service('sharedData', function($http, $q, $mdToast, $cookies) {
                   var self = this;
                   //Toast 
@@ -673,38 +793,38 @@
                                                       <div class="taskpanel" id="inProcessTask">
                                                             <div class="taskcard">
                                                                   <div class="card">
-                                                                        
+
                                                                         <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" >
-                                                                              <div class="user-avatar-group">
-                                                                                    <!-- ngRepeat:  item in Admin.MessageUsers   -->
-                                                                                    <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
-                                                                                    
-                                                                                   
-                                                                                   
-                                                                              </div>
+                                                                              <div class="checklist-number">
+                                                                                    <div class="user-avatar-group">
+                                                                                          <!-- ngRepeat:  item in Admin.MessageUsers   -->
+                                                                                          <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
+
+
+
+                                                                                    </div>
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                              <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-video-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-phone-outline"></i></div>
                                                                               </div>
                                                                         </div>
-                                                                        <hr/>
+                                                                        <hr />
                                                                         <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" >
-                                                                              <div class="user-avatar-group">
-                                                                                    <!-- ngRepeat:  item in Admin.MessageUsers   -->
-                                                                                    <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
-                                                                                    
-                                                                                   
-                                                                                   
-                                                                              </div>
+                                                                              <div class="checklist-number">
+                                                                                    <div class="user-avatar-group">
+                                                                                          <!-- ngRepeat:  item in Admin.MessageUsers   -->
+                                                                                          <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
+
+
+
+                                                                                    </div>
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                              <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-video-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-phone-outline"></i></div>
                                                                               </div>
@@ -716,38 +836,38 @@
                                                             </div>
                                                             <div class="taskcard">
                                                                   <div class="card">
-                                                                        
+
                                                                         <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" >
-                                                                              <div class="user-avatar-group">
-                                                                                    <!-- ngRepeat:  item in Admin.MessageUsers   -->
-                                                                                    <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
-                                                                                    
-                                                                                   
-                                                                                   
-                                                                              </div>
+                                                                              <div class="checklist-number">
+                                                                                    <div class="user-avatar-group">
+                                                                                          <!-- ngRepeat:  item in Admin.MessageUsers   -->
+                                                                                          <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
+
+
+
+                                                                                    </div>
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                              <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-video-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-phone-outline"></i></div>
                                                                               </div>
                                                                         </div>
-                                                                        <hr/>
+                                                                        <hr />
                                                                         <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" >
-                                                                              <div class="user-avatar-group">
-                                                                                    <!-- ngRepeat:  item in Admin.MessageUsers   -->
-                                                                                    <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
-                                                                                    
-                                                                                   
-                                                                                   
-                                                                              </div>
+                                                                              <div class="checklist-number">
+                                                                                    <div class="user-avatar-group">
+                                                                                          <!-- ngRepeat:  item in Admin.MessageUsers   -->
+                                                                                          <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
+
+
+
+                                                                                    </div>
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                              <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-video-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-phone-outline"></i></div>
                                                                               </div>
@@ -759,38 +879,38 @@
                                                             </div>
                                                             <div class="taskcard">
                                                                   <div class="card">
-                                                                        
+
                                                                         <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" >
-                                                                              <div class="user-avatar-group">
-                                                                                    <!-- ngRepeat:  item in Admin.MessageUsers   -->
-                                                                                    <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
-                                                                                    
-                                                                                   
-                                                                                   
-                                                                              </div>
+                                                                              <div class="checklist-number">
+                                                                                    <div class="user-avatar-group">
+                                                                                          <!-- ngRepeat:  item in Admin.MessageUsers   -->
+                                                                                          <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
+
+
+
+                                                                                    </div>
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                              <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-video-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-phone-outline"></i></div>
                                                                               </div>
                                                                         </div>
-                                                                        <hr/>
+                                                                        <hr />
                                                                         <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" >
-                                                                              <div class="user-avatar-group">
-                                                                                    <!-- ngRepeat:  item in Admin.MessageUsers   -->
-                                                                                    <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
-                                                                                    
-                                                                                   
-                                                                                   
-                                                                              </div>
+                                                                              <div class="checklist-number">
+                                                                                    <div class="user-avatar-group">
+                                                                                          <!-- ngRepeat:  item in Admin.MessageUsers   -->
+                                                                                          <div class="chatriq-user chatriq-user-05"></div><span>Adonis</span>
+
+
+
+                                                                                    </div>
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                              <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-video-outline"></i></div>
                                                                                     <div class="comments"><i class="iconbox__icon mdi mdi-phone-outline"></i></div>
                                                                               </div>
@@ -936,18 +1056,20 @@
                                                             <div class="taskcard">
                                                                   <div class="card">
                                                                         <div class="card-body">
-                                                                              <div class="taskdate">{{item.created_time}}
+                                                                              <div class="wrap-input100 validate-input" data-validate="Enter mobile">
+                                                                                    <span class="btn-show-pass">
+                                                                                          <i class="zmdi zmdi-eye"></i>
+                                                                                    </span>
+                                                                                    <input class="input100" type="text" name="Message" ng-model="Admin.TempMessage" ng-class="(Admin.TempMessage)?'has-val':''">
+                                                                                    <span class="focus-input100" data-placeholder="輸入文字"></span>
                                                                               </div>
-                                                                              <div class="collapse" id="{{item.UniqueID}}">
-                                                                                    <div class="card Message">
-                                                                                          <div class="card_image"> <img src="video/RIGUZa.gif" />
+                                                                              <div class="collapse show" id="FileUpload">
+                                                                                    <div class="card Message" ng-repeat=" item in Admin.FileUpload track by $index " ng-click="Admin.FileUpload.splice($index, 1);">
+                                                                                          <div class="card_image"> <img ng-src="{{item}}" />
                                                                                           </div>
                                                                                     </div>
-                                                                                    <div class="text-center p-t-30">
-                                                                                          <span class="txt1">
-                                                                                                我的聯絡方式尚未取得，請使用聊天室功能與我聯絡
-                                                                                          </span>
-                                                                                    </div>
+
+
                                                                               </div>
                                                                         </div>
 
@@ -958,11 +1080,16 @@
                                                                               </div>
 
                                                                               <div class="taskinfo-footer">
-                                                                                    <div class="attachment"><i class="mdi mdi-paperclip"></i><span>3</span></div>
-                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{Admin.Message.length}}</span></div>
+                                                                                    <div class="attachment"><i class="mdi mdi-paperclip"></i><span>{{Admin.FileUpload.length}}</span></div>
+                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{Admin.TempMessage.length}}</span></div>
                                                                               </div>
                                                                         </div>
-                                                                        <div class="task-expander" role="button" data-toggle="collapse" data-target="#{{item.UniqueID}}" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
+                                                                        <div class="card-body">
+                                                                              <div class="taskname">選擇上傳的圖片檔案，勾選確認圖片可以上傳至暫存區</div>
+                                                                              <div img-upload method="PUT" url="image/upload" ng-model="Admin.FileUpload"></div>
+                                                                        </div>
+
+                                                                        <div class="task-expander" role="button" data-toggle="collapse" data-target="#FileUpload" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
                                                                         </div>
                                                                         <div class="taskcard-ribbon"><span class="badge badge-success">草稿</span>
                                                                         </div>
@@ -982,7 +1109,7 @@
                   Admin.LoginInfo = {};
                   Admin.Connections = [];
                   Admin.SignInCkecked = {};
-
+                  Admin.FileUpload = [];
                   var SignInSession = sharedData.SignInSession();
                   SignInSession.then(function(SignInSession) { // 呼叫承諾API獲取資料 .resolve  
 

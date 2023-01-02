@@ -10,30 +10,30 @@ class SwooleController extends BaseController
 
       public function initialize()
       {
-          date_default_timezone_set( 'asia/taipei' );
-          session_name("swoole");
-          session_set_cookie_params(0, '/', $_SERVER['HTTP_HOST']);
-  
-          session_start();
-  
-  
-          $response = new Response();
-  
-          $response->setContentType('application/json', 'UTF-8');
-          $response->setHeader('Access-Control-Allow-Origin', '*');
-          // if (!empty($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == DOMAIN_DEV )) 
-          {
-              $postdata = file_get_contents("php://input");
-              $postdata = json_decode($postdata, true);
-              if (is_array($postdata) && isset($postdata['Action'])) {
-                  $_POST = $postdata;
-              }
-          }
-  
-          $response->setHeader('Access-Control-Allow-Methods', 'POST');
-          $response->setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Range, Content-Disposition, Content-Type, Authorization');
-          $response->setHeader('Content-type', 'application/json');
-          $response->sendHeaders();
+            date_default_timezone_set('asia/taipei');
+            session_name("swoole");
+            session_set_cookie_params(0, '/', $_SERVER['HTTP_HOST']);
+
+            session_start();
+
+
+            $response = new Response();
+
+            $response->setContentType('application/json', 'UTF-8');
+            $response->setHeader('Access-Control-Allow-Origin', '*');
+            // if (!empty($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == DOMAIN_DEV )) 
+            {
+                  $postdata = file_get_contents("php://input");
+                  $postdata = json_decode($postdata, true);
+                  if (is_array($postdata) && isset($postdata['Action'])) {
+                        $_POST = $postdata;
+                  }
+            }
+
+            $response->setHeader('Access-Control-Allow-Methods', 'POST');
+            $response->setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Range, Content-Disposition, Content-Type, Authorization');
+            $response->setHeader('Content-type', 'application/json');
+            $response->sendHeaders();
       }
 
 
@@ -65,7 +65,7 @@ class SwooleController extends BaseController
             //判斷 checkKeys 存不存在 並產生 回傳的 self::$PostData 正確格式
             self::$PostData = _Api::checkPostData(self::$checkKeys[$Action]);
 
-            
+
             //ActionLogs       
             $Item["ActionName"] = $Action;
             $Item["ActionPort"] = _Action::ActionPort($_SERVER['HTTP_HOST']);
@@ -84,16 +84,16 @@ class SwooleController extends BaseController
             _Action::checkKeys($checkKeys, $Item);
             $Insert = _Action::ActionLogs($this->router, self::$PostData, $checkKeys);
 
-           
+
             //紀錄ActionLogs
             $Return = Models::insertTable($Insert, "ActionLogs");
             if (empty($Return['Object']->UniqueID)) return $Return;
             else $ActionLogs = $Return['Object'];
 
-            
+
             $Return = $this->$Action();
             $Return['Action'] = $Action;
-            
+
 
             if (!empty($checkKeys->UniqueID)) {
                   $checkKeys->called_time = Tools::getDateTime();
@@ -101,7 +101,7 @@ class SwooleController extends BaseController
             }
 
             if (!empty($ActionLogs->UniqueID)) {
-                  
+
 
                   $ActionLogs->Return_JSON = JSON_encode($Return, JSON_UNESCAPED_UNICODE);
                   $ActionLogs->finish_time = Tools::getDateTime();
@@ -127,13 +127,65 @@ class SwooleController extends BaseController
             }
             echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
       }
+      
+      public function UserSoaked() {
 
-      public function SocketList(){
+            $Return[__FUNCTION__] = [];
+            $Item = Tools::fix_element_Key(self::$PostData,['account','mobile']);
+
+            $Users = Users::getObjectByItem($Item);
+            
+            if( !empty($Users->UniqueID) && $Users->UsersLoginLogs->UniqueID ==  self::$PostData['UniqueID']) {
+
+                  $UsersLoginLogs = $Users->UsersLoginLogs;
+
+                  if( !empty($UsersLoginLogs->SwooleConnections->shortUniqueID )) {
+                        $Now = Date("Y-m-d H:i:s");
+                        $Item['QRcodeSoaked_code'] = $UsersLoginLogs->SwooleConnections->shortUniqueID;
+                        $QRcodeSoaked_code = QRcodeSoaked_code::getListObjectByItem($Item, " opening_time >= '{$Now}' AND closing_time >= '{$Now}'  ");
+                        
+                        $Return[__FUNCTION__]['QRcodeSoaked_code']  = ( count($QRcodeSoaked_code) > 0 )?$QRcodeSoaked_code->toArray():[];
+                        
+                        //搜尋相關的泡湯
+                  }
+            }
+
+
+
+
+            return $Return;
+      }
+
+      public function UserCheck(){
+
+            $Item = Tools::fix_element_Key(self::$PostData,['account','mobile']);
+
+            $Users = Users::getObjectByItem($Item);
+
+            if( !empty($Users->UniqueID) ) $Return[__FUNCTION__] = Tools::fix_element_Key( $Users->UsersLoginLogs->toArray() , ['UniqueID','UniqueID_SignInList'] );
+            else $Return[__FUNCTION__] = false;
+
+            return $Return;
+      }
+      public function SoakedList()
+      {
             $UniqueID = self::$PostData['UniqueID'];
-            
-            
-            if($_SERVER['SERVER_ADDR'] == "10.0.1.2") $SocketLost[] = [ 'wss' => "adonis.tw" , "port" => "9509"];
-            else $SocketLost[] = [ 'wss' => "swoole.bestaup.com" , "port" => "8080"];
+
+
+            if ($_SERVER['SERVER_ADDR'] == "10.0.1.2") $SocketLost[] = ['wss' => "adonis.tw", "port" => "9501"];
+
+
+            $Return[__FUNCTION__] = $SocketLost;
+
+            return $Return;
+      }
+      public function SocketList()
+      {
+            $UniqueID = self::$PostData['UniqueID'];
+
+
+            if ($_SERVER['SERVER_ADDR'] == "10.0.1.2") $SocketLost[] = ['wss' => "adonis.tw", "port" => "9509"];
+            else $SocketLost[] = ['wss' => "swoole.bestaup.com", "port" => "8080"];
 
 
             $Return[__FUNCTION__] = $SocketLost;
@@ -141,11 +193,12 @@ class SwooleController extends BaseController
             return $Return;
       }
 
-      public function MessageToken(){
+      public function MessageToken()
+      {
 
             $Return = [];
-           
-            if(empty(self::$PostData['shortUniqueID'])) {
+
+            if (empty(self::$PostData['shortUniqueID'])) {
                   $Return['ErrorMsg'][] = "請先登入";
                   return $Return;
             }
@@ -153,129 +206,124 @@ class SwooleController extends BaseController
             $Item = [];
             $Item['shortUniqueID'] = self::$PostData['shortUniqueID'];
 
-            $SwooleConnections = SwooleConnections::getObjectByItem($Item," logout_time IS NULL ");
+            $SwooleConnections = SwooleConnections::getObjectByItem($Item, " logout_time IS NULL ");
 
-         
 
-            if(empty($SwooleConnections)) {
-                  $Return['ErrorMsg'] = "請先登入" ;
+
+            if (empty($SwooleConnections)) {
+                  $Return['ErrorMsg'] = "請先登入";
                   return $Return;
             }
 
-            if(empty($SwooleConnections->UsersLoginLogs)) {
-                  $Return['ErrorMsg'] = "請先登入" ;
+            if (empty($SwooleConnections->UsersLoginLogs)) {
+                  $Return['ErrorMsg'] = "請先登入";
                   return $Return;
             }
 
             $UsersLoginLogs = $SwooleConnections->UsersLoginLogs;
 
-            if( empty($UsersLoginLogs) || !empty($UsersLoginLogs->logout_time)) {
+            if (empty($UsersLoginLogs) || !empty($UsersLoginLogs->logout_time)) {
 
-                  $Return['ErrorMsg'] = "請先登入" ;
+                  $Return['ErrorMsg'] = "請先登入";
                   return $Return;
-
             } else {
                   $Item = [];
-                  $Item['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;                  
+                  $Item['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
                   $Item['shortUniqueID_SwooleConnections'] = $SwooleConnections->shortUniqueID;
             }
 
             $MessageType = MessageType::find();
 
 
-            foreach(  $MessageType AS $row ) {
+            foreach ($MessageType as $row) {
 
-                  if(empty( $row->UserMessageTypeDefaultCosts )) {
-
-
-
-                        $Item['UniqueID_MessageType'] = $row->UniqueID;
-
-                       
-                        $MessageToken = MessageToken::getObjectByItem($Item," ( faild_time IS NULL AND  used_time IS NULL  ) ");
-
-                        if(!empty($MessageToken)) {
-                              $MessageToken->faild_time = Tools::getDateTime();
-                              $MessageToken->save();
-                        } 
-
-
-
-                        //每次呼叫，都必定產生新的token
-                      
-                        $MessageToken = models::insertTable($Item,"MessageToken",true);
-                        
-                        
-                        if(!empty($MessageToken->UniqueID)) $Return[__FUNCTION__][$row->name] = $MessageToken->action_token ;
-
-
+                  if (!empty($row->start_time) && strtotime($row->start_time) > time()) {
+                        //該訊息功能尚未啟用
+                        continue;
                   }
+
+                  if (empty($row->UserMessageTypeDefaultCosts)) {
+                        //收費標準尚未建立
+                        continue;
+                  }
+
+
+
+                  $Item['UniqueID_MessageType'] = $row->UniqueID;
+
+
+                  $MessageToken = MessageToken::getObjectByItem($Item, " ( faild_time IS NULL AND  used_time IS NULL  ) ");
+
+                  if (!empty($MessageToken)) {
+                        $MessageToken->faild_time = Tools::getDateTime();
+                        $MessageToken->save();
+                  }
+
+
+
+                  //每次呼叫，都必定產生新的token
+
+                  $MessageToken = models::insertTable($Item, "MessageToken", true);
+
+
+                  if (!empty($MessageToken->UniqueID)) $Return[__FUNCTION__][$row->name] = $MessageToken->action_token;
             }
 
 
 
             return $Return;
-            
       }
 
 
-      public function Connect(){
+      public function Connect()
+      {
 
             $UniqueID = self::$PostData['query_string'];
             $user_md5 = self::$PostData['user_md5'];
 
-            $UsersLoginLogs =(object) _UniqueID::LoadUniqueIDObject($UniqueID,"UsersLoginLogs")['Object'];
-            if(!empty($UsersLoginLogs) ) {
+            $UsersLoginLogs = (object) _UniqueID::LoadUniqueIDObject($UniqueID, "UsersLoginLogs")['Object'];
+            if (!empty($UsersLoginLogs)) {
 
-                  if(empty($UsersLoginLogs->logout_time) && $user_md5 != md5( $UsersLoginLogs->HTTP_USER_AGENT . $UsersLoginLogs->REMOTE_ADDR )) {
+                  if (empty($UsersLoginLogs->logout_time) && $user_md5 != md5($UsersLoginLogs->HTTP_USER_AGENT . $UsersLoginLogs->REMOTE_ADDR)) {
                         //登入資料有誤
                         $UsersApiController = new UsersApiController();
                         $UsersApiController->logout();
                   }
-                  
+
                   //連線紀錄
 
-                  $Insert = Tools::fix_element_Key(self::$PostData,["shortUniqueID","user_md5","HTTP_HOST","REMOTE_ADDR","HTTP_USER_AGENT"]);
+                  $Insert = Tools::fix_element_Key(self::$PostData, ["shortUniqueID", "user_md5", "HTTP_HOST", "REMOTE_ADDR", "HTTP_USER_AGENT"]);
                   $Insert['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
-                  $SwooleConnections = Models::insertTable($Insert, "SwooleConnections",true);
+                  $SwooleConnections = Models::insertTable($Insert, "SwooleConnections", true);
 
                   $Return[__FUNCTION__] = $SwooleConnections->toArray();
-
-            }else{
+            } else {
                   $Return['ErrorMsg'][] = "請先登入";
             }
 
             return $Return;
-            
       }
 
-      public function DisConnect(){
-           
-            var_dump(self::$PostData);
-            if(empty(self::$PostData['UniqueID'])) {
-                  $Action = [];
-                  $Action['Type'] = "Action";
-                  $Action['Action'] = " sharedData.Logout(); ";
-                  
-                  $Return['Action'] = $Action;
+      public function DisConnect()
+      {
 
+            if (empty(self::$PostData['UniqueID'])) {                 
+                  $Return['ErrorMsg'] = "失效連線資料";
                   return $Return;
             }
 
             $UniqueID = self::$PostData['UniqueID'];
 
-            $SwooleConnections =(object) _UniqueID::LoadUniqueIDObject($UniqueID,"SwooleConnections")['Object'];
+            $SwooleConnections = (object) _UniqueID::LoadUniqueIDObject($UniqueID, "SwooleConnections")['Object'];
 
             $SwooleConnections->logout_time = Tools::getDateTime();
             $SwooleConnections->save();
 
             $Item = [];
             $Item['shortUniqueID_SwooleConnections'] = $SwooleConnections->shortUniqueID;
-           
-            $MessageToken = MessageToken::getListObjectByItem($Item," used_time IS NULL ");
+
+            $MessageToken = MessageToken::getListObjectByItem($Item, " used_time IS NULL ");
             $MessageToken->update(["faild_time" => Tools::getDateTime()]);
-
-
       }
       public function SignTokenAction($UniqueID = "", $Token = "")
       {
@@ -295,5 +343,36 @@ class SwooleController extends BaseController
 
                   echo _Views::RedirectAdmin($Return);
             }
+      }
+
+      //Mesa 
+
+      public function MesaConnect()
+      {
+
+            $UniqueID = self::$PostData['query_string'];
+            $user_md5 = self::$PostData['user_md5'];
+
+            $UsersLoginLogs = (object) _UniqueID::LoadUniqueIDObject($UniqueID, "UsersLoginLogs")['Object'];
+            if (!empty($UsersLoginLogs)) {
+
+                  if (empty($UsersLoginLogs->logout_time) && $user_md5 != md5($UsersLoginLogs->HTTP_USER_AGENT . $UsersLoginLogs->REMOTE_ADDR)) {
+                        //登入資料有誤
+                        $UsersApiController = new UsersApiController();
+                        $UsersApiController->logout();
+                  }
+
+                  //連線紀錄
+
+                  $Insert = Tools::fix_element_Key(self::$PostData, ["shortUniqueID", "user_md5", "HTTP_HOST", "REMOTE_ADDR", "HTTP_USER_AGENT"]);
+                  $Insert['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
+                  $MesaConnections = Models::insertTable($Insert, "MesaConnections", true);
+
+                  $Return[__FUNCTION__] = $MesaConnections->toArray();
+            } else {
+                  $Return['ErrorMsg'][] = "請先登入";
+            }
+
+            return $Return;
       }
 }

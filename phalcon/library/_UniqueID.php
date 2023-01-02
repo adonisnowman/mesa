@@ -9,10 +9,10 @@ class _UniqueID
     function __construct()
     {
     }
-    public static function shortUniqueID($SetTime = false)
+    public static function shortUniqueID($SetTime = false, $Encryptionkey = false)
     {
         //加入隨機資料ID
-        $Encryptionkey = self::$Encryptionkey;
+        if( false == $Encryptionkey ) $Encryptionkey = self::$Encryptionkey;
 
         if ($SetTime != false && is_numeric($SetTime)) $microtime = (int) round($SetTime);
         else $microtime = (int)  round(((float)microtime(true)));

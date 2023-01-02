@@ -40,10 +40,38 @@
 							<label class="form-label">Search here</label>
 							<input type="text" class="form-control" ng-model="Admin.Search">
 						</div>
+						<div class="col-md-4 align-self-center">
+							
+							<md-input-container class="btn btn-lg">
+								<md-select ng-model="Admin.group_type" aria-label="Select">
+									<md-option value="Service Page">
+										<span class="text-warning">前台頁面</span>
+										<span class="text-primany">Service Page</span>
+										<span class="text-success">完整頁面</span>
+									</md-option>
+									<md-option value="Service Module">
+										<span class="text-warning">前台頁面</span>
+										<span class="text-primany">Service Module</span>
+										<span class="text-success">模板功能</span>
+									</md-option>
+									<md-option value="Admin Page">
+										<span class="text-warning">後台頁面</span>
+										<span class="text-primany">Admin Page</span>
+										<span class="text-success">完整頁面</span>
+									</md-option>
+								
+									<md-option value="Admin Module">
+										<span class="text-warning">後台頁面</span>
+										<span class="text-primany">Admin Module</span>
+										<span class="text-success">模板功能</span>
+									</md-option>
+								</md-select>
+							</md-input-container>
+						</div>
 						<div class="card position-sticky top-1" style="height: 70vh;overflow: scroll;">
 							<ul class="nav flex-column bg-white border-radius-lg p-3">
-								<li class="nav-item" ng-repeat=" item in Admin.RedirectAdmin_List | filter : Admin.Search">
-
+								<li class="nav-item" ng-repeat=" item in Admin.RedirectAdmin_List | filter : Admin.Search" 
+								ng-show="(Admin.group_type != '' && Admin.group_type == item.group_type )">
 									<div ng-show="item.offshelf" class="btn btn-link text-danger px-0" style="float: left;" aria-hidden="false">
 										<i class="material-icons">delete</i>
 									</div>
@@ -61,6 +89,7 @@
 								</li>
 							</ul>
 						</div>
+						
 					</div>
 					<div class="col-lg-9 mt-lg-0 mt-4">
 						<!-- Card Profile -->
@@ -140,6 +169,34 @@
 													<span class="text-warning">{{item.checkKeys.label}}</span>
 													<span class="text-primany">{{ item.checkKeys.ControllerName.replace("Controller","") }}</span>
 													<span class="text-success">{{ item.checkKeys.ActionName }}</span>
+												</md-option>
+											</md-select>
+										</md-input-container>
+									</div>
+									<div class="col-md-4 align-self-center">
+										<label class="form-label mt-4 ms-0">頁面結構</label>
+										<md-input-container class="btn btn-lg">
+											<md-select ng-model="Admin.Input_RedirectAdmin.group_type" aria-label="Select">
+												<md-option value="Service Page">
+													<span class="text-warning">前台頁面</span>
+													<span class="text-primany">Service Page</span>
+													<span class="text-success">完整頁面</span>
+												</md-option>
+												<md-option value="Service Module">
+													<span class="text-warning">前台頁面</span>
+													<span class="text-primany">Service Module</span>
+													<span class="text-success">模板功能</span>
+												</md-option>
+												<md-option value="Admin Page">
+													<span class="text-warning">後台頁面</span>
+													<span class="text-primany">Admin Page</span>
+													<span class="text-success">完整頁面</span>
+												</md-option>
+											
+												<md-option value="Admin Module">
+													<span class="text-warning">後台頁面</span>
+													<span class="text-primany">Admin Module</span>
+													<span class="text-success">模板功能</span>
 												</md-option>
 											</md-select>
 										</md-input-container>

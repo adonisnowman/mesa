@@ -183,6 +183,48 @@
 
                         });
                   }
+
+
+                  self.PasswordRecheck = function(SignInCkecked) {
+                        var deferred = $q.defer();
+                        if (!SignInCkecked.email_checked_time || !SignInCkecked.mobile_checked_time) {
+                              self.Toast("請先認證您的聯絡方式[手機/電子郵件]", 3000);
+                              deferred.reject(false);
+                        }
+                        var postData = {
+                              UniqueID: $cookies.get('UniqueID'),
+                              password: SignInCkecked.password
+                        };
+
+                        var data = {
+                              'Action': 'PasswordRecheck',
+                              'Data': JSON.stringify(postData),
+                        }
+                       
+                        var request = $http({
+                              method: "post",
+                              url: "<?PHP echo SITE_URL; ?>UsersApi",
+                              data: data,
+                              headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+
+                              },
+                        }).then(function successCallback(response) {
+                              var data = response.data;
+
+
+                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                              if (data.ReDirect) self.ReDirect(data.ReDirect);
+                              if (data.SignInCkecked) {
+                                    deferred.resolve(data);
+                              }
+                        }, function errorCallback(response) {
+                              deferred.reject(response);
+                        });
+
+                        return deferred.promise;
+                  };
+
                   self.UsersLoginLogs = function() {
                         var postData = {
                               UniqueID: $cookies.get('UniqueID')
@@ -412,14 +454,14 @@
                                     <div class="iconbox iconbox-search btn-hovered-light"><i class="iconbox__icon mdi mdi-magnify"></i></div>
                                     <div class="navbar-nav">
                                           <div class="iconbox-group">
-                                          <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-gift"></i></div>
+                                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-gift"></i></div>
                                                 <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i></div>
                                                 <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i></div>
                                                 <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-dots-vertical"></i></div>
                                           </div>
                                           <div class="dropdown user-nav">
                                                 <div class="user-avatar user-avatar-rounded" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                     
+
                                                       <span><i class="mdi mdi-account-plus-outline base-font-size"></i></span>
                                                 </div>
                                                 <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" ng-click="Admin.ReDirect('Profile')"><span><i class="mdi mdi-account-outline"></i></span><span>Profile</span></a><a class="dropdown-item" href="chatbox/javascript:;"><span><i class="mdi mdi-account-multiple-plus-outline"></i></span><span>Invite
@@ -435,16 +477,16 @@
                         </nav><!-- navbar end -->
                         <!-- sidebar start -->
                         <div class="chatapp__sidebar">
-                        <ul class="nav" id="myTab" role="tablist">
+                              <ul class="nav" id="myTab" role="tablist">
                                     <li class="nav-item"><a class="nav-link " ng-click="Admin.ReDirect('UserChats');">
                                                 <i class="mdi mdi-message-text-outline"></i><span>泡湯聊天</span></a></li>
                                     <li class="nav-item nav-item-todo"><a class="nav-link" ng-click="Admin.ReDirect('UserInfo')">
                                                 <i class="mdi mdi-checkbox-marked-outline"></i><span>個人資訊</span></a></li>
 
                                     <li class="nav-item"><a class="nav-link active" ng-click="Admin.ReDirect('UserStored');">
-                                    <i class="iconbox__icon mdi mdi-wallet-outline"></i><span>儲值功能</span></a></li>
+                                                <i class="iconbox__icon mdi mdi-wallet-outline"></i><span>儲值功能</span></a></li>
                                     <li class="nav-item"><a class="nav-link" ng-click="Admin.ReDirect('UserTrade');">
-                                    <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>交易紀錄</span></a></li>
+                                                <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>交易紀錄</span></a></li>
 
                                     <li class="nav-item sidebar-bottom-nav nav-item-help">
                                           <a class="nav-link" href="chatbox/help.html" title="Help"><i class="mdi mdi-help-circle-outline"></i><span>聯絡我們</span></a>
@@ -455,27 +497,19 @@
                         <div class="chatapp__content">
                               <div class="taskmanager-wrapper">
                                     <div class="container-fluid">
-                                          <div class="row pt-3 mb-5">                                                
+                                          <div class="row pt-3 mb-5">
                                                 <div class="col-xl-3 col-lg-6 col-md-6 col-12">
                                                       <div class="taskpanel-title">會員註冊</div>
                                                       <div class="taskpanel" id="completedTasks">
                                                             <div class="taskcard">
                                                                   <div class="card">
                                                                         <div class="card-body">
-                                                                              <div class="taskname">藝名</div>
-                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
-                                                                                    <span class="btn-show-pass">
-                                                                                          <i class="zmdi zmdi-eye"></i>
-                                                                                    </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
-                                                                                    <span class="focus-input100" data-placeholder="藝名"></span>
-                                                                              </div>
                                                                               <div class="taskname">註冊帳號</div>
                                                                               <div class="wrap-input100 validate-input" data-validate="Enter Messages">
                                                                                     <span class="btn-show-pass">
                                                                                           <i class="zmdi zmdi-eye"></i>
                                                                                     </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.LoginInfo.email" ng-class="{false:'has-val'}[!Admin.LoginInfo.email]">
                                                                                     <span class="focus-input100" data-placeholder="註冊帳號"></span>
                                                                               </div>
                                                                               <div class="taskname">註冊手機</div>
@@ -483,22 +517,24 @@
                                                                                     <span class="btn-show-pass">
                                                                                           <i class="zmdi zmdi-eye"></i>
                                                                                     </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <input class="input100" type="text" name="mobile" ng-model="Admin.LoginInfo.mobile" ng-class="{false:'has-val'}[!Admin.LoginInfo.mobile]">
                                                                                     <span class="focus-input100" data-placeholder="註冊手機"></span>
                                                                               </div>
-                                                                              <div class="taskname">登入密碼</div>
-                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
-                                                                                    <span class="btn-show-pass">
-                                                                                          <i class="zmdi zmdi-eye"></i>
-                                                                                    </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
-                                                                                    <span class="focus-input100" data-placeholder="登入密碼"></span>
+                                                                              <div ng-if="Admin.LoginInfo.password_used == 0 ">
+                                                                                    <div class="taskname">建立密碼</div>
+                                                                                    <div class="wrap-input100 validate-input" data-validate="Enter Password">
+                                                                                          <span class="btn-show-pass">
+                                                                                                <i class="zmdi zmdi-eye"></i>
+                                                                                          </span>
+                                                                                          <input class="input100" type="text" name="password" ng-model="Admin.LoginInfo.password" ng-class="{false:'has-val'}[!Admin.LoginInfo.password]">
+                                                                                          <span class="focus-input100" data-placeholder="建立密碼"></span>
+                                                                                    </div>
                                                                               </div>
                                                                               <div class="container-login100-form-btn">
                                                                                     <div class="wrap-login100-form-btn">
                                                                                           <div class="login100-form-bgbtn"></div>
-                                                                                          <button class="login100-form-btn" >
-                                                                                                註冊會員
+                                                                                          <button class="login100-form-btn">
+                                                                                                註冊會員相關資料
                                                                                           </button>
                                                                                     </div>
                                                                               </div>
@@ -516,33 +552,36 @@
                                                                   <div class="card">
                                                                         <div class="card-body">
                                                                               <div class="taskname">電子信箱驗證</div>
-                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                              <div ng-if="Admin.SignInCkecked.email_checked_time"> {{ Admin.SignInCkecked.email_checked_time }} </div>
+                                                                              <div ng-if="!Admin.SignInCkecked.email_checked_time" class="wrap-input100 validate-input" data-validate="Enter Email">
                                                                                     <span class="btn-show-pass">
                                                                                           <i class="zmdi zmdi-eye"></i>
                                                                                     </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.SignInCkecked.email_token">
                                                                                     <span class="focus-input100" data-placeholder="電子信箱驗證"></span>
                                                                               </div>
                                                                               <div class="taskname">手機驗證</div>
-                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                              <div ng-if="Admin.SignInCkecked.mobile_checked_time"> {{ Admin.SignInCkecked.mobile_checked_time }} </div>
+                                                                              <div ng-if="!Admin.SignInCkecked.mobile_checked_time" class="wrap-input100 validate-input" data-validate="Enter Mobile">
                                                                                     <span class="btn-show-pass">
                                                                                           <i class="zmdi zmdi-eye"></i>
                                                                                     </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.SignInCkecked.mobile_code">
                                                                                     <span class="focus-input100" data-placeholder="簡訊驗證碼"></span>
                                                                               </div>
                                                                               <div class="taskname">密碼確認</div>
-                                                                              <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                              <div ng-if="Admin.SignInCkecked.password_confirm"> {{ Admin.SignInCkecked.password_confirm }} </div>
+                                                                              <div ng-if="!Admin.SignInCkecked.password_confirm" class="wrap-input100 validate-input" data-validate="Enter Password">
                                                                                     <span class="btn-show-pass">
                                                                                           <i class="zmdi zmdi-eye"></i>
                                                                                     </span>
-                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                    <input class="input100" type="text" name="email" ng-model="Admin.SignInCkecked.password">
                                                                                     <span class="focus-input100" data-placeholder="密碼確認"></span>
-                                                                              </div>                                                                              
+                                                                              </div>
                                                                               <div class="container-login100-form-btn">
                                                                                     <div class="wrap-login100-form-btn">
                                                                                           <div class="login100-form-bgbtn"></div>
-                                                                                          <button class="login100-form-btn" >
+                                                                                          <button class="login100-form-btn" ng-click=" Admin.PasswordRecheck() ">
                                                                                                 進行驗證
                                                                                           </button>
                                                                                     </div>
@@ -583,7 +622,7 @@
                                                                                     </span>
                                                                                     <input class="input100" type="text" name="email" ng-model="Admin.Message">
                                                                                     <span class="focus-input100" data-placeholder="目前電子郵件"></span>
-                                                                              </div>   
+                                                                              </div>
                                                                               <div class="taskname">目前聯絡地址</div>
                                                                               <div class="wrap-input100 validate-input" data-validate="Enter Messages">
                                                                                     <span class="btn-show-pass">
@@ -591,11 +630,11 @@
                                                                                     </span>
                                                                                     <input class="input100" type="text" name="email" ng-model="Admin.Message">
                                                                                     <span class="focus-input100" data-placeholder="目前聯絡地址"></span>
-                                                                              </div>                                                                              
+                                                                              </div>
                                                                               <div class="container-login100-form-btn">
                                                                                     <div class="wrap-login100-form-btn">
                                                                                           <div class="login100-form-bgbtn"></div>
-                                                                                          <button class="login100-form-btn" >
+                                                                                          <button class="login100-form-btn">
                                                                                                 進行驗證
                                                                                           </button>
                                                                                     </div>
@@ -636,7 +675,7 @@
                                                                                     </span>
                                                                                     <input class="input100" type="text" name="email" ng-model="Admin.Message">
                                                                                     <span class="focus-input100" data-placeholder="目前電子郵件"></span>
-                                                                              </div>   
+                                                                              </div>
                                                                               <div class="taskname">目前聯絡地址</div>
                                                                               <div class="wrap-input100 validate-input" data-validate="Enter Messages">
                                                                                     <span class="btn-show-pass">
@@ -644,17 +683,17 @@
                                                                                     </span>
                                                                                     <input class="input100" type="text" name="email" ng-model="Admin.Message">
                                                                                     <span class="focus-input100" data-placeholder="目前聯絡地址"></span>
-                                                                              </div>                                                                              
+                                                                              </div>
                                                                               <div class="container-login100-form-btn">
                                                                                     <div class="wrap-login100-form-btn">
                                                                                           <div class="login100-form-bgbtn"></div>
-                                                                                          <button class="login100-form-btn" >
+                                                                                          <button class="login100-form-btn">
                                                                                                 購買點數
                                                                                           </button>
                                                                                     </div>
                                                                               </div>
                                                                         </div>
-                                                                        
+
 
                                                                   </div>
                                                             </div>
@@ -664,7 +703,7 @@
                                                                               <div class="taskname">新手禮包
                                                                               </div>
                                                                               <div class="taskdate">
-                                                                              會員完成註冊之後，可以免費獲得相關儲值優會，每個會員只能購買一次
+                                                                                    會員完成註冊之後，可以免費獲得相關儲值優會，每個會員只能購買一次
                                                                               </div>
                                                                               <div class="taskdate">
                                                                                     <span><i class="mdi mdi-account-box-outline"></i>30</span>
@@ -683,7 +722,7 @@
                                                                               <div class="taskname">包廂專用
                                                                               </div>
                                                                               <div class="taskdate">
-                                                                              適合所有喜歡開設包廂的會員
+                                                                                    適合所有喜歡開設包廂的會員
                                                                               </div>
                                                                               <div class="taskdate">
                                                                                     <span><i class="mdi mdi-account-box-outline"></i>30</span>
@@ -717,6 +756,7 @@
                               if (SignInSession.SignInCkecked) Admin.SignInCkecked = SignInSession.SignInCkecked;
                               if (SignInSession.account) Admin.LoginInfo.email = SignInSession.account;
                               if (SignInSession.mobile) Admin.LoginInfo.mobile = SignInSession.mobile;
+                              if (SignInSession.password_used) Admin.LoginInfo.password_used = SignInSession.password_used;
                               if (SignInSession.UniqueID) {
                                     $cookies.put('UniqueID', SignInSession.UniqueID);
                                     $cookies.put('user_md5', SignInSession.user_md5);
@@ -882,6 +922,28 @@
                         }
 
                   }
+
+
+                  Admin.PasswordRecheck = function() {
+                        if (!Admin.SignInCkecked.password) {
+                              sharedData.Toast("密碼不得為空", 3000);
+                              return false;
+                        }
+
+                       
+                        var promise =  sharedData.PasswordRecheck(Admin.SignInCkecked);
+
+                        promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+                              console.info(data);
+                             if( data.SignInCkecked ) Admin.SignInCkecked = data.SignInCkecked;
+                        }, function(data) { // 處理錯誤 .reject  
+                              console.info(data);
+                        });
+
+                  }
+
+
+
 
                   if (location.pathname == "/logout") location.href = '';
                   Admin.ReDirect = function(ReDirect) {

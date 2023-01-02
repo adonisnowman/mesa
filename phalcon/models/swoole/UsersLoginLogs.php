@@ -20,6 +20,15 @@ class UsersLoginLogs extends BaseModel
             'UniqueID',
             []
         );
+
+        $this->hasMany(
+            'UniqueID',
+            SwooleConnections::class,
+            'UniqueID_UsersLoginLogs',
+            []
+        );
+
+        
     }
 
 

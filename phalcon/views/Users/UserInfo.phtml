@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,7 +58,7 @@
 
     <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
-
+    <script type="text/javascript" src="js/qrcode.min.js"></script>
     <script>
         var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages']);
 
@@ -287,6 +289,107 @@
             };
 
         });
+        adonis.factory('$socketMesa', ['$http', '$q', '$cookies', 'sharedData', function($http, $q, $cookies, sharedData) {
+
+            console.info("泡湯連線測試", $cookies.get('UniqueID'));
+            var $socketMesa = this;
+
+            var SocketList = function(UniqueID) {
+
+                var data = {
+                    'Action': 'SoakedList',
+                    'Data': JSON.stringify({
+                        UniqueID
+                    }),
+                }
+                var deferred = $q.defer();
+                var request = $http({
+                    method: "post",
+                    url: "<?PHP echo SITE_URL; ?>Swoole",
+                    data: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                    },
+                }).then(function successCallback(response) {
+                    var data = response.data;
+
+                    if (data.SocketList) {
+                        var Socket_url = data.SocketList.pop();
+                        var websocket_url = 'wss://' + Socket_url.wss + ':' + Socket_url.port + '?' + UniqueID;
+                        deferred.resolve(websocket_url);
+                    } else deferred.resolve('wss://adonis.tw:9501?' + UniqueID);
+                }, function errorCallback(response) {
+                    deferred.reject(response);
+                });
+
+                return deferred.promise;
+            };
+
+
+
+            var websocket_url = 'wss://adonis.tw:9501?' + $cookies.get('UniqueID');
+
+            var onmessageDefer;
+            var socket = {
+                ws: null,
+                SocketList: SocketList,
+                SignInSession: null,
+                connect: function(websocket_url, SignInSession) {
+                    socket.SignInSession = SignInSession;
+                    socket.ws = new WebSocket(websocket_url);
+                    socket.ws.addEventListener('error', (event) => {
+                        sharedData.Toast("訊息服務連線失敗", 3000);
+                    });
+                    socket.ws.addEventListener('close', (event) => {
+
+                        sharedData.Toast("連線關閉，系統登出", 3000);
+                        // sharedData.Logout();
+                    })
+
+                    socket.ws.onopen = function(event) {
+
+
+                        if (onmessageDefer) {
+                            socket.ws.onmessage = onmessageDefer;
+                            onmessageDefer = null;
+                        }
+
+                        socket.send(socket.SignInSession);
+                    };
+                },
+                readyState: function() {
+                    if (!socket.ws || !socket.ws.readyState) return 0;
+                    return socket.ws.readyState
+                },
+                send: function(data) {
+
+                    data = JSON.stringify(data);
+                    if (socket.ws.readyState == 1) {
+                        socket.ws.send(data);
+                    } else {
+                        sharedData.Toast("訊息服務連線失敗", 3000);
+                    }
+                },
+                close: function() {
+                    socket.ws.close();
+                },
+                onmessage: function(callback) {
+                    if (socket.ws && socket.ws.readyState == 1) {
+                        socket.ws.onmessage = callback;
+                    } else {
+                        onmessageDefer = callback;
+                    }
+
+                },
+            };
+            // socket.ws.addEventListener('error', (event) => {
+            //     socket.ws = socket.connect($cookies.get('UniqueID'));
+            // });
+
+            return socket;
+
+
+        }]);
         adonis.factory('$socket', ['$http', '$q', '$cookies', 'sharedData', function($http, $q, $cookies, sharedData) {
 
             console.info("訊息連線測試", $cookies.get('UniqueID'));
@@ -315,7 +418,7 @@
                         var Socket_url = data.SocketList.pop();
                         var websocket_url = 'wss://' + Socket_url.wss + ':' + Socket_url.port + '?' + UniqueID;
                         deferred.resolve(websocket_url);
-                    } else deferred.resolve('wss://swoole.bestaup.com:9509?' + UniqueID);
+                    } else deferred.resolve('wss://adonis.tw:9509?' + UniqueID);
                 }, function errorCallback(response) {
                     deferred.reject(response);
                 });
@@ -325,7 +428,7 @@
 
 
 
-            var websocket_url = 'wss://swoole.bestaup.com:9509?' + $cookies.get('UniqueID');
+            var websocket_url = 'wss://adonis.tw:9509?' + $cookies.get('UniqueID');
 
             var onmessageDefer;
             var socket = {
@@ -341,7 +444,7 @@
                     socket.ws.addEventListener('close', (event) => {
 
                         sharedData.Toast("連線關閉，系統登出", 3000);
-                        sharedData.Logout();
+                        // sharedData.Logout();
                     })
 
                     socket.ws.onopen = function(event) {
@@ -437,14 +540,14 @@
                 </nav><!-- navbar end -->
                 <!-- sidebar start -->
                 <div class="chatapp__sidebar">
-                <ul class="nav" id="myTab" role="tablist">
+                    <ul class="nav" id="myTab" role="tablist">
                         <li class="nav-item"><a class="nav-link " ng-click="Admin.ReDirect('UserChats');">
                                 <i class="mdi mdi-message-text-outline"></i><span>泡湯聊天</span></a></li>
                         <li class="nav-item nav-item-todo"><a class="nav-link " ng-click="Admin.ReDirect('UserInfo')">
                                 <i class="mdi mdi-checkbox-marked-outline"></i><span>個人資訊</span></a></li>
                         <li class="nav-item nav-item-todo"><a class="nav-link active" ng-click="Admin.ReDirect('UserProinfo')">
                                 <i class="mdi mdi-checkbox-marked-outline"></i><span>基本資料</span></a></li>
-                                
+
                         <li class="nav-item"><a class="nav-link" ng-click="Admin.ReDirect('UserStored');">
                                 <i class="iconbox__icon mdi mdi-wallet-outline"></i><span>儲值功能</span></a></li>
                         <li class="nav-item"><a class="nav-link" ng-click="Admin.ReDirect('UserTrade');">
@@ -467,26 +570,39 @@
                                     <div class="card my-2">
                                         <div class="card-body">
                                             <div class="taskbox">
-                                                <div class="taskbox__icon"><svg width="35px" height="35px" fill="#ae6eea" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 438.891 438.891" style="enable-background:new 0 0 438.891 438.891;" xml:space="preserve">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M347.968,57.503h-39.706V39.74c0-5.747-6.269-8.359-12.016-8.359h-30.824c-7.314-20.898-25.6-31.347-46.498-31.347                                                                    c-20.668-0.777-39.467,11.896-46.498,31.347h-30.302c-5.747,0-11.494,2.612-11.494,8.359v17.763H90.923                                                                    c-23.53,0.251-42.78,18.813-43.886,42.318v299.363c0,22.988,20.898,39.706,43.886,39.706h257.045                                                                    c22.988,0,43.886-16.718,43.886-39.706V99.822C390.748,76.316,371.498,57.754,347.968,57.503z M151.527,52.279h28.735                                                                    c5.016-0.612,9.045-4.428,9.927-9.404c3.094-13.474,14.915-23.146,28.735-23.51c13.692,0.415,25.335,10.117,28.212,23.51                                                                    c0.937,5.148,5.232,9.013,10.449,9.404h29.78v41.796H151.527V52.279z M370.956,399.185c0,11.494-11.494,18.808-22.988,18.808                                                                    H90.923c-11.494,0-22.988-7.314-22.988-18.808V99.822c1.066-11.964,10.978-21.201,22.988-21.42h39.706v26.645                                                                    c0.552,5.854,5.622,10.233,11.494,9.927h154.122c5.98,0.327,11.209-3.992,12.016-9.927V78.401h39.706                                                                    c12.009,0.22,21.922,9.456,22.988,21.42V399.185z" />
-                                                                    <path d="M179.217,233.569c-3.919-4.131-10.425-4.364-14.629-0.522l-33.437,31.869l-14.106-14.629                                                                    c-3.919-4.131-10.425-4.363-14.629-0.522c-4.047,4.24-4.047,10.911,0,15.151l21.42,21.943c1.854,2.076,4.532,3.224,7.314,3.135                                                                    c2.756-0.039,5.385-1.166,7.314-3.135l40.751-38.661c4.04-3.706,4.31-9.986,0.603-14.025                                                                    C179.628,233.962,179.427,233.761,179.217,233.569z" />
-                                                                    <path d="M329.16,256.034H208.997c-5.771,0-10.449,4.678-10.449,10.449s4.678,10.449,10.449,10.449H329.16                                                                    c5.771,0,10.449-4.678,10.449-10.449S334.931,256.034,329.16,256.034z" />
-                                                                    <path d="M179.217,149.977c-3.919-4.131-10.425-4.364-14.629-0.522l-33.437,31.869l-14.106-14.629                                                                    c-3.919-4.131-10.425-4.364-14.629-0.522c-4.047,4.24-4.047,10.911,0,15.151l21.42,21.943c1.854,2.076,4.532,3.224,7.314,3.135                                                                    c2.756-0.039,5.385-1.166,7.314-3.135l40.751-38.661c4.04-3.706,4.31-9.986,0.603-14.025                                                                    C179.628,150.37,179.427,150.169,179.217,149.977z" />
-                                                                    <path d="M329.16,172.442H208.997c-5.771,0-10.449,4.678-10.449,10.449s4.678,10.449,10.449,10.449H329.16                                                                    c5.771,0,10.449-4.678,10.449-10.449S334.931,172.442,329.16,172.442z" />
-                                                                    <path d="M179.217,317.16c-3.919-4.131-10.425-4.363-14.629-0.522l-33.437,31.869l-14.106-14.629                                                                    c-3.919-4.131-10.425-4.363-14.629-0.522c-4.047,4.24-4.047,10.911,0,15.151l21.42,21.943c1.854,2.076,4.532,3.224,7.314,3.135                                                                    c2.756-0.039,5.385-1.166,7.314-3.135l40.751-38.661c4.04-3.706,4.31-9.986,0.603-14.025                                                                    C179.628,317.554,179.427,317.353,179.217,317.16z" />
-                                                                    <path d="M329.16,339.626H208.997c-5.771,0-10.449,4.678-10.449,10.449s4.678,10.449,10.449,10.449H329.16                                                                    c5.771,0,10.449-4.678,10.449-10.449S334.931,339.626,329.16,339.626z" />
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg></div>
-                                                <div class="taskbox__text">
-                                                    <div class="taskbox__text--numbers">26</div>
-                                                    <div class="taskbox__text--heading">Number of
-                                                        Tasks</div>
-                                                </div>
+                                                <input id="text" type="text" value="http://jindo.dev.naver.com/collie" style="width:80%" /><br />
+                                                <div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
+
+                                                <script type="text/javascript">
+                                                    var qrcode = new QRCode(document.getElementById("qrcode"), {
+                                                        width: 100,
+                                                        height: 100
+                                                    });
+
+                                                    function makeCode() {
+                                                        var elText = document.getElementById("text");
+
+                                                        if (!elText.value) {
+                                                            alert("Input a text");
+                                                            elText.focus();
+                                                            return;
+                                                        }
+
+                                                        qrcode.makeCode(elText.value);
+                                                    }
+
+                                                    makeCode();
+
+                                                    $("#text").
+                                                    on("blur", function() {
+                                                        makeCode();
+                                                    }).
+                                                    on("keydown", function(e) {
+                                                        if (e.keyCode == 13) {
+                                                            makeCode();
+                                                        }
+                                                    });
+                                                </script>
                                             </div>
                                         </div>
                                     </div>
@@ -943,7 +1059,7 @@
                 </div><!-- Javascripts Files -->
     </main>
     <script>
-        adonis.controller('AdminController', ['sharedData', '$scope', '$http', '$cookies', '$socket', function(sharedData, $scope, $http, $cookies, $socket) {
+        adonis.controller('AdminController', ['sharedData', '$scope', '$http', '$cookies', '$socket', '$socketMesa', function(sharedData, $scope, $http, $cookies, $socket, $socketMesa) {
 
             var Admin = this;
             Admin.LoginInfo = {};
@@ -959,6 +1075,23 @@
                     if (SignInSession.UniqueID) {
                         $cookies.put('UniqueID', SignInSession.UniqueID);
                         $cookies.put('user_md5', SignInSession.user_md5);
+                        //Mesa
+                        console.info("Mesa");
+                        var SocketList = $socketMesa.SocketList(SignInSession.UniqueID);
+                        SocketList.then(function(websocket_url) {
+
+                            $socketMesa.connect(websocket_url, SignInSession);
+                        });
+
+                        $socketMesa.onmessage((event) => {
+
+
+                            var user_md5 = $cookies.get('user_md5');
+                            var data = JSON.parse(event.data);
+                            console.info("收到訊息", event, data);
+                            if (data.Type == "Toast") sharedData.Toast(data[data.Type], 3000);
+                        });
+                        //Message
                         var SocketList = $socket.SocketList(SignInSession.UniqueID);
                         SocketList.then(function(websocket_url) {
 
@@ -969,7 +1102,7 @@
 
 
                             var user_md5 = $cookies.get('user_md5');
-                            var data = JSON.parse(event.data);
+                            var data = (event.data) ? JSON.parse(event.data) : null;
                             console.info("收到訊息", event, data);
                             if (!user_md5) $socket.close();
                             if (data.shortUniqueID) $cookies.put('shortUniqueID', data.shortUniqueID);
@@ -1216,39 +1349,7 @@
                 });
             }
 
-            Admin.ReMessage = function(UniqueID, ReMessage) {
-
-                var postData = {};
-                postData.UniqueID = $cookies.get('UniqueID');
-                postData.ReUniqueID = UniqueID;
-                postData.ReMessage = ReMessage;
-                postData.UniqueID_MessageType = "";
-
-                var data = {
-                    'Action': 'ReMessage',
-                    'Data': JSON.stringify(postData),
-                }
-
-                var request = $http({
-                    method: "post",
-                    url: "<?PHP echo SITE_URL; ?>UsersApi",
-                    data: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                    },
-                }).then(function successCallback(response) {
-                    var data = response.data;
-                    console.info(data);
-                    if (data.UserTempMessages.UniqueID) Admin.UserTempMessages();
-
-                }, function errorCallback(response) {
-
-
-                });
-
-            }
-
+            
 
             Admin.MobileVerify = function() {
 
@@ -1404,3 +1505,4 @@
 </body>
 
 </html>
+

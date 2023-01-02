@@ -37,11 +37,7 @@ class MessageType extends BaseModel
       public function afterFetch()
       {
 
-            if (!empty($this->start_time) && strtotime($this->start_time) < strtotime("now")) $this->offshelf = 0;
 
-            if (!empty($this->due_time) && strtotime($this->due_time) > strtotime("now")) $this->offshelf = 1;
-
-            return $this;
       }
 
       public function afterSave()

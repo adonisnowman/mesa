@@ -68,7 +68,36 @@ class ImageController extends BaseController
         
         
     }
-    
+    public function uploadAction()
+    {
+        $postdata = file_get_contents("php://input");
+        $postdata = json_decode($postdata,1);
+        
+        
+        $fileName = "TempUpload/"._UniqueID::shortUniqueID();
+        Tools::base64_to_jpeg( $postdata['src'], $fileName );
+
+        if( filesize($fileName) == $postdata['fileSize'] ) {
+            $CheckedfileName = $fileName.".".Tools::mime_content_type($fileName , true);
+            file_put_contents( $CheckedfileName ,file_get_contents( $fileName ) );
+
+            $Return['src'] = $CheckedfileName;
+
+        }
+        else {
+            $Return['src'] = "";
+        }        
+
+        echo json_encode($Return);
+           
+    }
+
+    public function QRcodeAction(){
+        $data = 'otpauth://totp/test?secret=B3JX4VCVJDVNXNZ5&issuer=chillerlan.net';
+
+        // quick and simple:
+        echo '<img src="'.(new QRcode($data)).'" alt="QR Code" />';
+    }
     public function codeAction($code)
     {
        
