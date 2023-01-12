@@ -165,6 +165,9 @@ class UsersApiController extends BaseController
             
             $Return['SignInSession'] = $_SESSION[Tools::getIp()]['SignInSession'];
             $Return['SignInSession']['user_md5'] = md5($_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']);
+        }else {
+            $Return['SignInSession']['user_md5'] = md5($_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']);
+            $Return['SignInSession']['SignInCkecked']['password_confirm'] = Null;
         }
 
 
@@ -1121,8 +1124,9 @@ class UsersApiController extends BaseController
         $Insert['UniqueID_UsersLoginLogs'] = $UsersLoginLogs['UniqueID'];
         if(empty(self::$PostData['opening_time'])) $Insert['opening_time'] = date("Y-m-d H:i:s");
 
+        
         $QRcodeSoaked = Models::insertTable($Insert ,"QRcodeSoaked" , true);
-
+        
         if( $Insert['Users_number'] > 0 )
         foreach( self::$PostData['MessageUsers'] AS $QRcodeSoaked_code) 
         {

@@ -30,12 +30,17 @@ $messages->create();
 $connections = new Table(1024);
 $connections->column('client', Table::TYPE_INT, 4);
 $connections->column('UniqueID', Table::TYPE_STRING, 20);
-$connections->column('shortUniqueID', Table::TYPE_STRING, 20);
+$connections->column('mesaUniqueID', Table::TYPE_STRING, 20);
 $connections->column('UniqueID_UsersToken', Table::TYPE_STRING, 750);
 $connections->column('UniqueID_UsersLoginLogs', Table::TYPE_STRING, 20);
 $connections->column('user_md5', Table::TYPE_STRING, 750);
+$connections->column('soakedId', Table::TYPE_STRING, 50);
+$connections->column('UniqueID_QRcodeSoaked', Table::TYPE_STRING, 50);
+$connections->column('QRcodeSoaked_code', Table::TYPE_STRING, 50);
+$connections->column('NickName', Table::TYPE_STRING, 50);
 
 $connections->create();
+
 
 $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
 $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
@@ -43,9 +48,9 @@ $BestaupDefault = (file_exists($fullchain));
 if (file_exists("/opt/local/etc/nginx/ssl/fullchain")) $fullchain = "/opt/local/etc/nginx/ssl/fullchain";
 if (file_exists("/opt/local/etc/nginx/ssl/privkey")) $privkey = "/opt/local/etc/nginx/ssl/privkey";
 
-$SwoolePort  = ($BestaupDefault)?"9501":"9501";
+$SwoolePort  = ($BestaupDefault) ? "9501" : "9501";
 //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
-$ws = new swoole_websocket_server("0.0.0.0", $SwoolePort , SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+$ws = new swoole_websocket_server("0.0.0.0", $SwoolePort, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 $Response = new Response();
 
 function SendAction($ws, $fd, $Action)
@@ -54,13 +59,15 @@ function SendAction($ws, $fd, $Action)
     $ws->push($fd, json_encode($Action));
 }
 
-function ReFreshConnections($ws,  $connections ){
+function ReFreshConnections($ws, $UniqueID_QRcodeSoaked,  $connections)
+{
 
-    //傳送線上名單
     $Action = [];
     $Action['Type'] = "Connections";
     foreach ($connections as $client) {
-        $Action["Connections"][] = ["shortUniqueID" => $client["shortUniqueID"]];
+
+        if ($client['UniqueID_QRcodeSoaked'] == $UniqueID_QRcodeSoaked)
+            $Action["Connections"][] = Tools::fix_element_Key($client, ["mesaUniqueID", "NickName"]);
     }
     foreach ($connections as $client) {
 
@@ -68,9 +75,10 @@ function ReFreshConnections($ws,  $connections ){
     }
 }
 
-function DisConnect($ws ,$client) {
+function DisConnect($ws, $client)
+{
 
-    $ws->disconnect( (int) $client, 1003, 'Pleace Login first');
+    $ws->disconnect((int) $client, 1003, 'Pleace Login first');
 }
 
 
@@ -242,7 +250,7 @@ $SwooleSetting = [
 if ($BestaupDefault) $SwooleUrl = "https://adonis.bestaup.com/Swoole";
 else $SwooleUrl = "http://mesa.adonis.tw/Swoole";
 
-    echo $SwooleUrl;
+echo $SwooleUrl;
 
 //環境參數設定
 $SwooleSetting = [];
@@ -255,21 +263,21 @@ $ws->set($SwooleSetting);
 //监听WebSocket连接打开事件
 $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
 
-      $key = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
-   
+    $key = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+
     if ((int)  round(((float)microtime(true))) == $request->server['master_time'])
-        $shortUniqueID = _UniqueID::shortUniqueID($request->server['master_time'] ,  $key);
+        $mesaUniqueID = _UniqueID::shortUniqueID($request->server['master_time'],  $key);
     else
-        $shortUniqueID = _UniqueID::shortUniqueID( false ,  $key);
+        $mesaUniqueID = _UniqueID::shortUniqueID(false,  $key);
 
 
     $user_md5 = md5($request->header['user-agent'] . $request->server['remote_addr']);
     echo "client-{$request->fd} is open [{$user_md5}] \n";
 
-    
 
 
-    $Data['shortUniqueID'] = $shortUniqueID;
+
+    $Data['mesaUniqueID'] = $mesaUniqueID;
     $Data['user_md5'] = $user_md5;
     $Data['query_string'] = $request->server['query_string'];
     $Data['HTTP_HOST'] = $request->header['origin'];
@@ -293,12 +301,10 @@ $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
 
     if (empty($Return['Action']) ||  empty($Return[$Return['Action']])) return DisConnect($ws, (int) $request->fd);
 
-    $Return = Tools::fix_element_Key($Return[$post['Action']], ["UniqueID", "shortUniqueID", "UniqueID_UsersToken", "UniqueID_UsersLoginLogs", "user_md5"]);
+    $Return = Tools::fix_element_Key($Return[$post['Action']], ["UniqueID", "mesaUniqueID", "UniqueID_UsersToken", "UniqueID_UsersLoginLogs", "user_md5"]);
     $Return['client'] = $request->fd;
-
+    var_dump("client_adonis",$Return);
     $connections->set($request->fd, $Return);
-
-    
 });
 //
 
@@ -308,18 +314,59 @@ $ws->on('open', function ($ws, $request) use ($connections, $SwooleUrl) {
 $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleUrl) {
 
 
-    
+
     $output = json_decode($frame->data, true);
     echo "Message: \n";
 
     $client = $connections->get($frame->fd);
-    var_dump($client, $output);
+   
     if ($output['user_md5'] == $client['user_md5']  && $output['UniqueID'] == $client['UniqueID_UsersLoginLogs']) {
 
-      //    會員判斷
-      if( !empty($output['account']) && !empty($output['mobile']) ) {
 
-            $Data = Tools::fix_element_Key($output, ['account','mobile','UniqueID']);
+        if (empty($output['mesaUniqueID'])) {
+            $Action = [];
+            $Action['mesaUniqueID'] = $client['mesaUniqueID'];
+            $Action['Type'] = "Toast";
+            $Action['Toast'][] = "本次登入連線短碼:" . $client['mesaUniqueID'];
+            $Action['Toast'][] = "首次連線";
+            SendAction($ws, $frame->fd, $Action);
+        }
+        //首次連線訊息
+
+
+
+        if (!empty($output['Action']) ) {
+
+            switch ($output['Action']) {
+                case 'MessageToUsers':
+                    $clientTemp = $connections->get($frame->fd);
+                    foreach ($connections as $client) {
+                        $Action = [];
+                        $Action['Type'] = "soakedMessageList";
+                        $Action[$Action['Type']]['NickName'] = $client['NickName'];
+                        $Action[$Action['Type']]['mesaUniqueID'] = $output['mesaUniqueID'];
+                        $Action[$Action['Type']]['QRcodeSoaked_code'] = $client['QRcodeSoaked_code'];
+                        $Action[$Action['Type']]['SoakedMessage'] = $output['SoakedMessage'];
+
+                        if ($client['UniqueID_QRcodeSoaked'] == $clientTemp['UniqueID_QRcodeSoaked'])
+                            SendAction($ws, $client['client'], $Action);
+                    }
+                    break;
+                default:
+                    $Action = [];
+                    $Action['Type'] = "Toast";
+                    $Action['Toast'][] = "本次登入連線短碼:" . $client['mesaUniqueID'];
+                    $Action['Toast'][] = "您暫時無法使用此類型的訊息發送功能";
+                    SendAction($ws, $frame->fd, $Action);
+                    break;
+            }
+
+            return false;
+        }
+        //    會員判斷
+        if (!empty($output['account']) && !empty($output['mobile'])) {
+
+            $Data = Tools::fix_element_Key($output, ['account', 'mobile', 'UniqueID']);
             $post['Action'] = "UserSoaked";
             $post['Data'] = json_encode($Data);
 
@@ -327,17 +374,57 @@ $ws->on('message', function ($ws, $frame) use ($messages, $connections, $SwooleU
 
             $Action = [];
             $Action['Type'] = "UserSoaked";
-            $Action['UserSoaked'][] = $Return[$post['Action']];
-    
+            $Action['UserSoaked'] = $Return[$post['Action']];
+
             SendAction($ws, $frame->fd, $Action);
+        }
 
+        //暱稱設定
+        if (!empty($output['NickName'])) {
+
+            $client['NickName'] = $output['NickName'];
+            $connections->set($frame->fd, $client);
+            $UniqueID_QRcodeSoaked =  $client['UniqueID_QRcodeSoaked'];
+            $Action = [];
+            $Action['soakedLogin'] = date("Y-m-d H:i:s");
+            SendAction($ws, $client['client'], $Action);
+            ReFreshConnections($ws, $UniqueID_QRcodeSoaked, $connections);
+        }
+        //匿名使用
+        if (!empty($output['hash'])) {
+
+
+            $post['Action'] = "QRcodeSoaked_connections";
+            $post['Data'] = json_encode($output['hash']);
+
+            $Return = Tools::httpPost($SwooleUrl, $post, true);
+
+            var_dump($Return);
+            $Action = [];
+            $Action['Type'] = "QRcodeSoaked_connections";
+            $Action['QRcodeSoaked_connections'] = $Return[$post['Action']];
+            SendAction($ws, $frame->fd, $Action);
+            var_dump("Action", $Action);
+            foreach ($connections as $client) {
+
+                
+
+                    $clientTemp = $connections->get($frame->fd);
+                    $clientTemp['UniqueID_QRcodeSoaked'] = $Action['QRcodeSoaked_connections']['UniqueID_QRcodeSoaked'];
+                    $clientTemp['QRcodeSoaked_code'] = $Action['QRcodeSoaked_connections']['QRcodeSoaked_code'];
+                    $connections->set($frame->fd, $clientTemp);
+
+                    $UniqueID_QRcodeSoaked =  $Action['QRcodeSoaked_connections']['UniqueID_QRcodeSoaked'];
+
+                    $Action = [];
+                    $Action['UniqueID_QRcodeSoaked'] = $UniqueID_QRcodeSoaked;
+                    SendAction($ws, $clientTemp['client'], $Action);
+
+                    ReFreshConnections($ws, $client['UniqueID_QRcodeSoaked'], $connections);
+                   
+            }
            
-            
-      }
-
-
-      //匿名使用
-      
+        }
     }
 });
 
@@ -346,7 +433,7 @@ $ws->on('close', function ($ws, $fd) use ($connections, $SwooleUrl) {
     echo "client-{$fd} is closed\n";
     $DisClient = $connections->get($fd);
 
-        //如果 $DisClient 找無資料 表示 Server 可能快掛了！
+    //如果 $DisClient 找無資料 表示 Server 可能快掛了！
 
 
 
@@ -357,23 +444,26 @@ $ws->on('close', function ($ws, $fd) use ($connections, $SwooleUrl) {
     $post['Data'] = json_encode($Data);
 
     $Return = Tools::httpPost($SwooleUrl, $post);
-
+    $UniqueID_QRcodeSoaked = false;
     foreach ($connections as $client) {
 
-        if ((int) $client['client'] == $fd) continue;
+        if ((int) $client['client'] == $fd) {
+            $UniqueID_QRcodeSoaked =  $client['UniqueID_QRcodeSoaked'];
+            continue;
+        }
 
         $Action = [];
-        $Action['DisClient'] = $DisClient['shortUniqueID'];
+        $Action['DisClient'] = $DisClient['mesaUniqueID'];
         $Action['Type'] = "Toast";
         $Action['Toast'][] = "本次關閉連線短碼:" . $Action['DisClient'];
         SendAction($ws, $client['client'], $Action);
     }
 
     //傳送線上名單
-    
+
     $connections->del($fd);
 
-    ReFreshConnections($ws, $connections);
+    ReFreshConnections($ws, $UniqueID_QRcodeSoaked, $connections);
 });
 
 $ws->start();

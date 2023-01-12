@@ -139,9 +139,9 @@ class SwooleController extends BaseController
 
                   $UsersLoginLogs = $Users->UsersLoginLogs;
 
-                  if( !empty($UsersLoginLogs->SwooleConnections->shortUniqueID )) {
+                  if( !empty($UsersLoginLogs->SwooleConnections->mesaUniqueID )) {
                         $Now = Date("Y-m-d H:i:s");
-                        $Item['QRcodeSoaked_code'] = $UsersLoginLogs->SwooleConnections->shortUniqueID;
+                        $Item['QRcodeSoaked_code'] = $UsersLoginLogs->SwooleConnections->mesaUniqueID;
                         $QRcodeSoaked_code = QRcodeSoaked_code::getListObjectByItem($Item, " opening_time >= '{$Now}' AND closing_time >= '{$Now}'  ");
                         
                         $Return[__FUNCTION__]['QRcodeSoaked_code']  = ( count($QRcodeSoaked_code) > 0 )?$QRcodeSoaked_code->toArray():[];
@@ -364,14 +364,27 @@ class SwooleController extends BaseController
 
                   //連線紀錄
 
-                  $Insert = Tools::fix_element_Key(self::$PostData, ["shortUniqueID", "user_md5", "HTTP_HOST", "REMOTE_ADDR", "HTTP_USER_AGENT"]);
+                  $Insert = Tools::fix_element_Key(self::$PostData, ["mesaUniqueID", "user_md5", "HTTP_HOST", "REMOTE_ADDR", "HTTP_USER_AGENT"]);
                   $Insert['UniqueID_UsersLoginLogs'] = $UsersLoginLogs->UniqueID;
                   $MesaConnections = Models::insertTable($Insert, "MesaConnections", true);
 
                   $Return[__FUNCTION__] = $MesaConnections->toArray();
-            } else {
-                  $Return['ErrorMsg'][] = "請先登入";
-            }
+            } else if(!empty($UniqueID)){
+
+                  $Insert = Tools::fix_element_Key(self::$PostData, ["mesaUniqueID", "user_md5", "HTTP_HOST", "REMOTE_ADDR", "HTTP_USER_AGENT"]);
+                  $Insert['UniqueID_UsersLoginLogs'] = $UniqueID;
+                  $MesaConnections = Models::insertTable($Insert, "MesaConnections", true);
+
+                  $Return[__FUNCTION__] = $MesaConnections->toArray();
+                  
+            } else $Return['ErrorMsg'][] = "請先登入";
+
+            return $Return;
+      }
+
+      public function QRcodeSoaked_connections(){
+
+            $Return[__FUNCTION__] = QRcodeSoaked_code::getOneByItem(self::$PostData);
 
             return $Return;
       }

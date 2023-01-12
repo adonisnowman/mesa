@@ -351,6 +351,7 @@
                     
                     
                     if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
+                    if (data.NoticeMsg) sharedData.Toast(data.NoticeMsg, 3000);
                     if (data.UniqueID) {
                         $cookies.put('UniqueID', data.UniqueID);
                         Admin.UsersLoginLogs();

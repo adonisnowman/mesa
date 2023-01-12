@@ -57,10 +57,9 @@ class _UsersApi
         $SignInList = $UsersLoginLogs->SignInList;
         $SignInCkecked = $SignInList->SignInCkecked;
 
-        if (empty($SignInCkecked->EmailChecked))  $Return['ErrorMsg'][] = "電子信箱尚未認證完成";
-        if (empty($SignInCkecked->MobileChecked)) $Return['ErrorMsg'][] = "手機號碼尚未認證完成";
+        if (empty($SignInCkecked->EmailChecked))  $Return['NoticeMsg'][] = "電子信箱尚未認證完成";
+        if (empty($SignInCkecked->MobileChecked)) $Return['NoticeMsg'][] = "手機號碼尚未認證完成";
 
-        if (!empty($Return['ErrorMSg'])) return $Return;
 
 
         $EmailChecked = $SignInCkecked->EmailChecked;

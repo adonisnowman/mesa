@@ -68,7 +68,7 @@ class IndexController extends BaseController
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))  $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
 
         
-        else if ($_SERVER['SERVER_NAME'] == "sms.adonis.tw") $Return['ReDirect'] = "SoakedLogin";
+        else if ($_SERVER['SERVER_NAME'] == "soaked.adonis.tw") $Return['ReDirect'] = "SoakedLogin";
         else if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['ReDirect'] = "UserSign";
         else if ($_SERVER['SERVER_NAME'] == "swoole.bestaup.com") $Return['ReDirect'] = "UserSign";
         else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";

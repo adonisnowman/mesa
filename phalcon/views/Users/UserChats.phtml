@@ -56,9 +56,13 @@
 
       <!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
       <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
+      
+
+      <script src='js/clipboard.js/dist/clipboard.min.js' type='text/javascript'></script>
+		<script src='js/ngclipboard/dist/ngclipboard.min.js' type='text/javascript'></script>
       <script type="text/javascript" src="js/qrcode.min.js"></script>
       <script>
-            var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages']);
+            var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngCookies', 'ngMessages','ngclipboard']);
 
             adonis.service('sharedData', function($http, $q, $mdToast, $cookies) {
                   var self = this;
@@ -556,435 +560,837 @@
                                     </li>
                               </ul>
                         </div><!-- sidebar end -->
-                        <!-- main content start -->
-                        <div class="chatapp__content">
-                              <div class="taskmanager-wrapper">
-                                    <div class="container-fluid">
-                                          <div class="row">
-                                                <div class="col-12">
-                                                      <h6 class="pt-3">To-Do List Overview</h6>
-                                                </div>
-                                                <div class="col-lg-3 col-md-6 col-12">
-                                                      <div class="card my-2">
-                                                            <div class="card-body">
-                                                                  <div class="taskbox">
-                                                                        
-                                                                        <div class="taskbox__text">
-                                                                              <div class="taskbox__text--numbers">05</div>
-                                                                              <div class="taskbox__text--heading">會員泡湯區</div>
-                                                                        </div>
-                                                                  </div>
+                        <section ng-if=" Admin.QRcodeSoaked_code && !Admin.soakedLogin ">
+
+                              <div class="limiter" style="position: absolute;z-index:1;">
+                                    <main>
+                                          <div class="container-login100" style="background:none;">
+                                                <div class="wrap-login100">
+
+                                                      <span class="login100-form-title p-b-26">
+                                                            匿名泡湯區
+                                                      </span>
+
+
+                                                      <div class="wrap-input100 validate-input">
+                                                            <input class="input100" type="text" name="email" ng-model="Admin.NickName">
+                                                            <span class="focus-input100" data-placeholder="輸入暱稱"></span>
+                                                      </div>
+
+
+
+                                                      <div class="container-login100-form-btn">
+                                                            <div class="wrap-login100-form-btn">
+                                                                  <div class="login100-form-bgbtn"></div>
+                                                                  <button class="login100-form-btn" ng-click="Admin.setNickName()">
+                                                                        進入泡湯區
+                                                                  </button>
                                                             </div>
                                                       </div>
+
+
                                                 </div>
-                                                <div class="col-lg-3 col-md-6 col-12">
-                                                      <div class="card my-2">
-                                                            <div class="card-body">
-                                                                  <div class="taskbox">
-                                                                        
-                                                                        <div class="taskbox__text">
-                                                                              <div class="taskbox__text--numbers">05</div>
-                                                                              <div class="taskbox__text--heading">匿名泡湯區</div>
-                                                                        </div>
-                                                                  </div>
-                                                            </div>
-                                                      </div>
-                                                </div>
-                                                
                                           </div>
-                                          <hr>
-                                          <div class="row pt-3 mb-5">
-                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                                                      <div class="taskpanel-title">泡湯區人數設定</div>
-                                                      <div class="taskpanel" id="inReviewTask">
-                                                            <div class="taskcard">
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">匿名泡湯區</div>
-
-
-                                                                              <div class="collapse show" id="MessageBox">
-
-                                                                                    <md-input-container>
-                                                                                          <label>匿名人數</label>
-                                                                                          <input type="text" ng-model="Admin.QrcodeSoaked.Guest_number" required="" md-maxlength="10">
-                                                                                    </md-input-container>
-                                                                                    <md-input-container>
-                                                                                          <label>預留人數</label>
-                                                                                          <input type="text" ng-model="Admin.QrcodeSoaked.Reserved_number" required="" md-maxlength="10">
-                                                                                    </md-input-container>
-                                                                              </div>
-
-
-                                                                              <div class="collapse" id="MessageUsersBox">
-                                                                                    <div class="task-details__title">Users</div>
-                                                                                    <div class="user-avatar-group">
-                                                                                          <a ng-repeat=" item in Admin.MessageUsers  " class="user-avatar user-avatar-rounded avatar-info" ng-click=" Admin.MessageUsers.splice($index,1)">
-                                                                                                <span>{{ item.shortUniqueID }}</span>
-                                                                                          </a>
-
-                                                                                    </div>
-                                                                                    <div class="wrap-input100 validate-input" data-validate="Enter Search">
-                                                                                          <span class="btn-show-pass">
-                                                                                                <i class="mdi mdi-account-plus-outline base-font-size"></i>
-                                                                                          </span>
-                                                                                          <input class="input100" type="text" name="name" ng-model="Admin.Search">
-                                                                                          <span class="focus-input100" data-placeholder="搜尋會員"></span>
-                                                                                    </div>
-
-                                                                                    <div class="task-details">
-                                                                                          <div class="task-details__title"> Checklist </div>
-                                                                                          <ul class="task-checklist">
-                                                                                                <li ng-repeat=" item in Admin.Connections  | filter : Admin.Search ">
-                                                                                                      <label ng-click="item.checked = !item.checked;Admin.MessageUsersRefresh();" ng-class="(item.checked)?'':'text-success'">
-                                                                                                            {{ item.shortUniqueID }}
-                                                                                                      </label>
-                                                                                                </li>
-
-                                                                                          </ul>
-                                                                                    </div>
-
-                                                                              </div>
-                                                                        </div>
-
-                                                                        <div class="card-body">
-                                                                              <div class="container-login100-form-btn">
-                                                                                    <div class="wrap-login100-form-btn">
-                                                                                          <div class="login100-form-bgbtn"></div>
-                                                                                          <button class="login100-form-btn" ng-click="Admin.QRcodeSoaked_Create()">
-                                                                                                建立邀請碼
-                                                                                          </button>
-                                                                                    </div>
-                                                                              </div>
-                                                                        </div>
-
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" data-toggle="collapse" data-target="#MessageUsersBox" aria-expanded="true" aria-controls="MessageUsersBox">
-                                                                                    <i class="mdi mdi-account-plus-outline base-font-size"></i>
-                                                                                    <span>{{Admin.MessageUsers.length}}/{{Admin.Connections.length}}</span>
-                                                                              </div>
-
-                                                                              <div class="taskinfo-footer">
-                                                                                    <div class="attachment"><i class="mdi mdi-paperclip"></i><span>3</span></div>
-                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{Admin.Message.length}}</span></div>
-                                                                              </div>
-                                                                        </div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light">
-
-                                                                                    <i class="iconbox__icon mdi mdi-bell-ring-outline"></i><span> {{ Admin.MessageUsers.length * 30 }}</span>
-                                                                                    <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>{{ Admin.MessageUsers.length * 30 }} / {{ Admin.Connections.length * 30 }}</span>
-                                                                              </div>
-
-                                                                        </div>
+                                    </main>
+                              </div>
+                        </section>
+                        <section ng-if=" Admin.QRcodeSoaked_code && Admin.NickName && Admin.soakedLogin ">
+                              <div class="chatapp__content">
+                                    <div class="chatapp__messagetab"><!-- user list start -->
+                                          <div class="chatapp-user-list">
+                                                <div class="chatapp-user-list-body custom-scrollbar">
+                                                      <div class="chatapp__headingbar">
+                                                            <h6>All Messages</h6>
+                                                            <div class="chatapp__actions">
+                                                                  <div class="chatapp__actions--icon"><i class="mdi mdi-heart"></i>
                                                                   </div>
-                                                            </div>
-                                                            <div class="taskcard" ng-repeat=" item in Admin.REVIEW ">
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">來自 Adonis 的訊息
-                                                                              </div>
-                                                                              <div class="taskdate"> {{ item.close_time }}
-                                                                              </div>
-                                                                              <div class="collapse" id="MessageToUsers_{{item.UniqueID}}">
-                                                                                    <div class="text-center p-t-30">
-                                                                                          <span class="txt1">
-                                                                                                {{ item.MessageDataFile.encrypted_data.encrypted_data }}
-                                                                                          </span>
-                                                                                          <div class="taskdate">
-                                                                                                <i class="zmdi zmdi-eye"></i>
-                                                                                                {{ item.UserMessageUsed.created_time }}
-                                                                                          </div>
-
-                                                                                    </div>
-
-
-
-                                                                                    <div class="wrap-input100 validate-input" data-validate="Enter Messages">
-                                                                                          <span class="btn-show-pass">
-                                                                                                <i class="zmdi zmdi-eye"></i>
-                                                                                          </span>
-                                                                                          <input class="input100" type="text" name="email" ng-model="item.ReMessage">
-                                                                                          <span class="focus-input100" data-placeholder="輸入訊息"></span>
-                                                                                    </div>
-                                                                                    <div class="container-login100-form-btn">
-                                                                                          <div class="wrap-login100-form-btn">
-                                                                                                <div class="login100-form-bgbtn"></div>
-                                                                                                <button class="login100-form-btn" ng-click="Admin.ReMessage( item.UniqueID, item.ReMessage)">
-                                                                                                      回覆訊息
-                                                                                                </button>
-                                                                                          </div>
-                                                                                    </div>
-
-
-
-                                                                              </div>
-                                                                        </div>
-                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
-                                                                              <div class="taskinfo-footer">
-                                                                                    <div class="attachment"><i class="mdi mdi-account-heart-outline"></i></div>
-                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{item.ReMessage.length}}</span></div>
-                                                                              </div>
-                                                                        </div>
-
-                                                                        <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#MessageToUsers_{{item.UniqueID}}" aria-expanded="false" aria-controls="MessageToUsers_{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
-                                                                        </div>
-                                                                  </div>
-                                                            </div>
-                                                            <div class="taskcard" ng-repeat="item in Admin.UserTempMessages_List ">
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">發給 Adonis 的訊息
-                                                                              </div>
-                                                                              <div class="taskdate">{{item.created_time}}
-                                                                              </div>
-                                                                              <div class="collapse" id="{{item.UniqueID}}">
-                                                                                    <div class="card Message">
-                                                                                          <div class="card_image"> <img src="video/RIGUZa.gif" />
-                                                                                          </div>
-                                                                                    </div>
-                                                                                    <div class="text-center p-t-30">
-                                                                                          <span class="txt1">
-                                                                                                我的聯絡方式尚未取得，請使用聊天室功能與我聯絡
-                                                                                          </span>
-                                                                                    </div>
-                                                                              </div>
-                                                                        </div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
-                                                                        </div>
-                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                                                        <div class="task-expander" role="button" data-toggle="collapse" data-target="#{{item.UniqueID}}" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
-                                                                        </div>
-                                                                        <div ng-if=" !item.UniqueID_MessageDataFile " class="taskcard-ribbon"><span class="badge badge-warning">訊息遺失</span></div>
-                                                                        <div ng-if=" item.UniqueID_MessageDataFile && !item.close_time " class="taskcard-ribbon"><span class="badge badge-primary">尚未發送</span></div>
+                                                                  <div class="chatapp__actions--icon"><i class="mdi mdi-square-edit-outline"></i></div>
+                                                                  <div class="chatapp__actions--icon"><i class="mdi mdi-dots-horizontal-circle-outline"></i>
                                                                   </div>
                                                             </div>
                                                       </div>
-                                                </div>
-                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                                                      <div class="taskpanel-title">邀請碼設定</div>
-                                                      <div class="taskpanel" id="inProcessTask">
+                                                      <ul class="list-unstyled">
+                                                            <li class="active">
+                                                                  <div class="conversation ">
+                                                                        <div class="user-avatar user-avatar-rounded online">
+                                                                              <div class="chatriq-user chatriq-user-11"></div>
+                                                                        </div>
+                                                                        <div class="conversation__details">
+                                                                              <div class="conversation__name">
+                                                                                    <div class="conversation__name--title">Jack P.
+                                                                                          Angulo</div>
+                                                                                    <div class="conversation__time">07:15 PM</div>
+                                                                              </div>
+                                                                              <div class="conversation__message">
+                                                                                    <div class="conversation__message-preview">Lorem
+                                                                                          ipsum dolor sit amet consectetur
+                                                                                          adipisicing elit. Soluta consequuntur
+                                                                                          accusantium tempora. Ad officiis voluptate
+                                                                                          neque, deleniti porro necessitatibus aut!
+                                                                                    </div><span><i class="mdi mdi-pin"></i></span>
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                            </li>
+                                                            <li ng-repeat=" item in Admin.Connections ">
+                                                                  <div class="conversation">
+                                                                        <div class="user-avatar user-avatar-rounded online">
+                                                                              <div class="chatriq-user chatriq-user-03"></div>
+                                                                        </div>
+                                                                        <div class="conversation__details">
+                                                                              <div class="conversation__name">
+                                                                                    <span class="conversation__name--title">
+                                                                                          {{ item.NickName }}
+                                                                                    </span>
+                                                                                    <span class="conversation__time"> {{ item.soakedLogin }}</span>
+                                                                              </div>
 
-                                                      <div class="taskcard" >
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">請將二維碼或是網址交給您要邀請進入泡湯區的朋友</div>                                                                              
-                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                        </div>
+                                                                  </div>
+                                                            </li>
+
+                                                      </ul>
+                                                </div>
+                                                <ul id="mfbMenu" class="mfb-component--br mfb-slidein-spring" data-mfb-toggle="click">
+                                                      <li class="mfb-component__wrap"><a href="#" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting mdi mdi-plus ion-plus-round"></i><i class="mfb-component__main-icon--active mdi mdi-close ion-close-round"></i></a>
+                                                            <ul class="mfb-component__list">
+                                                                  <li><a href="javascript:;" data-mfb-label="Theme" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-palette"></i></a>
+                                                                  </li>
+                                                                  <li><a href="javascript:;" data-mfb-label="Create Group" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-account-group"></i></a>
+                                                                  </li>
+                                                                  <li><a href="javascript:;" data-mfb-label="New Call" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-phone"></i></a>
+                                                                  </li>
+                                                                  <li><a href="javascript:;" data-mfb-label="New Chat" class="mfb-component__button--child"><i class="mfb-component__child-icon mdi mdi-android-messages"></i></a>
+                                                                  </li>
+                                                            </ul>
+                                                      </li>
+                                                </ul>
+                                          </div><!-- user list end --><!-- conversations start -->
+                                          <div class="chatapp__conversations"><!-- conversation wrapper start -->
+                                                <div class="conversation-wrapper">
+                                                      <div class="conversation-panel">
+                                                            <div class="conversation-panel__head">
+                                                                  <div class="back-button-md"><i class="mdi mdi-arrow-left"></i>
+                                                                  </div>
+                                                                  <div class="conversation-panel__avatar info-panel-opener">
+                                                                        <div class="user-avatar user-avatar-rounded">
+                                                                              <div class="chatriq-user chatriq-user-11"></div>
+                                                                        </div>
+                                                                        <div class="conversation__name">
+                                                                              <div class="conversation__name--title">Jack P. Angulo
+                                                                              </div>
+                                                                              <div class="conversation__time">last seen at 07:15 PM
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                                  <div class="conversation__actions">
+                                                                        <div class="action-icon" data-toggle="modal" data-target="#outGoingCall" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-phone"></i>
+                                                                        </div>
+                                                                        <div class="action-icon" data-toggle="modal" data-target="#incomingVideoStart" data-backdrop="static" data-keyboard="false"><i class="mdi mdi-video-outline"></i></div>
+                                                                        <div class="dropdown">
+                                                                              <div class="action-icon" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></div>
+                                                                              <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item info-panel-opener" href="javascript:;"><span><i class="mdi mdi-information-outline"></i></span><span>View
+                                                                                                Contact</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-magnify"></i></span><span>Search</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-volume-mute"></i></span><span>Mute
+                                                                                                notifications</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-wallpaper"></i></span><span>Wallpaper</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-trash-can-outline"></i></span><span>Delete
+                                                                                                Chat</span></a><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-export-variant"></i></span><span>Export
+                                                                                                Chat</span></a>
+                                                                                    <div class="dropdown-divider"></div><a class="dropdown-item" href="javascript:;"><span><i class="mdi mdi-cancel"></i></span><span>Block</span></a>
+                                                                              </div>
+                                                                        </div>
                                                                   </div>
                                                             </div>
-                                                            <div class="taskcard" ng-repeat="item in Admin.QrcodeSoaked.QRcode.codeList " ng-init="$last && Admin.finished()">
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">網址 : {{item.code_url}}</div>
-                                                                              <div id="qrcode_{{item.UniqueID}}_{{item.QRcodeSoaked_code}}" style="width:50px; height:50px; margin-top:15px;"></div>
-                                                                        </div>
-                                                                       
+                                                            <div class="conversation-panel__body">
+                                                                  <div class="custom-scrollbar2">
+                                                                        <div class="container">
+                                                                              <ul class="chat-style-2">
+                                                                                    <div ng-repeat="item in Admin.soakedMessageList ">
 
+                                                                                          <li class="message received" ng-if="(item.mesaUniqueID != Admin.mesaUniqueID)">
+                                                                                                <div class="message__text">{{ item.SoakedMessage}}
+                                                                                                      <div class="metadata"><span class="time">07:15
+                                                                                                                  AM</span></div>
+                                                                                                </div>
+                                                                                                <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li class="message sent" ng-if="(item.mesaUniqueID == Admin.mesaUniqueID)">
+                                                                                                <div class="message__text">{{ item.SoakedMessage}}
+                                                                                                      <div class="metadata"><span class="time">07:15
+                                                                                                                  AM</span></div>
+                                                                                                </div>
+                                                                                                <div class="message__options"><i class=" mdi mdi-dots-horizontal"></i>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                    </div>
+
+                                                                              </ul>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                            <div class="conversation-panel__footer">
+                                                                  <div class="composer">
+                                                                        <div class="composer__left">
+                                                                              <div class="composer__left--sticker"><i class="mdi mdi-sticker-emoji"></i></div>
+                                                                              <div class="composer__left--emoticon"><i class="mdi mdi-emoticon-outline"></i>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div class="composer__middle">
+                                                                              <textarea ng-model="Admin.SoakedMessage" class="form-control" rows="1" placeholder="輸入聊天內容"></textarea>
+                                                                              <div class="composer__middle--microphone"><i class="mdi mdi-microphone"></i></div>
+                                                                              <div class="composer__middle--photo"><i class="mdi mdi-camera"></i></div>
+                                                                              <div class="composer__middle--attachment"><i class="mdi mdi-attachment"></i></div>
+                                                                        </div>
+                                                                        <div class="composer__right">
+                                                                              <div class="composer__right--send" ng-click="Admin.SoakedBox()"><i class="mdi mdi-send"></i></div>
+                                                                              <div class="composer__right--microphone"><i class="mdi mdi-microphone"></i></div>
+                                                                        </div>
                                                                   </div>
                                                             </div>
                                                       </div>
-                                                </div>
-                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                                                      <div class="taskpanel-title">In Review</div>
-                                                      <div class="taskpanel" id="inReviewTask">
-                                                            <div class="taskcard">
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">發送訊息</div>
-
-
-                                                                              <div class="collapse show" id="MessageBox">
-
-                                                                                    <div class="wrap-input100 validate-input" data-validate="Enter Messages">
-                                                                                          <span class="btn-show-pass">
-                                                                                                <i class="zmdi zmdi-eye"></i>
-                                                                                          </span>
-                                                                                          <input class="input100" type="text" name="email" ng-model="Admin.Message">
-                                                                                          <span class="focus-input100" data-placeholder="輸入訊息"></span>
-                                                                                    </div>
-                                                                                    <div class="container-login100-form-btn">
-                                                                                          <div class="wrap-login100-form-btn">
-                                                                                                <div class="login100-form-bgbtn"></div>
-                                                                                                <button class="login100-form-btn" ng-click="Admin.SendBox();">
-                                                                                                      發送訊息
-                                                                                                </button>
-                                                                                          </div>
-                                                                                    </div>
-
-                                                                              </div>
-
-
-                                                                              <div class="collapse" id="MessageUsersBox">
-                                                                                    <div class="task-details__title">Users</div>
-                                                                                    <div class="user-avatar-group">
-                                                                                          <a ng-repeat=" item in Admin.MessageUsers  " class="user-avatar user-avatar-rounded avatar-info" ng-click=" Admin.MessageUsers.splice($index,1)">
-                                                                                                <span>{{ item.shortUniqueID }}</span>
-                                                                                          </a>
-
-                                                                                    </div>
-                                                                                    <div class="wrap-input100 validate-input" data-validate="Enter Search">
-                                                                                          <span class="btn-show-pass">
-                                                                                                <i class="mdi mdi-account-plus-outline base-font-size"></i>
-                                                                                          </span>
-                                                                                          <input class="input100" type="text" name="name" ng-model="Admin.Search">
-                                                                                          <span class="focus-input100" data-placeholder="搜尋會員"></span>
-                                                                                    </div>
-
-                                                                                    <div class="task-details">
-                                                                                          <div class="task-details__title"> Checklist </div>
-                                                                                          <ul class="task-checklist">
-                                                                                                <li ng-repeat=" item in Admin.Connections  | filter : Admin.Search ">
-                                                                                                      <label ng-click="item.checked = !item.checked;Admin.MessageUsersRefresh();" ng-class="(item.checked)?'':'text-success'">
-                                                                                                            {{ item.shortUniqueID }}
-                                                                                                      </label>
-                                                                                                </li>
-
-                                                                                          </ul>
-                                                                                    </div>
-
-                                                                              </div>
+                                                </div><!-- conversation panel end --><!-- information panel start -->
+                                                <div class="information-panel">
+                                                      <div class="information-panel__head">
+                                                            <h5>Contact info</h5>
+                                                            <div class="information-panel__closer"><i class="mdi mdi-close"></i>
+                                                            </div>
+                                                      </div>
+                                                      <div class="information-panel__body custom-scrollbar">
+                                                            <div class="userprofile-avatar"><img src="chatbox/assets/images/user/150/01.jpg" alt=""></div>
+                                                            <div class="userprofile-name">
+                                                                  <h4>Jack P. Angulo</h4><span>Product Manager</span>
+                                                                  <div class="social-icon-box">
+                                                                        <div class="social-icon"><i class="mdi mdi-facebook"></i>
                                                                         </div>
-
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="checklist-number" data-toggle="collapse" data-target="#MessageUsersBox" aria-expanded="true" aria-controls="MessageUsersBox">
-                                                                                    <i class="mdi mdi-account-plus-outline base-font-size"></i>
-                                                                                    <span>{{Admin.MessageUsers.length}}/{{Admin.Connections.length}}</span>
-                                                                              </div>
-
-                                                                              <div class="taskinfo-footer">
-                                                                                    <div class="attachment"><i class="mdi mdi-paperclip"></i><span>3</span></div>
-                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{Admin.Message.length}}</span></div>
-                                                                              </div>
+                                                                        <div class="social-icon"><i class="mdi mdi-linkedin"></i>
                                                                         </div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light">
-
-                                                                                    <i class="iconbox__icon mdi mdi-bell-ring-outline"></i><span> {{ Admin.MessageUsers.length * 30 }}</span>
-                                                                                    <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>{{ Admin.MessageUsers.length * 30 }} / {{ Admin.Connections.length * 30 }}</span>
-                                                                              </div>
-
+                                                                        <div class="social-icon"><i class="mdi mdi-twitter"></i>
+                                                                        </div>
+                                                                        <div class="social-icon"><i class="mdi mdi-youtube"></i>
                                                                         </div>
                                                                   </div>
                                                             </div>
-                                                            <div class="taskcard" ng-repeat=" item in Admin.REVIEW ">
+                                                            <hr>
+                                                            <table class="table table-sm table-borderless user-table-info">
+                                                                  <tr>
+                                                                        <td><i class="mdi mdi-cellphone-android"></i></td>
+                                                                        <td>+91 99041-99041</td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                        <td><i class="mdi mdi-web"></i></td>
+                                                                        <td>www.jackangulo.com</td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                        <td><i class="mdi mdi-map-marker"></i></td>
+                                                                        <td>2519 Burnside Court, HORICON, WI, 53032</td>
+                                                                  </tr>
+                                                            </table>
+                                                            <hr>
+                                                            <div class="accordion accordion-ungrouped mb-3" id="accordionExample">
                                                                   <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">來自 Adonis 的訊息
-                                                                              </div>
-                                                                              <div class="taskdate"> {{ item.close_time }}
-                                                                              </div>
-                                                                              <div class="collapse" id="MessageToUsers_{{item.UniqueID}}">
-                                                                                    <div class="text-center p-t-30">
-                                                                                          <span class="txt1">
-                                                                                                {{ item.MessageDataFile.encrypted_data.encrypted_data }}
-                                                                                          </span>
-                                                                                          <div class="taskdate">
-                                                                                                <i class="zmdi zmdi-eye"></i>
-                                                                                                {{ item.UserMessageUsed.created_time }}
-                                                                                          </div>
-
-                                                                                    </div>
-
-
-
-                                                                                    <div class="wrap-input100 validate-input" data-validate="Enter Messages">
-                                                                                          <span class="btn-show-pass">
-                                                                                                <i class="zmdi zmdi-eye"></i>
-                                                                                          </span>
-                                                                                          <input class="input100" type="text" name="email" ng-model="item.ReMessage">
-                                                                                          <span class="focus-input100" data-placeholder="輸入訊息"></span>
-                                                                                    </div>
-                                                                                    <div class="container-login100-form-btn">
-                                                                                          <div class="wrap-login100-form-btn">
-                                                                                                <div class="login100-form-bgbtn"></div>
-                                                                                                <button class="login100-form-btn" ng-click="Admin.ReMessage( item.UniqueID, item.ReMessage)">
-                                                                                                      回覆訊息
-                                                                                                </button>
+                                                                        <div class="card-header" id="headingOne">
+                                                                              <div class="card-title" data-toggle="collapse" role="button" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                                                    <div class="acpanel__heading">
+                                                                                          <div class="acpanel__left"><span><i class="mdi mdi-camera-outline"></i></span><span>Photos
+                                                                                                      & Media</span></div>
+                                                                                          <div class="acpanel__right"><span class="badge badge-info">26</span>
                                                                                           </div>
                                                                                     </div>
-
-
-
                                                                               </div>
                                                                         </div>
-                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
-                                                                              <div class="taskinfo-footer">
-                                                                                    <div class="attachment"><i class="mdi mdi-account-heart-outline"></i></div>
-                                                                                    <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{item.ReMessage.length}}</span></div>
+                                                                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                                                              <div class="card-body">
+                                                                                    <div class="slick-slider">
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/01.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/02.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/03.png" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/04.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/05.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/06.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/07.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/04.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/02.jpg" alt=""></div>
+                                                                                          <div><img class="img-fluid" src="chatbox/assets/images/media/04.jpg" alt=""></div>
+                                                                                    </div>
                                                                               </div>
-                                                                        </div>
-
-                                                                        <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#MessageToUsers_{{item.UniqueID}}" aria-expanded="false" aria-controls="MessageToUsers_{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
                                                                         </div>
                                                                   </div>
-                                                            </div>
-                                                            <div class="taskcard" ng-repeat="item in Admin.UserTempMessages_List ">
                                                                   <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">發給 Adonis 的訊息
-                                                                              </div>
-                                                                              <div class="taskdate">{{item.created_time}}
-                                                                              </div>
-                                                                              <div class="collapse" id="{{item.UniqueID}}">
-                                                                                    <div class="card Message">
-                                                                                          <div class="card_image"> <img src="video/RIGUZa.gif" />
+                                                                        <div class="card-header" id="headingTwo">
+                                                                              <div class="card-title collapsed d-flex justify-content-between align-items-center" role="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                                                    <div class="acpanel__heading">
+                                                                                          <div class="acpanel__left"><span><i class="mdi mdi-file-document-outline"></i></span><span>Documents</span>
+                                                                                          </div>
+                                                                                          <div class="acpanel__right"><span class="badge badge-info">16</span>
                                                                                           </div>
                                                                                     </div>
-                                                                                    <div class="text-center p-t-30">
-                                                                                          <span class="txt1">
-                                                                                                我的聯絡方式尚未取得，請使用聊天室功能與我聯絡
-                                                                                          </span>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                                                              <div class="card-body">
+                                                                                    <ul class="list-unstyled documentlist-wrapper">
+                                                                                          <li>
+                                                                                                <div class="doclist">
+                                                                                                      <div class="docicon iconbox btn-solid-danger">
+                                                                                                            <i class="iconbox__icon mdi mdi-file-pdf-box"></i>
+                                                                                                      </div>
+                                                                                                      <div class="doctitle">
+                                                                                                            <div class="docname">
+                                                                                                                  example-file.pdf
+                                                                                                            </div>
+                                                                                                            <div class="docsize">
+                                                                                                                  217kb</div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="doclist">
+                                                                                                      <div class="docicon iconbox btn-solid-info">
+                                                                                                            <i class="iconbox__icon mdi mdi-file-word-box"></i>
+                                                                                                      </div>
+                                                                                                      <div class="doctitle">
+                                                                                                            <div class="docname">
+                                                                                                                  example-file.docs
+                                                                                                            </div>
+                                                                                                            <div class="docsize">
+                                                                                                                  217kb</div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="doclist">
+                                                                                                      <div class="docicon iconbox btn-solid-success">
+                                                                                                            <i class="iconbox__icon mdi mdi-file-excel-box"></i>
+                                                                                                      </div>
+                                                                                                      <div class="doctitle">
+                                                                                                            <div class="docname">
+                                                                                                                  example-file.xlxs
+                                                                                                            </div>
+                                                                                                            <div class="docsize">
+                                                                                                                  217kb</div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="doclist">
+                                                                                                      <div class="docicon iconbox btn-solid-warning">
+                                                                                                            <i class="iconbox__icon mdi mdi-file-powerpoint-box"></i>
+                                                                                                      </div>
+                                                                                                      <div class="doctitle">
+                                                                                                            <div class="docname">
+                                                                                                                  example-file.pptx
+                                                                                                            </div>
+                                                                                                            <div class="docsize">
+                                                                                                                  217kb</div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="doclistall">View All
+                                                                                                </div>
+                                                                                          </li>
+                                                                                    </ul>
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                                  <div class="card">
+                                                                        <div class="card-header" id="headingFour">
+                                                                              <div class="card-title collapsed  d-flex justify-content-between align-items-center" role="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                                                    <div class="acpanel__heading">
+                                                                                          <div class="acpanel__left"><span><i class="mdi mdi-settings-outline"></i></span><span>Settings</span>
+                                                                                          </div>
                                                                                     </div>
                                                                               </div>
                                                                         </div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
+                                                                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                                                                              <div class="card-body">
+                                                                                    <ul class="list-unstyled">
+                                                                                          <li>
+                                                                                                <div class="setting-list">
+                                                                                                      <div class="setting-list-name">
+                                                                                                            Media Auto Download
+                                                                                                      </div>
+                                                                                                      <div class="setting-list-switch">
+                                                                                                            <div class="custom-control custom-switch">
+                                                                                                                  <input type="checkbox" class="custom-control-input" id="customSwitch1"><label class="custom-control-label" for="customSwitch1"></label>
+                                                                                                            </div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="setting-list">
+                                                                                                      <div class="setting-list-name">
+                                                                                                            Mute Conversation</div>
+                                                                                                      <div class="setting-list-switch">
+                                                                                                            <div class="custom-control custom-switch">
+                                                                                                                  <input type="checkbox" class="custom-control-input" id="customSwitch2"><label class="custom-control-label" for="customSwitch2"></label>
+                                                                                                            </div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="setting-list">
+                                                                                                      <div class="setting-list-name">
+                                                                                                            Notifications</div>
+                                                                                                      <div class="setting-list-switch">
+                                                                                                            <div class="custom-control custom-switch">
+                                                                                                                  <input type="checkbox" class="custom-control-input" id="customSwitch3"><label class="custom-control-label" for="customSwitch3"></label>
+                                                                                                            </div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                          <li>
+                                                                                                <div class="setting-list">
+                                                                                                      <div class="setting-list-name">
+                                                                                                            Block</div>
+                                                                                                      <div class="setting-list-switch">
+                                                                                                            <div class="custom-control custom-switch">
+                                                                                                                  <input type="checkbox" class="custom-control-input" id="customSwitch4"><label class="custom-control-label" for="customSwitch4"></label>
+                                                                                                            </div>
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                          </li>
+                                                                                    </ul>
+                                                                              </div>
                                                                         </div>
-                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                                                        <div class="task-expander" role="button" data-toggle="collapse" data-target="#{{item.UniqueID}}" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
-                                                                        </div>
-                                                                        <div ng-if=" !item.UniqueID_MessageDataFile " class="taskcard-ribbon"><span class="badge badge-warning">訊息遺失</span></div>
-                                                                        <div ng-if=" item.UniqueID_MessageDataFile && !item.close_time " class="taskcard-ribbon"><span class="badge badge-primary">尚未發送</span></div>
                                                                   </div>
                                                             </div>
                                                       </div>
-                                                </div>
-                                                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                                                      <div class="taskpanel-title">Completed</div>
-                                                      <div class="taskpanel" id="completedTasks">
-                                                            <div class="taskcard">
-                                                                  <div class="card">
-                                                                        <div class="card-body">
-                                                                              <div class="taskname">來自 Adonis 的訊息
+                                                </div><!-- information panel end -->
+                                          </div><!-- conversations end -->
+                                    </div>
+                        </section>
+                        <!-- main content start -->
+                        <section ng-if="!Admin.QRcodeSoaked_code">
+                              <div class="chatapp__content">
+                                    <div class="taskmanager-wrapper">
+                                          <div class="container-fluid">
+                                                <div class="row">
+                                                      <div class="col-12">
+                                                            <h6 class="pt-3">To-Do List Overview</h6>
+                                                      </div>
+                                                      <div class="col-lg-3 col-md-6 col-12">
+                                                            <div class="card my-2">
+                                                                  <div class="card-body">
+                                                                        <div class="taskbox">
+
+                                                                              <div class="taskbox__text">
+                                                                                    <div class="taskbox__text--numbers">05</div>
+                                                                                    <div class="taskbox__text--heading">會員泡湯區</div>
                                                                               </div>
-                                                                              <div class="taskdate">20/07/2019 at 03:10PM
-                                                                              </div>
-                                                                        </div>
-                                                                        <div class="card-footer taskpanel-footer">
-                                                                              <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i>30</div>
-                                                                        </div>
-                                                                        <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                                                        <div class="taskcard-ribbon"><span class="badge badge-success">已讀訊息</span>
                                                                         </div>
                                                                   </div>
+                                                            </div>
+                                                      </div>
+                                                      <div class="col-lg-3 col-md-6 col-12">
+                                                            <div class="card my-2">
+                                                                  <div class="card-body">
+                                                                        <div class="taskbox">
+
+                                                                              <div class="taskbox__text">
+                                                                                    <div class="taskbox__text--numbers">05</div>
+                                                                                    <div class="taskbox__text--heading">匿名泡湯區</div>
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+
+                                                </div>
+                                                <hr>
+                                                <div class="row pt-3 mb-5">
+                                                      <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                            <div class="taskpanel-title">泡湯區人數設定</div>
+                                                            <div class="taskpanel" id="inReviewTask">
                                                                   <div class="taskcard">
+                                                                        <div class="card">
+                                                                              <div class="card-body">
+                                                                                    <div class="taskname">匿名泡湯區</div>
+
+
+                                                                                    <div class="collapse show" id="MessageBox">
+
+                                                                                          <md-input-container>
+                                                                                                <label>匿名人數</label>
+                                                                                                <input type="number" ng-model="Admin.QrcodeSoaked.Guest_number" required="" md-maxlength="10">
+                                                                                          </md-input-container>
+                                                                                          <md-input-container>
+                                                                                                <label>預留人數</label>
+                                                                                                <input type="number" ng-model="Admin.QrcodeSoaked.Reserved_number" required="" md-maxlength="10">
+                                                                                          </md-input-container>
+                                                                                    </div>
+
+
+                                                                                    <div class="collapse" id="MessageUsersBox">
+                                                                                          <div class="task-details__title">Users</div>
+                                                                                          <div class="user-avatar-group">
+                                                                                                <a ng-repeat=" item in Admin.MessageUsers  " class="user-avatar user-avatar-rounded avatar-info" ng-click=" Admin.MessageUsers.splice($index,1)">
+                                                                                                      <span>{{ item.shortUniqueID }}</span>
+                                                                                                </a>
+
+                                                                                          </div>
+                                                                                          <div class="wrap-input100 validate-input" data-validate="Enter Search">
+                                                                                                <span class="btn-show-pass">
+                                                                                                      <i class="mdi mdi-account-plus-outline base-font-size"></i>
+                                                                                                </span>
+                                                                                                <input class="input100" type="text" name="name" ng-model="Admin.Search">
+                                                                                                <span class="focus-input100" data-placeholder="搜尋會員"></span>
+                                                                                          </div>
+
+                                                                                          <div class="task-details">
+                                                                                                <div class="task-details__title"> Checklist </div>
+                                                                                                <ul class="task-checklist">
+                                                                                                      <li ng-repeat=" item in Admin.Connections  | filter : Admin.Search ">
+                                                                                                            <label ng-click="item.checked = !item.checked;Admin.MessageUsersRefresh();" ng-class="(item.checked)?'':'text-success'">
+                                                                                                                  {{ item.shortUniqueID }}
+                                                                                                            </label>
+                                                                                                      </li>
+
+                                                                                                </ul>
+                                                                                          </div>
+
+                                                                                    </div>
+                                                                              </div>
+
+                                                                              <div class="card-body">
+                                                                                    <div class="container-login100-form-btn">
+                                                                                          <div class="wrap-login100-form-btn">
+                                                                                                <div class="login100-form-bgbtn"></div>
+                                                                                                <button class="login100-form-btn" ng-click="Admin.QRcodeSoaked_Create()">
+                                                                                                      建立邀請碼
+                                                                                                </button>
+                                                                                          </div>
+                                                                                    </div>
+                                                                              </div>
+
+                                                                              <div class="card-footer taskpanel-footer">
+                                                                                    <div class="checklist-number" data-toggle="collapse" data-target="#MessageUsersBox" aria-expanded="true" aria-controls="MessageUsersBox">
+                                                                                          <i class="mdi mdi-account-plus-outline base-font-size"></i>
+                                                                                          <span>{{Admin.MessageUsers.length}}/{{Admin.Connections.length}}</span>
+                                                                                    </div>
+
+                                                                                    <div class="taskinfo-footer">
+                                                                                          <div class="attachment"><i class="mdi mdi-paperclip"></i><span>3</span></div>
+                                                                                          <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{Admin.Message.length}}</span></div>
+                                                                                    </div>
+                                                                              </div>
+                                                                              <div class="card-footer taskpanel-footer">
+                                                                                    <div class="iconbox btn-hovered-light">
+
+                                                                                          <i class="iconbox__icon mdi mdi-bell-ring-outline"></i><span> {{ Admin.MessageUsers.length * 30 }}</span>
+                                                                                          <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>{{ Admin.MessageUsers.length * 30 }} / {{ Admin.Connections.length * 30 }}</span>
+                                                                                    </div>
+
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                                  <div class="taskcard" ng-repeat=" item in Admin.REVIEW ">
                                                                         <div class="card">
                                                                               <div class="card-body">
                                                                                     <div class="taskname">來自 Adonis 的訊息
                                                                                     </div>
-                                                                                    <div class="taskdate">20/07/2019 at 03:10PM
+                                                                                    <div class="taskdate"> {{ item.close_time }}
+                                                                                    </div>
+                                                                                    <div class="collapse" id="MessageToUsers_{{item.UniqueID}}">
+                                                                                          <div class="text-center p-t-30">
+                                                                                                <span class="txt1">
+                                                                                                      {{ item.MessageDataFile.encrypted_data.encrypted_data }}
+                                                                                                </span>
+                                                                                                <div class="taskdate">
+                                                                                                      <i class="zmdi zmdi-eye"></i>
+                                                                                                      {{ item.UserMessageUsed.created_time }}
+                                                                                                </div>
+
+                                                                                          </div>
+
+
+
+                                                                                          <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                                <span class="btn-show-pass">
+                                                                                                      <i class="zmdi zmdi-eye"></i>
+                                                                                                </span>
+                                                                                                <input class="input100" type="text" name="email" ng-model="item.ReMessage">
+                                                                                                <span class="focus-input100" data-placeholder="輸入訊息"></span>
+                                                                                          </div>
+                                                                                          <div class="container-login100-form-btn">
+                                                                                                <div class="wrap-login100-form-btn">
+                                                                                                      <div class="login100-form-bgbtn"></div>
+                                                                                                      <button class="login100-form-btn" ng-click="Admin.ReMessage( item.UniqueID, item.ReMessage)">
+                                                                                                            回覆訊息
+                                                                                                      </button>
+                                                                                                </div>
+                                                                                          </div>
+
+
+
+                                                                                    </div>
+                                                                              </div>
+                                                                              <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                              <div class="card-footer taskpanel-footer">
+                                                                                    <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
+                                                                                    <div class="taskinfo-footer">
+                                                                                          <div class="attachment"><i class="mdi mdi-account-heart-outline"></i></div>
+                                                                                          <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{item.ReMessage.length}}</span></div>
+                                                                                    </div>
+                                                                              </div>
+
+                                                                              <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#MessageToUsers_{{item.UniqueID}}" aria-expanded="false" aria-controls="MessageToUsers_{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                                  <div class="taskcard" ng-repeat="item in Admin.UserTempMessages_List ">
+                                                                        <div class="card">
+                                                                              <div class="card-body">
+                                                                                    <div class="taskname">發給 Adonis 的訊息
+                                                                                    </div>
+                                                                                    <div class="taskdate">{{item.created_time}}
+                                                                                    </div>
+                                                                                    <div class="collapse" id="{{item.UniqueID}}">
+                                                                                          <div class="card Message">
+                                                                                                <div class="card_image"> <img src="video/RIGUZa.gif" />
+                                                                                                </div>
+                                                                                          </div>
+                                                                                          <div class="text-center p-t-30">
+                                                                                                <span class="txt1">
+                                                                                                      我的聯絡方式尚未取得，請使用聊天室功能與我聯絡
+                                                                                                </span>
+                                                                                          </div>
                                                                                     </div>
                                                                               </div>
                                                                               <div class="card-footer taskpanel-footer">
                                                                                     <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
                                                                               </div>
                                                                               <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
-                                                                              <div class="taskcard-ribbon"><span class="badge badge-success">已讀通知</span>
+                                                                              <div class="task-expander" role="button" data-toggle="collapse" data-target="#{{item.UniqueID}}" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
+                                                                              </div>
+                                                                              <div ng-if=" !item.UniqueID_MessageDataFile " class="taskcard-ribbon"><span class="badge badge-warning">訊息遺失</span></div>
+                                                                              <div ng-if=" item.UniqueID_MessageDataFile && !item.close_time " class="taskcard-ribbon"><span class="badge badge-primary">尚未發送</span></div>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                      </div>
+                                                      <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                            <div class="taskpanel-title">邀請碼設定</div>
+                                                            <div class="taskpanel" id="inProcessTask">
+
+                                                                  <div class="taskcard">
+                                                                        <div class="card">
+                                                                              <div class="card-body">
+                                                                                    <div class="taskname">請將二維碼或是網址交給您要邀請進入泡湯區的朋友</div>
+                                                                                    <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div class="taskcard" ng-repeat="item in Admin.QrcodeSoaked.QRcode.codeList " ng-init="$last && Admin.finished()">
+                                                                              <div class="card" ngclipboard data-clipboard-text="{{item.code_url}}" ng-click="Admin.Toast();">
+                                                                                    <div class="card-body">
+                                                                                          <div class="taskname">網址 : {{item.code_url}}</div>
+                                                                                          <div id="qrcode_{{item.UniqueID}}_{{item.QRcodeSoaked_code}}" style="width:50px; height:50px; margin-top:15px;"></div>
+                                                                                    </div>
+
+
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                            <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                                  <div class="taskpanel-title">In Review</div>
+                                                                  <div class="taskpanel" id="inReviewTask">
+                                                                        <div class="taskcard">
+                                                                              <div class="card">
+                                                                                    <div class="card-body">
+                                                                                          <div class="taskname">發送訊息</div>
+
+
+                                                                                          <div class="collapse show" id="MessageBox">
+
+                                                                                                <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                                      <span class="btn-show-pass">
+                                                                                                            <i class="zmdi zmdi-eye"></i>
+                                                                                                      </span>
+                                                                                                      <input class="input100" type="text" name="email" ng-model="Admin.Message">
+                                                                                                      <span class="focus-input100" data-placeholder="輸入訊息"></span>
+                                                                                                </div>
+                                                                                                <div class="container-login100-form-btn">
+                                                                                                      <div class="wrap-login100-form-btn">
+                                                                                                            <div class="login100-form-bgbtn"></div>
+                                                                                                            <button class="login100-form-btn" ng-click="Admin.SendBox();">
+                                                                                                                  發送訊息
+                                                                                                            </button>
+                                                                                                      </div>
+                                                                                                </div>
+
+                                                                                          </div>
+
+
+                                                                                          <div class="collapse" id="MessageUsersBox">
+                                                                                                <div class="task-details__title">Users</div>
+                                                                                                <div class="user-avatar-group">
+                                                                                                      <a ng-repeat=" item in Admin.MessageUsers  " class="user-avatar user-avatar-rounded avatar-info" ng-click=" Admin.MessageUsers.splice($index,1)">
+                                                                                                            <span>{{ item.shortUniqueID }}</span>
+                                                                                                      </a>
+
+                                                                                                </div>
+                                                                                                <div class="wrap-input100 validate-input" data-validate="Enter Search">
+                                                                                                      <span class="btn-show-pass">
+                                                                                                            <i class="mdi mdi-account-plus-outline base-font-size"></i>
+                                                                                                      </span>
+                                                                                                      <input class="input100" type="text" name="name" ng-model="Admin.Search">
+                                                                                                      <span class="focus-input100" data-placeholder="搜尋會員"></span>
+                                                                                                </div>
+
+                                                                                                <div class="task-details">
+                                                                                                      <div class="task-details__title"> Checklist </div>
+                                                                                                      <ul class="task-checklist">
+                                                                                                            <li ng-repeat=" item in Admin.Connections  | filter : Admin.Search ">
+                                                                                                                  <label ng-click="item.checked = !item.checked;Admin.MessageUsersRefresh();" ng-class="(item.checked)?'':'text-success'">
+                                                                                                                        {{ item.shortUniqueID }}
+                                                                                                                  </label>
+                                                                                                            </li>
+
+                                                                                                      </ul>
+                                                                                                </div>
+
+                                                                                          </div>
+                                                                                    </div>
+
+                                                                                    <div class="card-footer taskpanel-footer">
+                                                                                          <div class="checklist-number" data-toggle="collapse" data-target="#MessageUsersBox" aria-expanded="true" aria-controls="MessageUsersBox">
+                                                                                                <i class="mdi mdi-account-plus-outline base-font-size"></i>
+                                                                                                <span>{{Admin.MessageUsers.length}}/{{Admin.Connections.length}}</span>
+                                                                                          </div>
+
+                                                                                          <div class="taskinfo-footer">
+                                                                                                <div class="attachment"><i class="mdi mdi-paperclip"></i><span>3</span></div>
+                                                                                                <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{Admin.Message.length}}</span></div>
+                                                                                          </div>
+                                                                                    </div>
+                                                                                    <div class="card-footer taskpanel-footer">
+                                                                                          <div class="iconbox btn-hovered-light">
+
+                                                                                                <i class="iconbox__icon mdi mdi-bell-ring-outline"></i><span> {{ Admin.MessageUsers.length * 30 }}</span>
+                                                                                                <i class="iconbox__icon mdi mdi-diamond-stone"></i><span>{{ Admin.MessageUsers.length * 30 }} / {{ Admin.Connections.length * 30 }}</span>
+                                                                                          </div>
+
+                                                                                    </div>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div class="taskcard" ng-repeat=" item in Admin.REVIEW ">
+                                                                              <div class="card">
+                                                                                    <div class="card-body">
+                                                                                          <div class="taskname">來自 Adonis 的訊息
+                                                                                          </div>
+                                                                                          <div class="taskdate"> {{ item.close_time }}
+                                                                                          </div>
+                                                                                          <div class="collapse" id="MessageToUsers_{{item.UniqueID}}">
+                                                                                                <div class="text-center p-t-30">
+                                                                                                      <span class="txt1">
+                                                                                                            {{ item.MessageDataFile.encrypted_data.encrypted_data }}
+                                                                                                      </span>
+                                                                                                      <div class="taskdate">
+                                                                                                            <i class="zmdi zmdi-eye"></i>
+                                                                                                            {{ item.UserMessageUsed.created_time }}
+                                                                                                      </div>
+
+                                                                                                </div>
+
+
+
+                                                                                                <div class="wrap-input100 validate-input" data-validate="Enter Messages">
+                                                                                                      <span class="btn-show-pass">
+                                                                                                            <i class="zmdi zmdi-eye"></i>
+                                                                                                      </span>
+                                                                                                      <input class="input100" type="text" name="email" ng-model="item.ReMessage">
+                                                                                                      <span class="focus-input100" data-placeholder="輸入訊息"></span>
+                                                                                                </div>
+                                                                                                <div class="container-login100-form-btn">
+                                                                                                      <div class="wrap-login100-form-btn">
+                                                                                                            <div class="login100-form-bgbtn"></div>
+                                                                                                            <button class="login100-form-btn" ng-click="Admin.ReMessage( item.UniqueID, item.ReMessage)">
+                                                                                                                  回覆訊息
+                                                                                                            </button>
+                                                                                                      </div>
+                                                                                                </div>
+
+
+
+                                                                                          </div>
+                                                                                    </div>
+                                                                                    <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                                    <div class="card-footer taskpanel-footer">
+                                                                                          <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
+                                                                                          <div class="taskinfo-footer">
+                                                                                                <div class="attachment"><i class="mdi mdi-account-heart-outline"></i></div>
+                                                                                                <div class="comments"><i class="mdi mdi-comment-text-multiple-outline"></i><span>{{item.ReMessage.length}}</span></div>
+                                                                                          </div>
+                                                                                    </div>
+
+                                                                                    <div class="task-expander" ng-click="Admin.UserMessageUsed(item);" role="button" data-toggle="collapse" data-target="#MessageToUsers_{{item.UniqueID}}" aria-expanded="false" aria-controls="MessageToUsers_{{item.UniqueID}}"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
+                                                                                    </div>
+                                                                              </div>
+                                                                        </div>
+                                                                        <div class="taskcard" ng-repeat="item in Admin.UserTempMessages_List ">
+                                                                              <div class="card">
+                                                                                    <div class="card-body">
+                                                                                          <div class="taskname">發給 Adonis 的訊息
+                                                                                          </div>
+                                                                                          <div class="taskdate">{{item.created_time}}
+                                                                                          </div>
+                                                                                          <div class="collapse" id="{{item.UniqueID}}">
+                                                                                                <div class="card Message">
+                                                                                                      <div class="card_image"> <img src="video/RIGUZa.gif" />
+                                                                                                      </div>
+                                                                                                </div>
+                                                                                                <div class="text-center p-t-30">
+                                                                                                      <span class="txt1">
+                                                                                                            我的聯絡方式尚未取得，請使用聊天室功能與我聯絡
+                                                                                                      </span>
+                                                                                                </div>
+                                                                                          </div>
+                                                                                    </div>
+                                                                                    <div class="card-footer taskpanel-footer">
+                                                                                          <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
+                                                                                    </div>
+                                                                                    <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                                    <div class="task-expander" role="button" data-toggle="collapse" data-target="#{{item.UniqueID}}" aria-expanded="false" aria-controls="collapseExample"><i class="task-expander-btn mdi mdi-plus-box-outline"></i>
+                                                                                    </div>
+                                                                                    <div ng-if=" !item.UniqueID_MessageDataFile " class="taskcard-ribbon"><span class="badge badge-warning">訊息遺失</span></div>
+                                                                                    <div ng-if=" item.UniqueID_MessageDataFile && !item.close_time " class="taskcard-ribbon"><span class="badge badge-primary">尚未發送</span></div>
+                                                                              </div>
+                                                                        </div>
+                                                                  </div>
+                                                            </div>
+                                                            <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                                                                  <div class="taskpanel-title">Completed</div>
+                                                                  <div class="taskpanel" id="completedTasks">
+                                                                        <div class="taskcard">
+                                                                              <div class="card">
+                                                                                    <div class="card-body">
+                                                                                          <div class="taskname">來自 Adonis 的訊息
+                                                                                          </div>
+                                                                                          <div class="taskdate">20/07/2019 at 03:10PM
+                                                                                          </div>
+                                                                                    </div>
+                                                                                    <div class="card-footer taskpanel-footer">
+                                                                                          <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-diamond-stone"></i>30</div>
+                                                                                    </div>
+                                                                                    <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                                    <div class="taskcard-ribbon"><span class="badge badge-success">已讀訊息</span>
+                                                                                    </div>
+                                                                              </div>
+                                                                              <div class="taskcard">
+                                                                                    <div class="card">
+                                                                                          <div class="card-body">
+                                                                                                <div class="taskname">來自 Adonis 的訊息
+                                                                                                </div>
+                                                                                                <div class="taskdate">20/07/2019 at 03:10PM
+                                                                                                </div>
+                                                                                          </div>
+                                                                                          <div class="card-footer taskpanel-footer">
+                                                                                                <div class="iconbox btn-hovered-light"><i class="iconbox__icon mdi mdi-bell-ring-outline"></i>30</div>
+                                                                                          </div>
+                                                                                          <div class="taskcard-dragger"><i class="mdi mdi-drag-horizontal"></i></div>
+                                                                                          <div class="taskcard-ribbon"><span class="badge badge-success">已讀通知</span>
+                                                                                          </div>
+                                                                                    </div>
                                                                               </div>
                                                                         </div>
                                                                   </div>
@@ -992,9 +1398,10 @@
                                                       </div>
                                                 </div>
                                           </div>
-                                    </div><!-- main content end -->
-                              </div>
-                        </div><!-- Javascripts Files -->
+                                    </div>
+                        </section>
+                  </div>
+            </div><!-- Javascripts Files -->
       </main>
       <script>
             adonis.controller('AdminController', ['sharedData', '$scope', '$http', '$cookies', '$socket', '$socketMesa', function(sharedData, $scope, $http, $cookies, $socket, $socketMesa) {
@@ -1004,6 +1411,7 @@
                   Admin.Connections = [];
                   Admin.SignInCkecked = {};
                   Admin.MessageUsers = [];
+                  Admin.soakedMessageList = [];
                   var SignInSession = sharedData.SignInSession();
                   SignInSession.then(function(SignInSession) { // 呼叫承諾API獲取資料 .resolve  
 
@@ -1013,6 +1421,7 @@
                               if (SignInSession.UniqueID) {
                                     $cookies.put('UniqueID', SignInSession.UniqueID);
                                     $cookies.put('user_md5', SignInSession.user_md5);
+
                                     //Mesa
                                     console.info("Mesa");
                                     var SocketList = $socketMesa.SocketList(SignInSession.UniqueID);
@@ -1027,8 +1436,45 @@
                                           var user_md5 = $cookies.get('user_md5');
                                           var data = JSON.parse(event.data);
                                           console.info("收到訊息", event, data);
+                                          if (!Admin.QRcodeSoaked_code && location.hash) {
+
+                                                Admin.QRcodeSoaked_code = {
+                                                      UniqueID: location.hash.split('_')[0].replace("#!#", ''),
+                                                      QRcodeSoaked_code: location.hash.split('_')[1],
+                                                };
+
+
+                                                var SendData = {
+                                                      UniqueID: $cookies.get('UniqueID'),
+                                                      user_md5: $cookies.get('user_md5'),
+                                                      mesaUniqueID: $cookies.get('mesaUniqueID'),
+                                                      hash: Admin.QRcodeSoaked_code,
+                                                }
+
+                                                $socketMesa.send(SendData);
+                                          }
+                                          if (data.UniqueID_QRcodeSoaked) Admin.UniqueID_QRcodeSoaked = data.UniqueID_QRcodeSoaked;
+                                          if (data.soakedLogin) Admin.soakedLogin = data.soakedLogin;
+                                          if (data.mesaUniqueID) {
+                                                Admin.mesaUniqueID = data.mesaUniqueID;
+                                                $cookies.put('mesaUniqueID', data.mesaUniqueID);
+                                          }
                                           if (data.Type == "Toast") sharedData.Toast(data[data.Type], 3000);
+                                          if (data.Type == "soakedMessageList") {
+                                                Admin.soakedMessageList.push(data.soakedMessageList);
+                                                $scope.$apply();
+                                                Admin.MessageUsersRefresh();
+                                          }
+                                          if (data.Type == "Connections") {
+                                                Admin.Connections = data[data.Type];
+                                                $scope.$apply();
+                                                Admin.MessageUsersRefresh();
+                                          }
+
+
+                                          console.info(Admin.mesaUniqueID, Admin.QRcodeSoaked_code);
                                     });
+
                                     //Message
                                     var SocketList = $socket.SocketList(SignInSession.UniqueID);
                                     SocketList.then(function(websocket_url) {
@@ -1068,19 +1514,23 @@
                   Admin.SendData = {
                         MessageType: 'Notice_Dev'
                   };
+
+
                   Admin.QrcodeSoaked = {};
                   Admin.QrcodeSoaked.Guest_number = 0;
                   Admin.QrcodeSoaked.Reserved_number = 0;
                   Admin.QRcodeSoaked_Create = function() {
-                        
+
                         Admin.QrcodeSoaked.QRcode = new Array();
                         var QrcodeSoaked = {
                               'Action': 'QrcodeSoaked',
                               'Data': JSON.stringify({
                                     'UniqueID': $cookies.get('UniqueID'),
-                                    'Guest_number' : Admin.QrcodeSoaked.Guest_number,
-                                    'Reserved_number' :Admin.QrcodeSoaked.Reserved_number,
-                                    'MessageUsers' : Admin.MessageUsers.map( ( Item ) => { return Item.shortUniqueID }),
+                                    'Guest_number': Admin.QrcodeSoaked.Guest_number,
+                                    'Reserved_number': Admin.QrcodeSoaked.Reserved_number,
+                                    'MessageUsers': Admin.MessageUsers.map((Item) => {
+                                          return Item.shortUniqueID
+                                    }),
                               }),
                         }
                         console.info("QRcode");
@@ -1098,7 +1548,7 @@
                               console.info(response);
 
                         });
-                        
+
 
 
                   }
@@ -1107,7 +1557,7 @@
                         setTimeout(() => {
                               Admin.QrcodeSoaked.QRcode.codeList.forEach((value) => {
                                           console.info("qrcode_" + value.QRcodeSoaked_code);
-                                          value.QRcodeSoaked_code = new QRCode(document.getElementById("qrcode_" + value.UniqueID+"_"+value.QRcodeSoaked_code), {
+                                          value.QRcodeSoaked_code = new QRCode(document.getElementById("qrcode_" + value.UniqueID + "_" + value.QRcodeSoaked_code), {
                                                 width: 50,
                                                 height: 50
                                           })
@@ -1119,6 +1569,45 @@
 
                   }
 
+                  Admin.setNickName = function() {
+                        if (!Admin.NickName) {
+
+                              sharedData.Toast("請輸入訊息內容", 3000);
+                              return false;
+
+                        }
+                        var SendData = {
+                              UniqueID: $cookies.get('UniqueID'),
+                              user_md5: $cookies.get('user_md5'),
+                              mesaUniqueID: $cookies.get('mesaUniqueID'),
+                              NickName: Admin.NickName,
+                        }
+                        console.info('$socketMesa');
+                        $socketMesa.send(SendData);
+
+
+                  }
+                  Admin.SoakedBox = function() {
+
+                        if (!Admin.SoakedMessage) {
+
+                              sharedData.Toast("請輸入訊息內容", 3000);
+                              return false;
+
+                        }
+                        var SendData = {
+                              UniqueID: $cookies.get('UniqueID'),
+                              user_md5: $cookies.get('user_md5'),
+                              mesaUniqueID: $cookies.get('mesaUniqueID'),
+                              UniqueID_QRcodeSoaked: Admin.UniqueID_QRcodeSoaked,
+                              Action: 'MessageToUsers',
+                              SoakedMessage: Admin.SoakedMessage,
+                        }
+                        console.info(SendData);
+                        $socketMesa.send(SendData);
+
+
+                  }
                   Admin.SendBox = function() {
                         if (!Admin.Message) {
 
@@ -1293,168 +1782,20 @@
                   };
                   Admin.UserTempMessages();
 
-
-                  Admin.UserFootPointPages = {};
-
-                  //個人足跡紀錄
-                  Admin.UserFootPoint = function() {
-
-
-                        var UserFootPoint = {
-                              'Action': 'UserFootPoint',
-                              'Data': JSON.stringify({
-                                    'UniqueID': $cookies.get('UniqueID'),
-                                    'Pages': Admin.UserFootPointPages,
-                                    'Search': Admin.Search,
-                              }),
-                        }
-                        var UserFootPoint = $http({
-                              method: "post",
-                              url: "<?PHP echo SITE_URL; ?>UsersApi",
-                              data: UserFootPoint,
-                              headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-                              },
-                        }).then(function successCallback(response) {
-                              var data = response.data;
-                              Admin.UserFootPoint_List = data.UserFootPoint;
-                              Admin.UserFootPointPages = data.Pages;
-                        }, function errorCallback(response) {
-
-
-                        });
-                  };
-
-
-                  Admin.UserFootPoint();
-
                   //發送訊息會員列表更新
                   Admin.MessageUsers = [];
                   Admin.MessageUsersRefresh = function() {
-
+                        
                         Admin.MessageUsers = [];
                         Admin.Connections.forEach(element => {
                               if (element.checked) Admin.MessageUsers.push(element);
                         });
                   }
-
-
-
-                  Admin.MobileVerify = function() {
-
-                        var data = {
-                              'Action': 'MobileVerify',
-                              'Data': JSON.stringify(Admin.LoginInfo),
-                        }
-
-                        var request = $http({
-                              method: "post",
-                              url: "<?PHP echo SITE_URL; ?>UsersApi",
-                              data: data,
-                              headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                              },
-                        }).then(function successCallback(response) {
-                              var data = response.data;
-
-                              if (data.MobileChecked) Admin.MobileInfo.UniqueID = data.MobileChecked.UniqueID;
-                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                        }, function errorCallback(response) {
-                              // called asynchronously if an error occurs
-                              // or server returns response with an error status.
-
-                        });
-                  };
-
-                  Admin.MobileChecked = function() {
-                        var postData = {
-                              UniqueID: Admin.MobileInfo.UniqueID,
-                              mobile: Admin.LoginInfo.mobile,
-                              mobile_code: Admin.MobileInfo.mobile_code
-                        }
-                        var data = {
-                              'Action': 'MobileChecked',
-                              'Data': JSON.stringify(postData),
-                        }
-
-                        var request = $http({
-                              method: "post",
-                              url: "<?PHP echo SITE_URL; ?>UsersApi",
-                              data: data,
-                              headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                              },
-                        }).then(function successCallback(response) {
-                              var data = response.data;
-
-                              if (data.ReDirect) location.reload();
-                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                        }, function errorCallback(response) {
-                              // called asynchronously if an error occurs
-                              // or server returns response with an error status.
-
-                        });
-                  };
-                  Admin.EmailVerify = function() {
-
-                        var data = {
-                              'Action': 'EmailVerify',
-                              'Data': JSON.stringify(Admin.LoginInfo),
-                        }
-
-                        var request = $http({
-                              method: "post",
-                              url: "<?PHP echo SITE_URL; ?>UsersApi",
-                              data: data,
-                              headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                              },
-                        }).then(function successCallback(response) {
-                              var data = response.data;
-
-
-                              if (data.EmailChecked) Admin.CreateInfo.UniqueID = data.EmailChecked.UniqueID;
-                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                        }, function errorCallback(response) {
-                              // called asynchronously if an error occurs
-                              // or server returns response with an error status.
-
-                        });
-                  };
-
-                  Admin.EmailChecked = function() {
-                        var postData = {
-                              UniqueID: Admin.EmailInfo.UniqueID,
-                              email: Admin.LoginInfo.email,
-                              email_token: Admin.EmailInfo.email_token
-                        }
-                        var data = {
-                              'Action': 'EmailChecked',
-                              'Data': JSON.stringify(postData),
-                        }
-
-                        var request = $http({
-                              method: "post",
-                              url: "<?PHP echo SITE_URL; ?>UsersApi",
-                              data: data,
-                              headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
-
-                              },
-                        }).then(function successCallback(response) {
-                              var data = response.data;
-
-                              if (data.ErrorMsg) sharedData.Toast(data.ErrorMsg, 3000);
-                              if (data.ReDirect) location.reload();
-                        }, function errorCallback(response) {
-                              // called asynchronously if an error occurs
-                              // or server returns response with an error status.
-
-                        });
-                  };
+                  Admin.Toast = function() {
+                        
+                        sharedData.Toast('複製網址完成！！！', 3000);
+                  }
+                  
             }]);
       </script>
       <script src="chatbox/dist/js/jquery-3.3.1.slim.min.js"></script>
