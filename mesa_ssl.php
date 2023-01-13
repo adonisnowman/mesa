@@ -6,9 +6,7 @@ include "phalcon/library/Tools.php";
 
 
 
-
-use Swoole\Websocket\Server;
-use Swoole\WebSocket\Frame;
+use Swoole\Coroutine\Http\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Table;
@@ -50,7 +48,7 @@ if (file_exists("/opt/local/etc/nginx/ssl/privkey")) $privkey = "/opt/local/etc/
 
 $SwoolePort  = ($BestaupDefault) ? "9501" : "9501";
 //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道
-$ws = new swoole_websocket_server("0.0.0.0", $SwoolePort, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+$ws = new Server("0.0.0.0", $SwoolePort, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 $Response = new Response();
 
 function SendAction($ws, $fd, $Action)
