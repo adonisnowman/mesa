@@ -40,8 +40,10 @@ $connections->create();
 $fullchain = "/etc/letsencrypt/live/swoole.bestaup.com/fullchain.pem";
 $privkey = "/etc/letsencrypt/live/swoole.bestaup.com/privkey.pem";
 $BestaupDefault = (file_exists($fullchain));
-if (file_exists("/opt/local/etc/nginx/ssl/fullchain")) $fullchain = "/opt/local/etc/nginx/ssl/fullchain";
-if (file_exists("/opt/local/etc/nginx/ssl/privkey")) $privkey = "/opt/local/etc/nginx/ssl/privkey";
+if (file_exists("mycert.pem"))
+     $fullchain = "mycert.pem";
+if (file_exists("private.key")) 
+    $privkey = "private.key";
 
 $SwoolePort  = ($BestaupDefault)?"8080":"9509";
 //创建websocket服务器对象，监听0.0.0.0:9501端口，开启SSL隧道

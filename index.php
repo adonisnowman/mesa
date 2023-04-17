@@ -12,7 +12,7 @@ use Phalcon\Mvc\Dispatcher;
 use Phalcon\Events\Manager;
 use Phalcon\Cache;
 use Phalcon\Cache\AdapterFactory;
-
+use Phalcon\Db\Adapter\Pdo\Mysql;
 
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
@@ -42,9 +42,9 @@ if (!defined('ROOT_PATH') && file_exists("/home/cfd888/public_html"))
 	define('ROOT_PATH', "/home/cfd888/public_html" . $dir);	
 }
 
-if (!defined('ROOT_PATH') && file_exists("/var/www")) 
+if (!defined('ROOT_PATH') && file_exists("/opt/local/share/nginx/html")) 
 {
-	define('ROOT_PATH', "/var/www" . $dir);
+	define('ROOT_PATH', "/opt/local/share/nginx/html" . $dir);
 }
 
 
@@ -111,6 +111,7 @@ $container->set(
 		return $view;
 	}
 );
+
 
 
 

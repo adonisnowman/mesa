@@ -84,6 +84,7 @@ class IndexController extends BaseController
         $Item['ViewsPath'] = "admin";
         $RedirectAdmin = RedirectAdmin::getListByItem($Item);
 
+        
         foreach ($RedirectAdmin as $item) {
             $Return[$item['ReDirect']] = _Views::RedirectAdmin(["ReDirect" => $item['ReDirect']]);
         }
