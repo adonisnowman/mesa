@@ -132,6 +132,34 @@ class _Api
         }
         return $Return;
     }
+    
+
+    public static function LottoNumbersHistory($Ojbects){
+        $Return = [];
+        if(empty($Ojbects)) $Return = [];
+        else {
+            foreach($Ojbects AS $Object){
+                $Item = $Object->toArray();
+                
+                $Name = "台灣彩卷_".$Item['name'];
+                $LottoDateValues_Value_Str = "台灣彩卷_".$Item['LottoDateValues_Value_Str'];
+                $LottoIndexValues_Value_Str = "台灣彩卷_".$Item['LottoIndexValues_Value_Str'];
+                $NumberIndex = "台灣彩卷_".$Item['NumberIndex'];
+
+                if( $Item['SpecialNumber'] ) $NumberIndex = "台灣彩卷_SpecialNumber";
+
+                if( empty( $Return[$Name] )) $Return[$Name] = array();
+                if( empty( $Return[$Name][$LottoDateValues_Value_Str] )) $Return[$Name][$LottoDateValues_Value_Str] = array();
+                if( empty( $Return[$Name][$LottoDateValues_Value_Str][$LottoIndexValues_Value_Str] )) 
+                    $Return[$Name][$LottoDateValues_Value_Str][$LottoIndexValues_Value_Str] = $Item;
+                if( empty( $Return[$Name][$LottoDateValues_Value_Str][$LottoIndexValues_Value_Str]['Numbers'] )) 
+                    $Return[$Name][$LottoDateValues_Value_Str][$LottoIndexValues_Value_Str]['Numbers'] = array();
+                if( empty( $Return[$Name][$LottoDateValues_Value_Str][$LottoIndexValues_Value_Str]['Numbers'][$NumberIndex] )) 
+                    $Return[$Name][$LottoDateValues_Value_Str][$LottoIndexValues_Value_Str]['Numbers'][$NumberIndex] = Tools::fix_element_Key( $Item , ["SpecialNumber", "LottoNumberValues_Value_Str", "LottoNumberValues_Value_HTML"]);;
+            }            
+        }
+        return $Return;
+    }
 
     public static function Accounts($Ojbects){
         if(empty($Ojbects)) $Return = [];

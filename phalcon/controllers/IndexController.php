@@ -1,7 +1,7 @@
 <?php
 
 use Phalcon\Http\Response;
-
+use Orhanerday\OpenAi\OpenAi;
 
 class IndexController extends BaseController
 {
@@ -17,13 +17,46 @@ class IndexController extends BaseController
 
     public function infoAction()
     {
-        $SwooleUrl = "http://mesa.adonis.tw/Swoole";
-        $Data['shortUniqueID'] = "QhM9Za";
-        $post['Action'] = "MessageToken";
-        $post['Data'] = json_encode($Data);
+       
 
-        $Return = Tools::httpPost($SwooleUrl, $post);
-        var_dump($Return);
+        $open_ai_key = getenv('OPENAI_API_KEY');
+        $open_ai = new OpenAi($open_ai_key);
+        
+        $chat = $open_ai->chat([
+           'model' => 'gpt-3.5-turbo',
+           'messages' => [
+               [
+                   "role" => "system",
+                   "content" => "You are a helpful assistant."
+               ],
+               [
+                   "role" => "user",
+                   "content" => "Who won the world series in 2020?"
+               ],
+               [
+                   "role" => "assistant",
+                   "content" => "The Los Angeles Dodgers won the World Series in 2020."
+               ],
+               [
+                   "role" => "user",
+                   "content" => "Where was it played?"
+               ],
+           ],
+           'temperature' => 1.0,
+           'max_tokens' => 4000,
+           'frequency_penalty' => 0,
+           'presence_penalty' => 0,
+        ]);
+        
+        
+        var_dump($chat);
+        echo "<br>";
+        echo "<br>";
+        echo "<br>";
+        // decode response
+        $d = json_decode($chat);
+        // Get Content
+        echo($d->choices[0]->message->content);
         exit;
         $Insert = [];
         $Insert['UniqueID_MessageType'] = "95A1y0r097n97489921";
@@ -54,28 +87,24 @@ class IndexController extends BaseController
     }
     public function indexAction()
     {
-
+       
+        
         if (!empty($_GET['Token'])) Tools::checkToken($_GET['Token']);
         
 
-        //預設模板讀取
+        //預設模板讀取 www.xn--ehx388b.tw
         $Return = _Views::Init();
-        if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);
-        else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
+        if ($_SERVER['SERVER_NAME'] == "taiwanlottery.xn--ehx388b.tw") $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);     
+        else if ($_SERVER['SERVER_NAME'] == "taiwanlotteryadmin.xn--ehx388b.tw") $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);     
         else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "Home_header"]);
         else $Return['header'] = _Views::RedirectAdmin(["ReDirect" => "User_header"]);
 
         if (!empty($_SESSION[Tools::getIp()]['ReDirect']))  $Return['ReDirect'] = $_SESSION[Tools::getIp()]['ReDirect'];
+        else if ( $_SERVER['SERVER_NAME'] == "taiwanlotteryadmin.xn--ehx388b.tw" && ( Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps()))) $Return['ReDirect'] = "sign-in";
+
+        else $Return['ReDirect'] = "Novelindex";
 
         
-        else if ($_SERVER['SERVER_NAME'] == "soaked.adonis.tw") $Return['ReDirect'] = "SoakedLogin";
-        else if ($_SERVER['SERVER_NAME'] == "users.adonis.tw") $Return['ReDirect'] = "UserSign";
-        else if ($_SERVER['SERVER_NAME'] == "swoole.bestaup.com") $Return['ReDirect'] = "UserSign";
-        else if ($_SERVER['SERVER_NAME'] == "adonis.bestaup.com") $Return['ReDirect'] = "sign-in";
-        else if (Tools::getIp() == Tools::ServerIp() || in_array(Tools::getIp(),  _Accounts::AllowIps())) $Return['ReDirect'] = "sign-in";
-
-        else $Return['ReDirect'] = "UserSign";
-
 
         //預設 新增修改 模板讀取
         $Return['Input_Nav'] = _Views::RedirectAdmin(["ReDirect" => "Input_Nav"]);
@@ -109,7 +138,7 @@ class IndexController extends BaseController
         }
         else {
             unset($_SESSION[Tools::getIp()]['ReDirect']);
-            $Return['ReDirect'] = "UserSign";
+            $Return['ReDirect'] = "Novelindex";
             echo _Views::RedirectAdmin($Return);
             _UsersApi::insertUserFootPoint(__CLASS__,$Return['ReDirect']);
         }

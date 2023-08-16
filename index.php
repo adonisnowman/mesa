@@ -83,9 +83,9 @@ $loader->registerDirs(
 		ROOT_PATH . $config->application->controllersDir,
 		ROOT_PATH . $config->application->pluginsDir,
 		ROOT_PATH . $config->application->modelsDir,
-		ROOT_PATH . $config->application->modelsDir.'swoole/',
+		ROOT_PATH . $config->application->modelsDir.'taiwanlottery/',
+		ROOT_PATH . $config->application->modelsDir.'TaiwanLotteryAdmin/',
 		ROOT_PATH . $config->application->modelsDir.'phalcon4/',
-		ROOT_PATH . $config->application->modelsDir.'account/',
 		ROOT_PATH . $config->application->libraryDir,
 	]
 );
@@ -124,13 +124,13 @@ $container->set('db', function () use ($config) {
 		'options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config->database->charset)
 	));
 });
-$container->set('swoole', function () use ($config) {
+$container->set('taiwanlottery', function () use ($config) {
 	return new \Phalcon\Db\Adapter\Pdo\Mysql(array(
-		"host" => $config->swoole->host,
-		"username" => $config->swoole->username,
-		"password" => $config->swoole->password,
-		"dbname" => $config->swoole->name,
-		'options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config->swoole->charset)
+		"host" => $config->taiwanlottery->host,
+		"username" => $config->taiwanlottery->username,
+		"password" => $config->taiwanlottery->password,
+		"dbname" => $config->taiwanlottery->name,
+		'options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config->taiwanlottery->charset)
 	));
 });
  

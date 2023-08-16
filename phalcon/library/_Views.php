@@ -48,7 +48,7 @@ class _Views
            
         }
         
-
+        
         if(!empty($RedirectAdmin->UniqueID) && $RedirectAdmin->offshelf != 1)
         $Echo = BaseController::viewAction($RedirectAdmin->ViewsPath,$RedirectAdmin->ReDirect,$Return);
         

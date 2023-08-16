@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<!--
+	Story by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+	<title>Story by HTML5 UP</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="./html5up-story/assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="./html5up-story/assets/css/noscript.css" />
+	</noscript>
+
+	<!-- AngularJS Material CSS now available via Google CDN; version 1.2.1 used here -->
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.css">
+	<link id="pagestyle" href="material-dashboard-master/assets/css/material-dashboard.min.css?v=3.0.2" rel="stylesheet" />
+	<!--===============================================================================================-->
+	<script src="https://kit.fontawesome.com/4e4a114ffc.js" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-cookies.js"></script>
+
+	<script src="https://cdn3.devexpress.com/jslib/21.2.6/js/dx.all.js"></script>
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.css" />
+	<script src="//cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
+	<!-- AngularJS Material Javascript now available via Google CDN; version 1.2.1 used here -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.js"></script>
+
+	<script>
+		var adonis = angular.module('Admin', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngMessages', 'dx']);
+		adonis.service('sharedData', function($http, $q, $mdToast) {
+			var self = this;
+			//Toast 
+			var last = {
+				bottom: true,
+				top: false,
+				left: false,
+				right: true
+			};
+			self.toastPosition = angular.extend({}, last);
+
+			self.getToastPosition = function() {
+				sanitizePosition();
+
+				return Object.keys(self.toastPosition)
+					.filter(function(pos) {
+						return self.toastPosition[pos];
+					}).join(' ');
+			};
+
+			function sanitizePosition() {
+				var current = self.toastPosition;
+
+				if (current.bottom && last.top) {
+					current.top = false;
+				}
+				if (current.top && last.bottom) {
+					current.bottom = false;
+				}
+				if (current.right && last.left) {
+					current.left = false;
+				}
+				if (current.left && last.right) {
+					current.right = false;
+				}
+
+				last = angular.extend({}, current);
+			};
+
+			self.Toast = function(Msg, timeout) {
+				console.info('Toast', Msg, timeout);
+				var pinTo = self.getToastPosition();
+				var toast = $mdToast.simple()
+					.textContent(Msg)
+					.highlightAction(true)
+					// Accent is used by default, this just demonstrates the usage.
+					.highlightClass('md-accent')
+					.position(pinTo)
+					.hideDelay(timeout);
+
+				$mdToast.show(toast)
+			}
+			self.showActionToast = function() {
+				var pinTo = self.getToastPosition();
+				var toast = $mdToast.simple()
+					.textContent('Marked as read')
+					.actionKey('z')
+					.actionHint('Press the Control-"z" key combination to ')
+					.action('UNDO')
+					.dismissHint('Activate the Escape key to dismiss this toast.')
+					.highlightAction(true)
+					// Accent is used by default, this just demonstrates the usage.
+					.highlightClass('md-accent')
+					.position(pinTo)
+					.hideDelay(0);
+
+				$mdToast.show(toast)
+					.then(function(response) {
+						if (response === 'ok') {
+							alert('You selected the \'UNDO\' action.');
+						} else {
+							$log.log('Toast dismissed.');
+						}
+					}).catch(function() {
+						$log.log('Toast failed or was forced to close early by another toast.');
+					});
+			};
+
+			self.OpenAI = function(Message) {
+				var Return = {};
+				Return.Message = Message;
+				console.info(Return);
+
+				var data = {
+					'Action': 'OpenAI',
+					'Data': JSON.stringify(Return),
+				}
+				var deferred = $q.defer();
+				var request = $http({
+					method: "post",
+					url: "<?PHP echo SITE_URL; ?>Novel",
+					data: data,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+					}
+				}).then(function successCallback(response) {
+					deferred.resolve(response.data[data.Action]);
+				}, function errorCallback(response) {
+					deferred.reject(response);
+
+				});
+
+				return deferred.promise;
+			};
+			self.ReDirect = function(ReDirect) {
+				var ReDirect = {
+					UniqueID: "",
+					ReDirect: ReDirect
+				}
+				var ReDirect = {
+					'Action': 'ReDirect',
+					'Data': JSON.stringify(ReDirect),
+				}
+				console.info(ReDirect);
+				var request = $http({
+					method: "post",
+					url: "<?PHP echo SITE_URL; ?>UsersApi",
+					data: ReDirect,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+					},
+				}).then(function successCallback(response) {
+					var data = response.data;
+					location.reload();
+				}, function errorCallback(response) {
+
+				});
+			}
+			//Edit
+			self.Edit = function(data) {
+
+				var request = $http({
+					method: "post",
+					url: "<?PHP echo SITE_URL; ?>ApiEdit",
+					data: data,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+					}
+				}).then(function successCallback(response) {
+
+					if (response.data.Data && response.data.Data.action) {
+						self.Toast('Marked as ' + response.data.Data.action, 3000);
+					} else if (response.data.ErrorMsg) {
+						self.Toast('Marked as ' + response.data.ErrorMsg.join(","), 3000);
+					} else console.info(response.data);
+				}, function errorCallback(response) {
+					// called asynchronously if an error occurs
+					// or server returns response with an error status.
+
+				});
+			};
+			//List
+			self.LtstData = {};
+			self.List = function(data, key) {
+				var deferred = $q.defer();
+				var request = $http({
+					method: "post",
+					url: "<?PHP echo SITE_URL; ?>api",
+					data: data,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+					}
+				}).then(function successCallback(response) {
+					var data = response.data;
+					var Data = {};
+					Data.List = data[data.Action];
+					Data.Pages = data.Pages;
+					deferred.resolve(Data);
+				}, function errorCallback(response) {
+					deferred.reject(response);
+
+				});
+
+				return deferred.promise;
+			};
+
+			//Remove
+
+			self.Remove = function(data) {
+				var deferred = $q.defer();
+				var request = $http({
+					method: "post",
+					url: "<?PHP echo SITE_URL; ?>ApiRemove",
+					data: data,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+					}
+				}).then(function successCallback(response) {
+					var data = response.data;
+					var Data = {};
+					Data.List = data[data.Action];
+					Data.Pages = data.Pages;
+					deferred.resolve(Data);
+				}, function errorCallback(response) {
+					deferred.reject(response);
+
+				});
+
+				return deferred.promise;
+			};
+
+
+		});
+	</script>
+</head>
+
+<body class="is-preload" ng-app="Admin">
+
+	<main ng-controller="AdminController as Admin">
+		<!-- One -->
+		<section class="banner style1 orient-left content-align-left image-position-right fullscreen onload-image-fade-in onload-content-fade-right">
+			<div class="content">
+				<h1>我墮過胎</h1>
+				<p class="major">在這個宇宙，有許多的生命存活在各種星球上面，某一個星系正面臨著毀滅的命運。守護宇宙的諸神們正在討論如何拯救需要幾十億年才可能誕生的生命。</p>
+				<ul class="actions stacked">
+					<li><a href="#first" class="button big wide smooth-scroll-middle">開始閱讀</a></li>
+				</ul>
+			</div>
+			<div class="image">
+				<img src="../cover.png" alt="" />
+			</div>
+		</section>
+		<!-- Seven -->
+		<section class="wrapper style1 align-center">
+			<div class="inner medium">
+				<h2>Get in touch OpenAI</h2>
+				<form method="post" action="#">
+					<div class="fields">
+						<div class="field">
+							<label for="message">Message</label>
+							<textarea name="message" id="message" rows="6" ng-model="Admin.Message"></textarea>
+						</div>
+					</div>
+					<ul class="actions special">
+						<li><input type="button" name="button" id="button" value="Send Message" ng-click=" Admin.OpenAI() " /></li>
+					</ul>
+				</form>
+				{{Admin.ReBackMessage}}
+			</div>
+		</section>
+
+		
+
+	</main>
+	<script>
+		adonis.controller('AdminController', ['sharedData', '$scope', '$http', '$cookies', function(sharedData, $scope, $http, $cookies) {
+			var Admin = this;
+			Admin.Message = "";
+			Admin.CreateInfo = {};
+			if (location.pathname == "/logout") location.href = '';
+			Admin.ReDirect = function(ReDirect) {
+				console.info(ReDirect);
+				sharedData.ReDirect(ReDirect);
+			}
+			Admin.OpenAI = function() {
+				// var Data = sharedData.OpenAI(Admin.Message).choices[0].message.content;
+				// console.info(Data);
+				// Admin.ReBackMessage = Data;
+
+				var promise = sharedData.OpenAI(Admin.Message);
+
+				promise.then(function(data) { // 呼叫承諾API獲取資料 .resolve  
+					Admin.ReBackMessage = data.choices[0].message.content;//chat 
+				}, function(data) { // 處理錯誤 .reject  
+					console.info(data);
+				});
+			}
+
+
+
+
+		}]);
+	</script>
+	<!-- Scripts -->
+	<script src="./html5up-story/assets/js/jquery.min.js"></script>
+	<script src="./html5up-story/assets/js/jquery.scrollex.min.js"></script>
+	<script src="./html5up-story/assets/js/jquery.scrolly.min.js"></script>
+	<script src="./html5up-story/assets/js/browser.min.js"></script>
+	<script src="./html5up-story/assets/js/breakpoints.min.js"></script>
+	<script src="./html5up-story/assets/js/util.js"></script>
+	<script src="./html5up-story/assets/js/main.js"></script>
+
+</body>
+
+</html>

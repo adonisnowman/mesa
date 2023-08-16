@@ -117,6 +117,8 @@ class ApiController extends BaseController
             var_dump($Item);
             exit;
         }
+
+       
         //checkKeys
         _Action::checkKeys($checkKeys, $Item);
         $Insert = _Action::ActionLogs($this->router, self::$PostData, $checkKeys);
@@ -129,11 +131,14 @@ class ApiController extends BaseController
         $Return = Models::insertTable($Insert, "ActionLogs");
         if (empty($Return['Object']->UniqueID)) return $Return;
         else $ActionLogs = $Return['Object'];
+       
+
+        
 
         $Return = $this->$Action();
         $Return['Action'] = $Action;
         $Return['Pages'] = self::$Pages;
-
+       
         if (!empty($checkKeys->UniqueID)) {
             $checkKeys->called_time = Tools::getDateTime();
             $checkKeys->save();
@@ -175,8 +180,7 @@ class ApiController extends BaseController
         echo JSON_encode($Return, JSON_UNESCAPED_UNICODE);
     }
 
-
-    //讀取單筆資料
+       //讀取單筆資料
     public function ActionLogsData()
     {
 
@@ -299,6 +303,27 @@ class ApiController extends BaseController
         $Return = [];
         $Return[$TableName] = _Api::$TableName($TableName::find($Select));
 
+
+        return $Return;
+    }
+
+    public function LottoNumbersHistory()
+    {
+       
+        $TableName = __FUNCTION__;
+
+        if (!empty(self::$PostData['Search'])) {
+            $SelectKeys = ["name"];
+            $Select = Models::SelectLike($SelectKeys, self::$PostData['Search']);
+        } else $Select = "";
+        self::$Pages = Tools::Pages(self::$Pages, $TableName::count());
+        $Select = Models::DefultSelect(self::$Pages, $Select , 12*7*3);
+
+        $Select['order'] = " name DESC, LottoDateValues_Value_Str DESC , LottoIndexValues_Value_Str DESC ";
+
+        $Return = [];
+        $Return[$TableName] = _Api::$TableName($TableName::find($Select));
+      
 
         return $Return;
     }
